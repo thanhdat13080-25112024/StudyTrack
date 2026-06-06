@@ -1,17 +1,17 @@
 /** TanStack Query hooks for auth + profile. */
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '@/lib/apiClient';
-import { applyTheme, type Theme } from '@/lib/theme';
-import { setLanguage, type Lang } from '@/lib/i18n';
+import type { Theme } from '@/lib/theme';
+import type { Lang } from '@/lib/i18n';
 import { useAuthStore } from '@/store/authStore';
+import { useUiStore } from '@/store/uiStore';
 import type { MeOut, ProfileOut, ProfileUpdate, Token, UserOut, UserSettingsUpdate } from './types';
 
 export const ME_KEY = ['auth', 'me'] as const;
 
-/** Apply server-stored lang/theme to the client (cross-device sync). */
+/** Adopt server-stored lang/theme into the UI store (cross-device sync, no echo). */
 function applyServerPrefs(user: UserOut): void {
-  applyTheme(user.theme as Theme);
-  setLanguage(user.lang as Lang);
+  useUiStore.getState().hydrate(user.lang as Lang, user.theme as Theme);
 }
 
 export function useMe() {
