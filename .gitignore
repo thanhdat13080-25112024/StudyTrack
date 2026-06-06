@@ -5,13 +5,20 @@
 # =============================================================================
 
 # -----------------------------------------------------------------------------
-# Harness / Claude Code
+# AI assistant tooling & guidance — kept LOCAL ONLY (untracked, not pushed)
 # -----------------------------------------------------------------------------
-# Local Claude Code settings (personal, not shared)
-.claude/settings.local.json
+# The Claude Code harness (agents + skills + settings) and the AI-instruction
+# files live on disk but are intentionally untracked to keep the public repo
+# product-only (solo project). GEMINI.md/GEMINI-VIE.md were removed (unused).
+.claude/
+CLAUDE.md
+CLAUDE-VIE.md
+GEMINI.md
+GEMINI-VIE.md
+# Superpowers workflow artifacts (per-phase specs & plans)
+docs/superpowers/
 # Harness cross-agent scratch (never pushed)
 _workspace/
-# NOTE: do NOT ignore the rest of .claude/ — it is the committed agent harness.
 
 # -----------------------------------------------------------------------------
 # Python (backend/)
