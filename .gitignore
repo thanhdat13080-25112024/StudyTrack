@@ -1,0 +1,10 @@
+# Local Claude Code settings (personal, not shared)
+.claude/settings.local.json
+
+# Harness cross-agent scratch (never pushed)
+_workspace/
+
+# OS noise
+.DS_Store
+
+# NOTE: expanded with full Python/Node/env/build rules during Phase 0 (devops-engineer).

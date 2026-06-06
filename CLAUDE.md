@@ -4,6 +4,19 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 StudyTrack is a single-page study-habit manager (Pomodoro timer, dashboard, weekly scheduler, achievement badges, virtual student ID). It is bilingual (Vietnamese/English) with light/dark themes, deployed at https://studytrack-mzds.vercel.app/.
 
+> **Note:** the live app is the single-file vanilla build documented below. A full-stack rewrite (FastAPI + Postgres + React + WebSocket) is in progress under the harness — see the section directly beneath.
+
+## Harness: StudyTrack refactor
+
+**Goal:** drive the StudyTrack full-stack refactor (FastAPI + Postgres + React/Vite + WebSocket, self-hosted VPS) as a phased, always-green, auto-deployed pipeline.
+
+**Trigger:** for any refactor work — "bắt đầu/tiếp tục phase N", "start/continue/redo/fix phase N", "build backend/frontend", "re-run part X" — use the `studytrack-build` orchestrator skill. It coordinates 5 specialist subagents (`backend-engineer`, `frontend-engineer`, `devops-engineer`, `qa-integrator`, `docs-keeper` in `.claude/agents/`) over their skills in `.claude/skills/studytrack-*`, wiring in the installed superpowers skills (TDD, brainstorming, code-review, finishing-a-development-branch, using-git-worktrees, verification-before-completion, systematic-debugging) and the `frontend-design` / `claude-api` skills. Simple one-off questions: answer directly, no harness.
+
+**Change log:**
+| Date | Change | Target | Reason |
+|------|--------|--------|--------|
+| 2026-06-06 | Initial harness (5 agents + 5 domain skills + orchestrator) | all | Phase 0 of the refactor |
+
 ## Running
 
 No build step or package manager — it is vanilla HTML/CSS/JS loading Chart.js and Canvas Confetti from CDNs (requires internet). Serve over HTTP rather than `file://` so `dom.mp3` and assets load:

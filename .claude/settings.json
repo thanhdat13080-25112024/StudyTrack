@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cd \"/Users/thanhdat/.claude/projects/-Users-thanhdat-Documents-Code-Personal-Repo-StudyTrack/memory/\")",
+      "Bash(cat MEMORY.md)",
+      "Read(//Users/thanhdat/.claude/plans/**)",
+      "Edit(/.claude/skills/studytrack-backend/**)",
+      "Edit(/.claude/skills/studytrack-frontend/**)",
+      "Edit(/.claude/skills/studytrack-devops/**)",
+      "Edit(/.claude/skills/studytrack-qa/**)",
+      "Edit(/.claude/skills/studytrack-docs/**)",
+      "Edit(/.claude/skills/studytrack-build/**)",
+      "Bash(git checkout *)",
+      "Bash(git add *)"
+    ]
+  }
+}
