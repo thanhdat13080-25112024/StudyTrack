@@ -128,4 +128,4 @@ Khai báo trong `.env` (copy từ `.env.example`). `.env` bị git-ignore và b�
 ## Ghi chú
 
 - Bản app cũ single-file nằm trong `legacy/` (chạy bằng `python3 -m http.server 8000` rồi mở `legacy/index.html`); xem `legacy/README.md`.
-- Tài liệu hướng dẫn cho AI (Claude/Gemini) ở `CLAUDE.md` (nguồn tiếng Anh chuẩn), `CLAUDE-VIE.md`, `GEMINI.md`, `GEMINI-VIE.md`.
+- Dự án được phát triển với sự hỗ trợ của Claude Code. Cấu hình trợ lý AI (file hướng dẫn `CLAUDE.md` và bộ harness `.claude/`) được giữ **cục bộ trên máy dev, không commit lên repo** để GitHub chỉ chứa mã nguồn sản phẩm.
