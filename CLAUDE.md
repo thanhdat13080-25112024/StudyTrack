@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 StudyTrack is a single-page study-habit manager (Pomodoro timer, dashboard, weekly scheduler, achievement badges, virtual student ID). It is bilingual (Vietnamese/English) with light/dark themes, deployed at https://studytrack-mzds.vercel.app/.
 
-> **Note:** the live app is the single-file vanilla build documented below. A full-stack rewrite (FastAPI + Postgres + React + WebSocket) is in progress under the harness — see the section directly beneath.
+> **Note — where the active project lives:** the detailed single-file documentation in the rest of this file now describes the **legacy app in `legacy/`** (`legacy/index.html`), kept for reference. The active project is the **full-stack monorepo** (`backend/` FastAPI + Postgres, `frontend/` React/Vite, `deploy/`). For the current architecture, run commands, and Git/deploy flow, start with the root `README.md`, the `## Harness: StudyTrack refactor` section just below, and `make dev` / `make help`. The single-file guidance below is still accurate for `legacy/` but does not describe the new stack.
 
 ## Harness: StudyTrack refactor
 

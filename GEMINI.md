@@ -2,6 +2,8 @@
 
 Welcome to StudyTrack, a web-based study habit management application. This project is a "Single-file Component" architecture where UI, styling, and logic are primarily contained within `index.html`.
 
+> **Note — where the active project lives:** the detailed single-file documentation in the rest of this file now describes the **legacy app in `legacy/`** (`legacy/index.html`), kept for reference. The active project is the **full-stack monorepo** (`backend/` FastAPI + Postgres, `frontend/` React/Vite, `deploy/`). For the current architecture, run commands, and Git/deploy flow, start with the root `README.md`, the `## Harness: StudyTrack refactor` section in `CLAUDE.md`, and `make dev` / `make help`. The single-file guidance below is still accurate for `legacy/` but does not describe the new stack.
+
 ## Project Overview
 
 - **Purpose**: A productivity tool for students to manage study sessions, track progress via dashboards, and maintain study streaks.

@@ -1,0 +1,51 @@
+# =============================================================================
+# StudyTrack — DEV docker-compose
+# Brings up Postgres (and optional Adminer) for local development.
+# The backend (uvicorn --reload) and frontend (vite) run on the host via
+# `make dev`; only stateful infra lives here.
+#
+#   docker compose up -d db          # Postgres only
+#   docker compose --profile tools up -d   # + Adminer DB UI on :8080
+#
+# Values come from .env (copy .env.example -> .env). Defaults below are
+# dev-only conveniences, NOT production secrets.
+# =============================================================================
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: studytrack-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-studytrack}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-studytrack}
+      POSTGRES_DB: ${POSTGRES_DB:-studytrack}
+    ports:
+      # Host 5432 -> container 5432. Change the host side in .env if it clashes.
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-studytrack} -d ${POSTGRES_DB:-studytrack}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  # Optional lightweight DB browser. Enabled only with `--profile tools`.
+  adminer:
+    image: adminer:4
+    container_name: studytrack-adminer
+    restart: unless-stopped
+    profiles: ["tools"]
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      ADMINER_DEFAULT_SERVER: db
+    ports:
+      - "8080:8080"
+
+volumes:
+  pgdata:
+    name: studytrack_pgdata

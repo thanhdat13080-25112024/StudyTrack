@@ -1,0 +1,97 @@
+# =============================================================================
+# StudyTrack — PRODUCTION docker-compose (runs on the VPS)
+# Services:
+#   nginx    -- TLS terminator + reverse proxy (80/443); serves FE static,
+#               proxies /api and /ws to the backend (wss upgrade), and the
+#               ACME http-01 challenge to certbot.
+#   backend  -- FastAPI via gunicorn + uvicorn workers.
+#   db       -- Postgres 16 with a named volume.
+#   certbot  -- Let's Encrypt issuance/renewal (webroot).
+#
+# Secrets come from a server-side .env at the repo root (NOT in git).
+# Build contexts (../backend, ../frontend) are produced by the other agents;
+# this file wires them. Run via deploy/deploy.sh.
+# =============================================================================
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: studytrack-prod-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+    # Not published to the host — only reachable on the internal compose network.
+    expose:
+      - "5432"
+
+  backend:
+    build:
+      context: ..
+      dockerfile: backend/Dockerfile
+    container_name: studytrack-prod-backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      JWT_SECRET: ${JWT_SECRET}
+      # Uncomment when the AI feature ships:
+      # ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+    # gunicorn with uvicorn workers, bound on the internal network only.
+    command: >-
+      gunicorn app.main:app
+      -k uvicorn.workers.UvicornWorker
+      --bind 0.0.0.0:8000
+      --workers ${GUNICORN_WORKERS:-3}
+      --timeout 60
+    expose:
+      - "8000"
+
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: studytrack-prod-nginx
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      # Frontend static build output, produced by the frontend image/build step.
+      - frontend_dist:/usr/share/nginx/html:ro
+      # Let's Encrypt certs + ACME webroot, shared with certbot.
+      - ./certbot/conf:/etc/letsencrypt:ro
+      - ./certbot/www:/var/www/certbot:ro
+
+  certbot:
+    image: certbot/certbot:latest
+    container_name: studytrack-prod-certbot
+    restart: unless-stopped
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    # Renew twice a day; nginx picks up new certs on its next reload.
+    entrypoint: >-
+      /bin/sh -c "trap exit TERM;
+      while :; do certbot renew --webroot -w /var/www/certbot --quiet;
+      sleep 12h & wait $${!}; done"
+
+volumes:
+  pgdata:
+    name: studytrack_prod_pgdata
+  # Populated by the frontend build (e.g. a one-shot build container or a
+  # bind-mount of frontend/dist). See deploy/deploy.sh / frontend Dockerfile.
+  frontend_dist:
+    name: studytrack_frontend_dist
