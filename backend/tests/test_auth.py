@@ -2,11 +2,10 @@
 
 from __future__ import annotations
 
+from app.models.user import User
 from fastapi.testclient import TestClient
 from sqlalchemy import select
 from sqlalchemy.orm import Session
-
-from app.models.user import User
 
 REG = {"email": "demo@studytrack.app", "password": "secret123", "name": "Demo"}
 

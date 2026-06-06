@@ -4,10 +4,15 @@ that is a Python keyword, so the attribute/JSON field is `class_name`."""
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from sqlalchemy import Float, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.db import Base
+
+if TYPE_CHECKING:
+    from app.models.user import User
 
 
 class Profile(Base):
@@ -30,4 +35,4 @@ class Profile(Base):
     total_credits_required: Mapped[int | None] = mapped_column(Integer, nullable=True)
     expected_graduation: Mapped[str | None] = mapped_column(String(32), nullable=True)
 
-    user: Mapped["User"] = relationship(back_populates="profile")
+    user: Mapped[User] = relationship(back_populates="profile")

@@ -3,11 +3,15 @@
 from __future__ import annotations
 
 from datetime import datetime
+from typing import TYPE_CHECKING
 
 from sqlalchemy import DateTime, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.db import Base
+
+if TYPE_CHECKING:
+    from app.models.profile import Profile
 
 
 class User(Base):
@@ -23,6 +27,6 @@ class User(Base):
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
 
-    profile: Mapped["Profile"] = relationship(
+    profile: Mapped[Profile] = relationship(
         back_populates="user", uselist=False, cascade="all, delete-orphan"
     )

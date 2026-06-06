@@ -6,16 +6,15 @@ from __future__ import annotations
 
 from collections.abc import Iterator
 
+import app.models  # noqa: F401  (registers User/Profile on Base.metadata)
 import pytest
+from app.core.db import Base
+from app.core.deps import get_db
+from app.main import app
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
-
-import app.models  # noqa: F401  (registers User/Profile on Base.metadata)
-from app.core.db import Base
-from app.core.deps import get_db
-from app.main import app
 
 
 @pytest.fixture
