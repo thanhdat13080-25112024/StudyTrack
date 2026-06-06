@@ -9,15 +9,13 @@ from __future__ import annotations
 
 from logging.config import fileConfig
 
-from alembic import context
-from sqlalchemy import engine_from_config, pool
-
-from app.core.config import settings
-from app.core.db import Base
-
 # Importing the models package registers all model tables on Base.metadata.
 # (Phase 0: no models yet — this import is a no-op but keeps the wiring ready.)
 import app.models  # noqa: F401
+from alembic import context
+from app.core.config import settings
+from app.core.db import Base
+from sqlalchemy import engine_from_config, pool
 
 config = context.config
 
