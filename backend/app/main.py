@@ -11,7 +11,7 @@ from __future__ import annotations
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import health
+from app.api import auth, health
 from app.core.config import settings
 
 app = FastAPI(
@@ -31,9 +31,9 @@ app.add_middleware(
 
 # --- Routers ----------------------------------------------------------------
 app.include_router(health.router, prefix="/api")
+app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
 
 # Future domain routers (Phases 1-6) are mounted here, e.g.:
-# app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
 # app.include_router(dashboard.router, prefix="/api/dashboard", tags=["dashboard"])
 
 # --- WebSocket mount point (Phase 5) ----------------------------------------
