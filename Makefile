@@ -27,7 +27,7 @@ API_TYPES_OUT  ?= $(FRONTEND_DIR)/src/lib/api-types.ts
 .DEFAULT_GOAL := help
 
 .PHONY: help db-up db-down dev backend frontend test migrate migrate-rev \
-        seed gen-types deploy lint pre-commit clean
+        migrate-check seed gen-types deploy lint pre-commit clean
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) \
@@ -72,6 +72,9 @@ migrate: db-up ## Apply all Alembic migrations (alembic upgrade head)
 
 migrate-rev: db-up ## Autogenerate a new revision: make migrate-rev m="message"
 	cd $(BACKEND_DIR) && $(ALEMBIC) revision --autogenerate -m "$(m)"
+
+migrate-check: migrate ## Drift gate: fail if models changed without a migration (CI parity)
+	cd $(BACKEND_DIR) && $(ALEMBIC) check
 
 seed: db-up ## Load demo data via backend/seed.py
 	cd $(BACKEND_DIR) && $(PY) seed.py

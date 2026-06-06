@@ -158,27 +158,10 @@ jobs:
         working-directory: backend
         run: alembic upgrade head
 
-      # Drift gate: if models changed without a matching migration, an
-      # autogenerate run produces a non-empty revision. We generate into a temp
-      # dir and fail if Alembic detected any schema operations.
+      # Drift gate: `alembic check` runs autogenerate in-memory and exits
+      # non-zero if the models have schema changes without a matching migration.
+      # (Replaces a temp-dir `revision --autogenerate` hack that this alembic
+      # rejects: a custom --version-path must be in `version_locations`.)
       - name: Fail on un-migrated model drift
         working-directory: backend
-        run: |
-          set -euo pipefail
-          mkdir -p /tmp/drift
-          alembic revision --autogenerate -m "drift-check" --version-path /tmp/drift
-          GEN_FILE="$(ls -1 /tmp/drift/*.py 2>/dev/null | head -n1 || true)"
-          if [ -z "$GEN_FILE" ]; then
-            echo "No revision generated — models are in sync."
-            exit 0
-          fi
-          # An empty autogenerate leaves `pass` in both upgrade() and downgrade().
-          if grep -Eq '^\s*(op\.|sa\.)' "$GEN_FILE"; then
-            echo "::error::Model drift detected — there are schema changes without a migration."
-            echo "----- generated (uncommitted) revision -----"
-            cat "$GEN_FILE"
-            echo "--------------------------------------------"
-            echo "Run 'make migrate-rev m=\"<msg>\"' locally and commit the migration."
-            exit 1
-          fi
-          echo "Autogenerate produced an empty revision — no drift."
+        run: alembic check
