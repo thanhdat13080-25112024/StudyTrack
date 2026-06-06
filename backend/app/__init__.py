@@ -1,0 +1,1 @@
+"""StudyTrack backend application package."""

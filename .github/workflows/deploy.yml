@@ -1,0 +1,46 @@
+# =============================================================================
+# StudyTrack — auto-deploy on merge to main
+# SSHes into the VPS and runs deploy/deploy.sh (git pull -> compose up --build
+# -> alembic upgrade head). main stays always-green via CI, so a merge here is
+# a deployable commit.
+#
+# Required GitHub repo Secrets (Settings -> Secrets and variables -> Actions):
+#   VPS_HOST     -- VPS hostname or IP
+#   VPS_USER     -- SSH user with access to the repo checkout + docker
+#   VPS_SSH_KEY  -- private SSH key (PEM) authorized on the VPS
+# Optional repo Variable:
+#   VPS_REPO_PATH -- repo path on the VPS (default: /opt/studytrack)
+# =============================================================================
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  # Allow manual re-deploys from the Actions tab.
+  workflow_dispatch:
+
+# Never run two deploys at once.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: deploy
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Deploy over SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script_stop: true
+          script: |
+            set -euo pipefail
+            cd "${{ vars.VPS_REPO_PATH || '/opt/studytrack' }}"
+            bash deploy/deploy.sh

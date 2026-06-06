@@ -4,6 +4,8 @@ Tệp này cung cấp hướng dẫn cho Claude Code (claude.ai/code) khi làm v
 
 StudyTrack là một ứng dụng quản lý thói quen học tập trên một trang duy nhất (bộ đếm giờ Pomodoro, bảng điều khiển, lập lịch hàng tuần, huy hiệu thành tích, thẻ sinh viên ảo). Ứng dụng hỗ trợ song ngữ (Tiếng Việt/Tiếng Anh) với các giao diện sáng/tối, được triển khai tại https://studytrack-mzds.vercel.app/.
 
+> **Lưu ý — dự án đang hoạt động nằm ở đâu:** phần tài liệu single-file chi tiết bên dưới giờ mô tả **app cũ trong `legacy/`** (`legacy/index.html`), giữ lại để tham khảo. Dự án đang hoạt động là **monorepo full-stack** (`backend/` FastAPI + Postgres, `frontend/` React/Vite, `deploy/`). Để xem kiến trúc hiện tại, lệnh chạy và quy trình Git/deploy, hãy bắt đầu từ `README.md` ở thư mục gốc, mục `## Harness: StudyTrack refactor` trong `CLAUDE.md`, và `make dev` / `make help`. Hướng dẫn single-file bên dưới vẫn đúng cho `legacy/` nhưng không mô tả stack mới.
+
 ## Khởi chạy
 
 Không có bước xây dựng (build) hay trình quản lý gói nào — đây là ứng dụng HTML/CSS/JS thuần túy tải Chart.js và Canvas Confetti từ các CDN (yêu cầu internet). Hãy khởi chạy qua HTTP thay vì `file://` để `dom.mp3` và các tài nguyên có thể tải được:
@@ -18,25 +20,82 @@ Không có thiết lập kiểm thử (test) hay kiểm lỗi (lint).
 
 **Tất cả mọi thứ đều nằm trong `index.html`** như một thành phần tệp đơn có chủ đích — tất cả các phần `<style>`, đánh dấu (markup), và logic `<script>` đều được đặt nội tuyến. `main.css` và `main.js` tồn tại nhưng được để trống một cách cố ý; đừng chuyển mã nguồn vào đó trừ khi có yêu cầu cấu trúc lại (refactor) một cách rõ ràng. `dom.mp3` là âm thanh lofi cho phiên tập trung.
 
-Ứng dụng là một tập hợp các thẻ div `content-section` được chuyển đổi qua hàm `navigateTo()` (không sử dụng bộ định tuyến - router). Trạng thái được giữ trong các biến cấp mô-đun (`isLoggedIn`, `currentUser`) và được phản chiếu vào `localStorage` thông qua hàm `saveState()`.
+Ứng dụng là một tập hợp các thẻ div `content-section` (`#dashboard-section`, `#profile-section`, `#study-section`, `#history-section`, `#login-section`) được chuyển đổi bằng **bộ định tuyến dựa trên hash (hash-based router)**:
+- `navigateTo(pageId)` chỉ thiết lập `window.location.hash`; nó **không** trực tiếp hiển thị trang.
+- `renderSection()` là bộ điều phối thực sự — nó lắng nghe sự kiện `window.addEventListener('hashchange', …)`, ẩn mọi `.content-section`, sau đó hiển thị `#{page}-section` và đánh dấu `#nav-{page}` là đang hoạt động. Nó cũng thực thi xác thực: người dùng chưa đăng nhập bị buộc phải quay về `login`; người dùng đã đăng nhập nếu vào `#login sẽ được chuyển hướng đến `dashboard`. Sau khi định tuyến, nó gọi `updateStreakLogic()` + `updateUIAndDashboard()`.
+- Một trang là `{name}` ⇒ cần một thẻ div `#{name}-section` và (tùy chọn) một mục thực đơn `<li>` có id `#nav-{name}`. Không cần bảng đăng ký — quy ước ID chính là cách kết nối.
+
+**Việc kết nối sự kiện được thực hiện nội tuyến `onclick="fn()"` trong mã markup**, không phải `addEventListener`. Để kết nối một nút mới, hãy thêm thuộc tính `onclick` và định nghĩa một hàm cấp cao nhất `function fn()` trong phần `<script>`. Tất cả các hàm xử lý đều là toàn cục vì chúng nằm trong phạm vi script.
+
+Trạng thái được giữ trong các biến cấp mô-đun (`isLoggedIn`, `currentUser`, `userDatabase`, `currentLang`, `currentTheme`, cùng các biến bộ đếm giờ/biểu đồ `countdownInterval`, `totalSecondsLeft`, `initialSecondsPlanned`, `isTimerRunning`, `myChartInstance`) và được phản chiếu vào `localStorage` thông qua `saveState()`.
 
 ### Lưu trữ dữ liệu — tất cả các khóa đều bắt đầu bằng `track_`
-- `track_isLoggedIn` — kiểu boolean
-- `track_currentUser` — JSON của người dùng đang hoạt động (nhật ký học tập, lịch trình, hồ sơ, huy hiệu đều được lồng ở đây)
+- `track_isLoggedIn` — kiểu boolean (được ghi bởi `saveState()`)
+- `track_currentUser` — JSON của đối tượng người dùng đang hoạt động (được ghi bởi `saveState()`)
 - `track_userDatabase` — mảng chứa tất cả người dùng đã đăng ký; lưu các thay đổi thông qua `updateUserInDatabase()`
-- `track_theme` (`light`/`dark`), `track_lang` (`vi`/`en`)
+- `track_theme` (`light`/`dark`, mặc định `dark`), `track_lang` (`vi`/`en`, mặc định `vi`)
 
-Việc xác thực chỉ diễn ra cục bộ (không có backend); việc đăng ký/đăng nhập chỉ đọc/ghi vào `track_userDatabase`.
+**Cấu trúc `currentUser`** (được tạo trong `handleRegister()`):
+```js
+{ name, email, pass, streak: 0, logs: [], schedules: [],
+  profile: { class: '', major: '', goal: '', avatarData: '' } }
+```
+- `logs[]` — `{ subject, duration, plannedDuration, focus, method, note, date }`. `date` có định dạng `DD/MM/YYYY` thông qua `toLocaleDateString('vi-VN')`; mục mới nhất được đưa lên đầu bằng `unshift`.
+- `schedules[]` — `{ day, time, subject }`. `day` là chuỗi ngày tiếng Việt từ mảng `daysOfWeek` (mảng `daysOfWeekEn` dùng để dịch hiển thị).
+- `streak` là một con số **được tính toán và lưu trữ**: `updateStreakLogic()` tính toán lại từ các giá trị `logs[].date` duy nhất và ghi lại vào `currentUser`.
+- **Huy hiệu KHÔNG được lưu trữ** — `updateBadgeUI(logs)` suy ra chúng mỗi khi render và chỉ bật/tắt lớp CSS `.unlocked` trên `#badge-1/2/3`. Ngưỡng: ≥1 phiên học, ≥5 giờ tổng cộng, ≥20 giờ tổng cộng. Để thêm huy hiệu, hãy thêm mã markup + kiểm tra ngưỡng tại đó.
+
+Việc xác thực chỉ diễn ra cục bộ (không có backend); việc đăng ký/đăng nhập chỉ đọc/ghi vào `track_userDatabase`. **Mật khẩu được lưu trữ dưới dạng văn bản thuần (plaintext)** trong `localStorage` — đây là một bản demo offline có chủ đích, không phải xác thực thực tế cho sản phẩm. Đừng thêm băm mật khẩu/backend trừ khi được yêu cầu rõ ràng (xem đặc tả thiết kế mục tiêu bên dưới để biết về `pass` được băm dự kiến).
 
 ## Các quy ước cần giữ vững
 
-- **Đa ngôn ngữ (Localization):** tất cả các chuỗi ký tự hiển thị cho người dùng đều đến từ từ điển `langData`. Khi thêm văn bản giao diện, hãy thêm cả mục nhập `vi` và `en` và dựa vào `applyLanguagePack()` để hiển thị — tuyệt đối không viết cứng (hardcode) các chuỗi hiển thị.
-- **Giao diện (Theming):** màu sắc là các biến CSS nằm trong `:root`; chuyển đổi giao diện bằng cách đặt thuộc tính `data-theme` trên thẻ `<body>`, không chỉnh sửa các quy tắc CSS trực tiếp.
+- **Đa ngôn ngữ (Localization):** tất cả các chuỗi ký tự hiển thị cho người dùng đều đến từ từ điển `langData`. `applyLanguagePack()` hiển thị bằng cách **gán thủ công từng phần tử một** (`document.getElementById('lbl-x').innerText = p.x`) — nó KHÔNG tự động quét DOM. Vì vậy, một chuỗi mới cần ba chỉnh sửa: (1) thêm khóa dưới cả `langData.vi` và `langData.en`, (2) đặt cho phần tử một `id` cố định, (3) thêm dòng `getElementById(...).innerText = p.key` tương ứng trong `applyLanguagePack()`. Tuyệt đối không viết cứng các chuỗi hiển thị.
+  - *Sự không nhất quán đã biết:* một số văn bản hiển thị động (các mục lịch sử trong `updateUIAndDashboard()`, hậu tố "ngày/days" của chuỗi ngày) sử dụng toán tử ba ngôi `currentLang === 'vi' ? … : …` thay vì `langData`. Hãy làm theo `langData` cho mã mới; chỉ sử dụng toán tử ba ngôi khi bạn muốn khớp với mẫu hiện có trong cùng một hàm render.
+- **Giao diện (Theming):** màu sắc là các biến CSS nằm trong `:root` (và `[data-theme="light"]`); chuyển đổi giao diện bằng cách đặt thuộc tính `data-theme` trên thẻ `<body>` thông qua `toggleTheme()`, không chỉnh sửa các quy tắc CSS trực tiếp. Biểu đồ Chart.js đọc `currentTheme` để lấy màu sắc, vì vậy khi đổi giao diện cần gọi `initOrUpdateWeeklyChart()` để vẽ lại màu.
 - **Bảng điều khiển/Chuỗi ngày/Huy hiệu (Dashboard/streak/badges)** được tính toán lại từ dữ liệu của `currentUser` thông qua `updateUIAndDashboard()`, `updateStreakLogic()`, và `updateBadgeUI()` — hãy cập nhật các hàm đó thay vì ghi trực tiếp các giá trị vào bảng điều khiển.
+
+## Bản đồ các hàm chính
+
+Tất cả nằm trong một khối `<script>` ở cuối tệp `index.html`. Những nơi cần tìm:
+
+| Khu vực | Các hàm |
+|------|-----------|
+| Định tuyến | `navigateTo()`, `renderSection()`, `toggleAuthForm()` |
+| Xác thực | `handleRegister()`, `handleLogin()`, `handleLogout()` |
+| Lưu trữ | `saveState()`, `updateUserInDatabase()` |
+| Render Dashboard | `updateUIAndDashboard()` (lời chào, các thẻ KPI, danh sách lịch sử, biểu đồ, huy hiệu, lịch) |
+| Streak / biểu đồ / huy hiệu | `updateStreakLogic()`, `initOrUpdateWeeklyChart()`, `updateBadgeUI()` |
+| Bộ đếm giờ | `triggerManualStart()`, `startCountdown()`, `pauseCountdown()`, `stopCountdown(isFinishedNaturally)`, `renderTimerDisplay()` |
+| Lịch trình | `renderCalendar()`, `handleSaveSchedule()` |
+| Hồ sơ | `handleSaveProfile()`, `syncCardRealtime()`, `handleAvatarChange()`, `renderAvatarUI()` |
+| i18n / giao diện | `toggleLanguage()`, `applyLanguagePack()`, `toggleTheme()`, `syncThemeUI()` |
+| Âm thanh | `toggleStudyMusic()`, `changeMusicVolume()`, `resetMusicPlayerUI()` |
+| Gợi ý | `generateSmartSuggestion(method, focusLevel, minutesPlanned)` |
+
+## Các quy trình công việc phổ biến
+
+Sau **bất kỳ** thay đổi nào đối với `currentUser`, hãy lưu trữ bằng `updateUserInDatabase()` **sau đó** là `saveState()` (cơ sở dữ liệu trước, để JSON người dùng hiện tại và mảng DB luôn đồng bộ), và render lại khung nhìn bị ảnh hưởng.
+
+- **Thêm một chuỗi UI:** thêm khóa vào `langData.vi` VÀ `langData.en` → đặt cho phần tử một `id` → thêm dòng `getElementById(id).innerText = p.key` trong `applyLanguagePack()`.
+- **Thêm một nút/hành động:** thêm `onclick="myFn()"` trong mã markup → định nghĩa `function myFn()` cấp cao nhất trong script → nếu nó thay đổi dữ liệu, hãy lưu trữ (như trên) và gọi hàm `update*`/`render*` liên quan.
+- **Thêm một trang/phần:** thêm một div `#{name}-section` lớp `.content-section` (`style="display:none;"`) → tùy chọn mục thực đơn `<li>` với `onclick="navigateTo('{name}')"` → thêm nhãn điều hướng vào `langData` + `applyLanguagePack()`. `renderSection()` sẽ tự động nhận diện thông qua quy ước ID.
+- **Thêm một trường vào nhật ký học tập:** thu thập nó trong `triggerManualStart()`/`stopCountdown()`, thêm vào đối tượng `newLog`, và hiển thị trong phần render lịch sử bên trong `updateUIAndDashboard()`.
+- **Thêm một trường hồ sơ:** mở rộng đối tượng `profile` trong giá trị mặc định của `handleRegister()` + ghi trong `handleSaveProfile()` + đọc/render trong `updateUIAndDashboard()`.
+
+**Kiểm tra thủ công (không có kiểm thử tự động):** khởi chạy qua HTTP, sau đó với bất kỳ thay đổi nào, hãy xác nhận ở **cả hai ngôn ngữ** (`toggleLanguage`) và **cả hai giao diện** (`toggleTheme`), cũng như ở trạng thái **đã đăng nhập và chưa đăng nhập**. Kiểm tra các khóa `track_*` trong `localStorage` bằng DevTools. Để đặt lại, hãy xóa các khóa `track_*`.
+
+## Các ràng buộc / rào chắn
+
+- **Tệp đơn là có chủ đích.** Giữ tất cả định dạng, mã markup và logic nội tuyến trong `index.html`. `main.css`/`main.js` cố ý để trống — đừng chuyển mã vào đó, đừng thêm bộ đóng gói (bundler)/framework/package.json, trừ khi có yêu cầu cấu trúc lại *rõ ràng*.
+- **Không có bước build/test/lint** và không có backend. Đừng tự ý đưa vào như một tác dụng phụ của một thay đổi nhỏ.
+- **Phụ thuộc vào CDN:** Chart.js và Canvas Confetti tải từ các CDN — ứng dụng cần internet, và các hàm sử dụng thư viện (ví dụ: confetti) chỉ được gọi khi thư viện có mặt. Đừng giả định hỗ trợ ngoại tuyến (offline).
+- **Lưu trữ qua các hàm hỗ trợ** (`updateUserInDatabase()` + `saveState()`); tuyệt đối không ghi đè `track_currentUser`/`track_userDatabase` một cách tùy tiện, nếu không người dùng hiện tại và mảng DB sẽ bị lệch nhau.
+- **Mặc định song ngữ + giao diện:** mọi chuỗi hiển thị cho người dùng phải đi qua `langData` (cả `vi` và `en`); mọi màu sắc phải đi qua biến CSS/`data-theme`. Không viết cứng văn bản chỉ có tiếng Anh hoặc mã màu hex trong UI mới.
+- **Giữ các tài liệu anh em đồng bộ** (xem phần Ghi chú) khi bạn thay đổi một quy ước ở đây.
 
 ## Ghi chú
 
-- `GEMINI.md` / `GEMINI-VIE.md` là các tệp hướng dẫn AI tương tự bao quát cùng một dự án; hãy giữ chúng nhất quán khi bạn thay đổi các quy ước ở đây.
+- `CLAUDE.md` là bản gốc tiếng Anh của tệp này; `GEMINI.md` / `GEMINI-VIE.md` là các tệp hướng dẫn AI tương tự bao quát cùng một dự án. Hãy giữ tất cả chúng nhất quán khi bạn thay đổi các quy ước ở đây. Tệp này (`CLAUDE-VIE.md`) là bản dịch tiếng Việt.
 - `README.md` được viết bằng tiếng Việt.
 
 ## Đặc tả Hệ thống (từ tài liệu UML — thiết kế mục tiêu)
@@ -66,6 +125,10 @@ Việc xác thực chỉ diễn ra cục bộ (không có backend); việc đăn
 Quan hệ: User 1→0..* StudySession; User 1→0..* Schedule; User 1→1 Dashboard; User 1→0..* Achievement; StudySession 0..*→1 Music (phát); StudySession 1→1 History (lưu vào); Dashboard 1→0..* History (đọc).
 
 ### Logic bộ đếm giờ / phiên học
-- **Bắt đầu (`triggerManualStart`):** yêu cầu `subject`; xây dựng `currentSession` trong bộ nhớ với `secondsLeft = duration * 60` và `startTime = Date.now()`; chạy một vòng lặp `setInterval` 1 giây để giảm `secondsLeft` và hiển thị lại, gọi `stopCountdown(wasInterrupted=false)` khi nó bằng 0.
-- **Tạm dừng:** `clearInterval(timerInterval)` và chuyển giao diện sang `PAUSED`.
-- **Dừng / lưu (`stopCountdown`):** tính toán số phút thực tế là `((plannedDuration * 60) - secondsLeft) / 60`, làm tròn. Nếu `> 0`, tạo một Log mới và thêm vào.
+
+> Đặc tả bên dưới sử dụng cách đặt tên `currentSession`/`secondsLeft`/`timerInterval`. **Trong thực tế triển khai**, bộ đếm giờ được thực hiện bằng các biến cấp mô-đun `totalSecondsLeft`, `initialSecondsPlanned`, `countdownInterval`, `isTimerRunning` (không có đối tượng `currentSession`). Hãy sử dụng các tên thực tế bên dưới khi chỉnh sửa mã nguồn hiện tại.
+
+- **Bắt đầu (`triggerManualStart()`):** yêu cầu `subject` + một `duration` dương (nếu không `alert(langData[currentLang].alert_valid)`); thiết lập `totalSecondsLeft = duration*60`, `initialSecondsPlanned = totalSecondsLeft`; hoán đổi biểu mẫu lấy hộp đếm giờ, bắt đầu âm thanh lofi (tự động phát có thể bị chặn → cần xử lý lỗi), thêm lớp `body.focus-active`, sau đó gọi `startCountdown()`.
+- **Chạy giây (`startCountdown()`):** ngăn chặn việc bắt đầu hai lần bằng biến `isTimerRunning`; một `setInterval` 1 giây (`countdownInterval`) giảm `totalSecondsLeft`, render lại qua `renderTimerDisplay()`, và gọi `stopCountdown(true)` khi về 0.
+- **Tạm dừng (`pauseCountdown()`):** `clearInterval(countdownInterval)`, `isTimerRunning = false`, hoán đổi nút tạm dừng→tiếp tục. Tiếp tục sẽ gọi lại `startCountdown()`.
+- **Dừng / lưu (`stopCountdown(isFinishedNaturally=false)`):** phút thực tế = `initialSecondsPlanned - totalSecondsLeft` giây, làm tròn xuống phút, **làm tròn lên nếu phần dư ≥ 30 giây**, và tối thiểu là **1 phút** nếu có thời gian trôi qua. Nếu số phút `> 0` và môn học đã được đặt, `unshift` một nhật ký mới vào `currentUser.logs`, tính toán lại chuỗi ngày, lưu trữ (`updateUserInDatabase()` + `saveState()`), bắn pháo hoa **chỉ khi `isFinishedNaturally` là true**, sau đó `navigateTo('dashboard')`.

@@ -1,0 +1,22 @@
+{
+  "app": {
+    "name": "StudyTrack",
+    "tagline": "Study Habit Management"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "profile": "Profile",
+    "study": "Study Log",
+    "history": "History",
+    "login": "Login"
+  },
+  "common": {
+    "welcome": "Welcome",
+    "logout": "Logout",
+    "toggleTheme": "Toggle theme",
+    "toggleLanguage": "Toggle language"
+  },
+  "dashboard": {
+    "welcomeLine": "Welcome to StudyTrack — start your focused study session."
+  }
+}

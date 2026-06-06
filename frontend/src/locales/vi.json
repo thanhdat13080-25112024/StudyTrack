@@ -1,0 +1,22 @@
+{
+  "app": {
+    "name": "StudyTrack",
+    "tagline": "Quản Lý Thói Quen Học Tập"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "profile": "Hồ sơ",
+    "study": "Phiên học",
+    "history": "Lịch sử",
+    "login": "Đăng nhập"
+  },
+  "common": {
+    "welcome": "Xin chào",
+    "logout": "Đăng xuất",
+    "toggleTheme": "Đổi giao diện",
+    "toggleLanguage": "Đổi ngôn ngữ"
+  },
+  "dashboard": {
+    "welcomeLine": "Chào mừng đến với StudyTrack — hãy bắt đầu phiên học tập trung của bạn."
+  }
+}

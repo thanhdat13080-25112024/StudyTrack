@@ -2,6 +2,8 @@
 
 Chào mừng bạn đến với StudyTrack, một ứng dụng web quản lý thói quen học tập. Dự án này sử dụng kiến trúc "Thành phần tệp đơn" (Single-file Component), trong đó giao diện (UI), định dạng (styling) và logic xử lý chủ yếu nằm trong tệp `index.html`.
 
+> **Lưu ý — dự án đang hoạt động nằm ở đâu:** phần tài liệu single-file chi tiết bên dưới giờ mô tả **app cũ trong `legacy/`** (`legacy/index.html`), giữ lại để tham khảo. Dự án đang hoạt động là **monorepo full-stack** (`backend/` FastAPI + Postgres, `frontend/` React/Vite, `deploy/`). Để xem kiến trúc hiện tại, lệnh chạy và quy trình Git/deploy, hãy bắt đầu từ `README.md` ở thư mục gốc, mục `## Harness: StudyTrack refactor` trong `CLAUDE.md`, và `make dev` / `make help`. Hướng dẫn single-file bên dưới vẫn đúng cho `legacy/` nhưng không mô tả stack mới.
+
 ## Tổng quan Dự án
 
 - **Mục đích**: Một công cụ tăng năng suất cho học sinh, sinh viên để quản lý các phiên học, theo dõi tiến độ qua bảng điều khiển (dashboard) và duy trì chuỗi ngày học tập (streaks).
@@ -14,7 +16,6 @@ Chào mừng bạn đến với StudyTrack, một ứng dụng web quản lý th
 
 ## Các Tính năng Hiện tại
 
-Dựa trên mã nguồn, ứng dụng bao gồm các tính năng chính sau:
 - **Quản lý phiên học**: Bộ đếm giờ Pomodoro tùy chỉnh, cho phép chọn môn học, thời gian, mức độ tập trung và phương pháp học. Tích hợp trình phát nhạc lofi nền.
 - **Bảng điều khiển (Dashboard)**: Theo dõi tổng số giờ học trong ngày, chuỗi ngày học liên tiếp (streak) và tổng số buổi học.
 - **Thống kê trực quan**: Biểu đồ cột thể hiện thời gian học tập trong 7 ngày gần nhất sử dụng Chart.js.
@@ -24,236 +25,107 @@ Dựa trên mã nguồn, ứng dụng bao gồm các tính năng chính sau:
 - **Đa ngôn ngữ & Giao diện**: Hỗ trợ chuyển đổi Tiếng Việt/Tiếng Anh và chế độ Sáng/Tối.
 - **Xác thực người dùng**: Hệ thống Đăng ký/Đăng nhập cơ bản lưu trữ thông tin cục bộ.
 
-## Cấu trúc Dự án
+## Kiến trúc & Quy ước Phát triển
 
-- `index.html`: Điểm truy cập chính chứa toàn bộ HTML, CSS và JavaScript.
-- `dom.mp3`: Tệp âm thanh nền được sử dụng cho các phiên tập trung.
-- `README.md`: Tổng quan cơ bản về dự án và các liên kết.
-- `main.css` & `main.js`: Hiện tại là các tệp trống (lựa chọn kiến trúc ưu tiên gộp vào `index.html`).
+### Kiến trúc Tệp đơn (Single-File Architecture)
+Duy trì cách tiếp cận "Tệp đơn" trong `index.html`. Tất cả các phần `<style>`, đánh dấu (markup), và logic `<script>` đều được đặt nội tuyến. `main.css` và `main.js` cố ý để trống; đừng chuyển mã nguồn vào đó trừ khi có yêu cầu cấu trúc lại (refactor) một cách rõ ràng.
+
+### Định tuyến (Routing)
+Ứng dụng sử dụng một **bộ định tuyến dựa trên hash (hash-based router)**:
+- `navigateTo(pageId)`: Thiết lập `window.location.hash`.
+- `renderSection()`: Lắng nghe sự kiện `hashchange`, chuyển đổi hiển thị của các `.content-section`, thực thi xác thực và kích hoạt cập nhật giao diện.
+- Quy ước ID trang: Một trang `{name}` yêu cầu một thẻ div `#{name}-section` và một mục thực đơn tùy chọn `#nav-{name}`.
+
+### Kết nối Sự kiện (Event Wiring)
+**Việc kết nối sự kiện được thực hiện nội tuyến `onclick="fn()"`** trong mã markup, không phải `addEventListener`. Định nghĩa các hàm xử lý là các biến toàn cục cấp cao nhất trong khối `<script>`.
+
+### Trạng thái & Lưu trữ (State & Persistence)
+Trạng thái được giữ trong các biến cấp mô-đun và được phản chiếu vào `localStorage` với tiền tố `track_`.
+- `track_isLoggedIn`: Kiểu Boolean.
+- `track_currentUser`: Đối tượng JSON của người dùng đang hoạt động.
+- `track_userDatabase`: Mảng chứa tất cả người dùng đã đăng ký.
+- `track_theme` / `track_lang`: Tùy chọn của người dùng.
+
+**Cấu trúc Đối tượng `currentUser`:**
+```js
+{ 
+  name, email, pass, streak: 0, logs: [], schedules: [],
+  profile: { class: '', major: '', goal: '', avatarData: '' } 
+}
+```
+*Lưu ý: Mật khẩu được lưu dưới dạng văn bản thuần cho bản demo offline này.*
+
+### Đa ngôn ngữ (Localization - i18n)
+Tất cả các chuỗi ký tự hiển thị cho người dùng đến từ `langData`. `applyLanguagePack()` thực hiện **gán thủ công từng phần tử một** thông qua `innerText`.
+- Để thêm một chuỗi: (1) Cập nhật `langData` (vi/en), (2) đặt `id` cố định cho phần tử, (3) thêm dòng gán giá trị trong `applyLanguagePack()`.
+
+### Hỗ trợ Giao diện (Theme Support)
+Sử dụng các biến CSS trong `:root` và `[data-theme="light"]`. Chuyển đổi giao diện bằng cách đặt thuộc tính `data-theme` trên thẻ `<body>` thông qua hàm `toggleTheme()`.
+
+## Bản đồ các hàm chính
+
+| Khu vực | Các hàm |
+|------|-----------|
+| Định tuyến | `navigateTo()`, `renderSection()` |
+| Xác thực | `handleRegister()`, `handleLogin()`, `handleLogout()` |
+| Lưu trữ | `saveState()`, `updateUserInDatabase()` |
+| Hiển thị | `updateUIAndDashboard()`, `renderCalendar()`, `updateBadgeUI()` |
+| Bộ đếm giờ | `triggerManualStart()`, `startCountdown()`, `stopCountdown()` |
+| i18n/Giao diện | `applyLanguagePack()`, `toggleLanguage()`, `toggleTheme()` |
+
+## Các Quy trình Công việc Phổ biến
+
+- **Chỉnh sửa Trạng thái**: Sau bất kỳ thay đổi nào đối với `currentUser`, hãy gọi `updateUserInDatabase()` sau đó là `saveState()`, và theo sau bởi hàm render liên quan.
+- **Thêm một Nút**: Thêm `onclick="myFn()"` trong markup → định nghĩa `function myFn()` trong script → lưu các thay đổi → render lại.
+- **Thêm một Trang**: Thêm một thẻ div `#{name}-section` → thêm thẻ `<li>` điều hướng với `navigateTo('{name}')` → cập nhật `langData` và `applyLanguagePack()`.
+
+## Các Ràng buộc & Rào chắn (Guardrails)
+
+- **Tệp đơn là có chủ đích**: Giữ tất cả mọi thứ trong `index.html`.
+- **Không có Build/Test/Lint**: Đừng đưa vào các công cụ build phức tạp hay trình quản lý gói.
+- **Phụ thuộc CDN**: Chart.js và Canvas Confetti tải từ các CDN; ứng dụng yêu cầu internet.
+- **Hàm hỗ trợ Lưu trữ**: Luôn sử dụng `updateUserInDatabase()` + `saveState()` để giữ cho người dùng hiện tại và mảng DB luôn đồng bộ.
+- **Luôn Song ngữ & Giao diện**: Tuyệt đối không viết cứng các chuỗi hiển thị hoặc mã màu hex trong giao diện mới.
 
 ## Xây dựng và Khởi chạy
 
 ### Chạy tại máy cục bộ (Local)
-1. Chỉ cần mở tệp `index.html` bằng một trình duyệt web hiện đại.
-2. Để có trải nghiệm tốt nhất (đảm bảo âm thanh và các tài nguyên tải đúng cách), hãy sử dụng một máy chủ cục bộ như:
-   - Tiện ích mở rộng "Live Server" trên VS Code.
-   - Python: `python3 -m http.server 8000`.
-   - Node.js: `npx serve .`.
-
-### Thư viện phụ thuộc (Dependencies)
-Dự án sử dụng các CDN sau:
-- [Chart.js](https://cdn.jsdelivr.net/npm/chart.js)
-- [Canvas Confetti](https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js)
-- Google Fonts (Poppins)
-
-## Quy ước Phát triển
-
-### Kiến trúc Tệp đơn (Single-File Architecture)
-Duy trì cách tiếp cận "Tệp đơn" trong `index.html` trừ khi có yêu cầu cấu trúc lại (refactor). Logic được chia thành các phần:
-- `<style>`: Các biến giao diện và định dạng thành phần.
-- `<body>`: Cấu trúc UI được chia thành các thẻ div `content-section`.
-- `<script>`:
-  - `langData`: Từ điển hỗ trợ đa ngôn ngữ (VI/EN).
-  - Quản lý trạng thái (`isLoggedIn`, `currentUser`).
-  - Logic bộ đếm giờ (Timer) và Âm thanh.
-  - Tích hợp Chart.js.
-
-### Chiến lược Lưu trữ (Persistence Strategy)
-Tất cả dữ liệu được lưu trong `localStorage` với tiền tố `track_`:
-- `track_isLoggedIn`: Kiểu Boolean.
-- `track_currentUser`: Đối tượng JSON của phiên làm việc hiện tại.
-- `track_userDatabase`: Mảng chứa tất cả người dùng đã đăng ký.
-- `track_theme`: `light` hoặc `dark`.
-- `track_lang`: `vi` hoặc `en`.
-
-### Đa ngôn ngữ (Localization)
-Khi thêm các thành phần UI mới, hãy đảm bảo cập nhật đối tượng `langData` trong phần script và sử dụng hàm `applyLanguagePack()` để duy trì hỗ trợ song ngữ.
-
-### Hỗ trợ Giao diện (Theme Support)
-Sử dụng các biến CSS (được định nghĩa trong `:root`) cho màu sắc. Chuyển đổi giao diện bằng cách thiết lập thuộc tính `data-theme` trên thẻ `<body>`.
+Khởi chạy qua HTTP (không phải `file://`) để âm thanh và tài nguyên tải đúng cách:
+- Python: `python3 -m http.server 8000`
+- Node.js: `npx serve .`
 
 ---
 
 ## Đặc tả Hệ thống (Kiến trúc Mục tiêu)
 
-Dưới đây là đặc tả kỹ thuật chi tiết của hệ thống "StudyTrack". Hãy sử dụng tài liệu này làm ngữ cảnh chính xác để thiết kế cơ sở dữ liệu, viết mã nguồn Frontend (HTML/JS/Tailwind) hoặc Backend (Flask/Python API).
+*Lưu ý: Phần này mô tả kiến trúc dự kiến/mục tiêu (Flask/MySQL), khác với triển khai JS thuần hiện tại.*
 
-### 1. THÔNG TIN CHUNG (PROJECT CONTEXT)
-
-• Tên dự án: StudyTrack - Hệ thống phân tích thói quen học tập.
-• Mô hình kiến trúc: Client-Server.
-• Frontend: Single-Page Application (SPA), HTML5, CSS (Tailwind CSS), JS thuần (ES6), Chart.js.
-• Backend: Python 3, Flask, SQLAlchemy ORM, Flask-Login.
-• Database: MySQL (Sản phẩm) / LocalStorage (Mô phỏng & Đồng bộ Client).
-
-### 2. KIẾN TRÚC DỮ LIỆU (DATABASE & STATE SCHEMA)
+### 1. Sơ đồ Dữ liệu (Data Schema)
 
 ```json
 {
-  "User": {
-    "email": "String (PK) (Unique)",
-    "pass": "String (Hashed)",
-    "name": "String",
-    "streak": "Integer (Default: 0)"
-  },
-  "Profile": {
-    "user_email": "String (FK -> User.email) (1-1)",
-    "class": "String (Default: '')",
-    "major": "String (Default: '')",
-    "goal": "String (Default: '')",
-    "avatarData": "String (Base64 Image Data)"
-  },
-  "Log": {
-    "id": "Integer (PK) (Auto Increment)",
-    "user_email": "String (FK -> User.email) (1-N)",
-    "subject": "String",
-    "duration": "Integer (Phút thực tế)",
-    "plannedDuration": "Integer (Phút dự kiến)",
-    "focus": "Integer (Thang điểm 1-10)",
-    "method": "String (Pomodoro / Deep Work / Active Recall)",
-    "note": "String",
-    "date": "String (DD/MM/YYYY)"
-  },
-  "Schedule": {
-    "id": "Integer (PK) (Auto Increment)",
-    "user_email": "String (FK -> User.email) (1-N)",
-    "day": "String (Thứ 2 -> Chủ nhật)",
-    "time": "String (HH:MM SA/CH)",
-    "subject": "String"
-  }
+  "User": { "email": "String (PK)", "pass": "String (Hashed)", "name": "String", "streak": "Integer" },
+  "Profile": { "user_email": "FK", "class": "String", "major": "String", "goal": "String", "avatarData": "String" },
+  "Log": { "id": "PK", "user_email": "FK", "subject": "String", "duration": "Int", "focus": "Int", "method": "String", "date": "String" },
+  "Schedule": { "id": "PK", "user_email": "FK", "day": "String", "time": "String", "subject": "String" }
 }
 ```
 
-### 3. THIẾT KẾ KIẾN TRÚC TĨNH (CLASS UML IN MERMAID)
+### 2. Kiến trúc Tĩnh (Class UML)
 
 ```mermaid
 classDiagram
-    class NguoiDung {
-        +int id
-        +string hoTen
-        +string email
-        +string matKhau
-        +string lopKhoa
-        +string nganhHoc
-        +string mucTieuDaiHan
-        +string anhDaiDien
-        +string ngonNgu
-        +boolean cheDoManHinh
-        +dangKy()
-        +dangNhap()
-        +dangXuat()
-        +capNhatHoSo()
-        +thayDoiNgonNgu()
-        +chinhCheDoMH()
-    }
-    class PhienHoc {
-        +int id
-        +string monHoc
-        +int thoiGianDinhHoc
-        +int mucDoTapTrung
-        +string phuongPhap
-        +string ghiChu
-        +datetime thoiGianBatDau
-        +datetime thoiGianKetThuc
-        +int thoiGianThucHoc
-        +kichHoat()
-        +tamDung()
-        +luuVaKetThuc()
-        +demGio()
-    }
-    class LichHoc {
-        +int id
-        +string thu
-        +string thoiGianBatDau
-        +string monHoc
-        +lenLich()
-        +suaLich()
-        +xoaLich()
-    }
-    class Dashboard {
-        +int nguoiDungId
-        +float gioHocHomNay
-        +int streakNgay
-        +int tongSoBuoi
-        +tinhStreak()
-        +tinhGioHocHomNay()
-        +layLichTuan()
-        +layBieuDo7Ngay()
-    }
-    class LichSu {
-        +int id
-        +string monHoc
-        +int thoiGianThucHoc
-        +string phuongPhap
-        +int mucDoTapTrung
-        +string ghiChu
-        +date ngayHoc
-        +xemLichSu()
-        +locTheoMon()
-    }
-    class ThanhTuu {
-        +int id
-        +string ten
-        +string moTa
-        +string dieuKien
-        +int nguongGio
-        +string icon
-        +kiemTraDieuKien()
-        +capHuyHieu()
-    }
-    class AmNhac {
-        +int id
-        +string ten
-        +string url
-        +phat()
-        +tamDung()
-        +dieuChinh()
-    }
-
-    NguoiDung "1" --> "0..*" PhienHoc : so_huu
-    NguoiDung "1" --> "0..*" LichHoc : so_huu
-    NguoiDung "1" --> "1" Dashboard : so_huu
-    NguoiDung "1" --> "0..*" ThanhTuu : so_huu
-    PhienHoc "0..*" --> "1" AmNhac : phat
-    PhienHoc "1" --> "1" LichSu : luu_vao
-    Dashboard "1" --> "0..*" LichSu : doc_du_lieu
+    class User { +id, +fullName, +email, +password, +register(), +login(), +updateProfile() }
+    class StudySession { +id, +subject, +plannedDuration, +actualDuration, +activate(), +stopCountdown() }
+    class StudySchedule { +id, +dayOfWeek, +startTime, +subject, +schedule() }
+    class Dashboard { +calculateStreak(), +getWeeklySchedule(), +get7DayChart() }
+    User "1" --> "0..*" StudySession
+    User "1" --> "0..*" StudySchedule
+    User "1" --> "1" Dashboard
 ```
 
-### 4. LOGIC ĐỘNG VÀ THUẬT TOÁN (DYNAMIC LOGIC & BEHAVIOR)
+### 3. Logic Động (Bộ đếm giờ thực tế)
 
-#### 4.1. Thuật toán xử lý đếm ngược (Countdown Timer & State Mutation)
-Khi kích hoạt phiên học:
-
-```javascript
-function triggerManualStart(subject, duration, focus, method, note) {
-    if (!subject) throw Error("Subject is required");
-    
-    // Khởi tạo trạng thái phiên hiện tại (In-Memory State)
-    currentSession = {
-        subject: subject,
-        duration: duration, // phút
-        focus: focus,
-        method: method,
-        note: note,
-        secondsLeft: duration * 60,
-        startTime: Date.now()
-    };
-
-    // Khởi chạy vòng lặp Interval 1 giây
-    timerInterval = setInterval(() => {
-        if (currentSession.secondsLeft > 0) {
-            currentSession.secondsLeft--;
-            renderDisplay(currentSession.secondsLeft);
-        } else {
-            stopCountdown(wasInterrupted = false);
-        }
-    }, 1000);
-}
-```
-
-**Khi tạm dừng (`pauseTimer`):** `clearInterval(timerInterval)` và chuyển đổi trạng thái giao diện UI sang trạng thái "PAUSED".
-
-**Khi lưu kết quả phiên học (`stopCountdown`):**
-1. Tính toán thời gian học thực tế:
-   `durationActual = ((plannedDuration * 60) - secondsLeft) / 60` (làm tròn)
-2. Nếu `durationActual > 0`: Tạo đối tượng Log mới -> thêm vào mảng.
+- **Bắt đầu (`triggerManualStart`):** Thiết lập `totalSecondsLeft = duration * 60`; chuyển giao diện sang chế độ đếm giờ; phát nhạc lofi; gọi `startCountdown()`.
+- **Chạy giây (`startCountdown`):** `setInterval` 1 giây giảm `totalSecondsLeft`; gọi `stopCountdown(true)` khi về 0.
+- **Dừng/Lưu (`stopCountdown`):** Tính toán `actualMinutes` (làm tròn lên nếu dư ≥ 30 giây); đưa nhật ký vào `currentUser.logs`; lưu qua các hàm hỗ trợ; chuyển về dashboard.

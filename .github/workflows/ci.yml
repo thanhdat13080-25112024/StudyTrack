@@ -1,0 +1,167 @@
+# =============================================================================
+# StudyTrack CI — PR merge gate (must be green to merge into main)
+# Jobs:  test (pytest + vitest) | lint (ruff/black + eslint/prettier) |
+#        migrate-check (alembic upgrade on a Postgres service + drift check)
+#
+# Required-status-check names for branch protection (see docs/branch-protection.md):
+#   - test
+#   - lint
+#   - migrate-check
+# =============================================================================
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+# Cancel superseded runs on the same ref to save CI minutes.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  # ---------------------------------------------------------------------------
+  test:
+    name: test
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: studytrack
+          POSTGRES_PASSWORD: studytrack
+          POSTGRES_DB: studytrack_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U studytrack"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql+psycopg://studytrack:studytrack@localhost:5432/studytrack_test
+      JWT_SECRET: ci-test-secret-not-a-real-secret
+    steps:
+      - uses: actions/checkout@v4
+
+      # --- Backend: pytest ---
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install backend deps
+        working-directory: backend
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+      - name: Run pytest
+        working-directory: backend
+        run: python -m pytest
+
+      # --- Frontend: vitest ---
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install frontend deps
+        working-directory: frontend
+        run: npm ci
+      - name: Run vitest
+        working-directory: frontend
+        run: npm run test -- --run
+
+  # ---------------------------------------------------------------------------
+  lint:
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # --- Backend: ruff + black ---
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install backend deps
+        working-directory: backend
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+      - name: ruff check
+        working-directory: backend
+        run: ruff check .
+      - name: black --check
+        working-directory: backend
+        run: black --check .
+
+      # --- Frontend: eslint + prettier ---
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install frontend deps
+        working-directory: frontend
+        run: npm ci
+      - name: eslint
+        working-directory: frontend
+        run: npm run lint
+      - name: prettier --check
+        working-directory: frontend
+        run: npm run format:check
+
+  # ---------------------------------------------------------------------------
+  migrate-check:
+    name: migrate-check
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: studytrack
+          POSTGRES_PASSWORD: studytrack
+          POSTGRES_DB: studytrack
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U studytrack"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql+psycopg://studytrack:studytrack@localhost:5432/studytrack
+      JWT_SECRET: ci-test-secret-not-a-real-secret
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install backend deps
+        working-directory: backend
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Apply migrations (alembic upgrade head)
+        working-directory: backend
+        run: alembic upgrade head
+
+      # Drift gate: `alembic check` runs autogenerate in-memory and exits
+      # non-zero if the models have schema changes without a matching migration.
+      # (Replaces a temp-dir `revision --autogenerate` hack that this alembic
+      # rejects: a custom --version-path must be in `version_locations`.)
+      - name: Fail on un-migrated model drift
+        working-directory: backend
+        run: alembic check
