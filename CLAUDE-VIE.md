@@ -5,6 +5,8 @@ Tệp này cung cấp hướng dẫn cho Claude Code (claude.ai/code) khi làm v
 StudyTrack là một ứng dụng quản lý thói quen học tập trên một trang duy nhất (bộ đếm giờ Pomodoro, bảng điều khiển, lập lịch hàng tuần, huy hiệu thành tích, thẻ sinh viên ảo). Ứng dụng hỗ trợ song ngữ (Tiếng Việt/Tiếng Anh) với các giao diện sáng/tối, được triển khai tại https://studytrack-mzds.vercel.app/.
 
 > **Lưu ý — dự án đang hoạt động nằm ở đâu:** phần tài liệu single-file chi tiết bên dưới giờ mô tả **app cũ trong `legacy/`** (`legacy/index.html`), giữ lại để tham khảo. Dự án đang hoạt động là **monorepo full-stack** (`backend/` FastAPI + Postgres, `frontend/` React/Vite, `deploy/`). Để xem kiến trúc hiện tại, lệnh chạy và quy trình Git/deploy, hãy bắt đầu từ `README.md` ở thư mục gốc, mục `## Harness: StudyTrack refactor` trong `CLAUDE.md`, và `make dev` / `make help`. Hướng dẫn single-file bên dưới vẫn đúng cho `legacy/` nhưng không mô tả stack mới.
+>
+> **Tiến độ:** Phase 0 (scaffold) và **Phase 1 (auth + nền user: JWT+argon2, User/Profile, thẻ SV ảo, đồng bộ `lang`/`theme` qua server)** đã hoàn thành. Chi tiết kiến trúc auth as-built: xem `README.md` (mục "Xác thực & API") và `CLAUDE.md` (mục "Active stack — Phase 1").
 
 ## Khởi chạy
 

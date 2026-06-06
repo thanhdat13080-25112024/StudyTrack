@@ -90,6 +90,7 @@ gen-types: ## Boot FastAPI, dump OpenAPI, regenerate frontend api-types.ts
 		sleep 1; \
 	done; \
 	npx --yes openapi-typescript $(OPENAPI_URL) -o $(API_TYPES_OUT); \
+	cd $(FRONTEND_DIR) && npx --yes prettier --write src/lib/api-types.ts; \
 	echo ">> Wrote $(API_TYPES_OUT)"
 
 # --- Deploy ------------------------------------------------------------------

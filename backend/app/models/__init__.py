@@ -12,8 +12,7 @@ registers on ``Base.metadata``.
 from __future__ import annotations
 
 from app.core.db import Base  # noqa: F401  (re-exported for convenience)
+from app.models.profile import Profile  # noqa: F401
+from app.models.user import User  # noqa: F401
 
-# Future models are imported here so Alembic sees them, e.g.:
-# from app.models.user import User  # noqa: F401
-
-__all__ = ["Base"]
+__all__ = ["Base", "User", "Profile"]
