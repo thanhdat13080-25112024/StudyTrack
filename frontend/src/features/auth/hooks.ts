@@ -4,14 +4,7 @@ import { apiClient } from '@/lib/apiClient';
 import { applyTheme, type Theme } from '@/lib/theme';
 import { setLanguage, type Lang } from '@/lib/i18n';
 import { useAuthStore } from '@/store/authStore';
-import type {
-  MeOut,
-  ProfileOut,
-  ProfileUpdate,
-  Token,
-  UserOut,
-  UserSettingsUpdate,
-} from './types';
+import type { MeOut, ProfileOut, ProfileUpdate, Token, UserOut, UserSettingsUpdate } from './types';
 
 export const ME_KEY = ['auth', 'me'] as const;
 

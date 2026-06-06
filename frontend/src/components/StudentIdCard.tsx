@@ -26,7 +26,9 @@ export function StudentIdCard({ name, className, major, avatarUrl }: StudentIdCa
         </div>
         <div className="min-w-0">
           {/* Uppercase in JS so textContent matches (CSS uppercase is visual-only). */}
-          <div className="truncate text-lg font-semibold">{(name || 'STUDENT NAME').toUpperCase()}</div>
+          <div className="truncate text-lg font-semibold">
+            {(name || 'STUDENT NAME').toUpperCase()}
+          </div>
           <div className="text-sm opacity-90">
             {t('studentId.class')}: {className || '...'}
           </div>
