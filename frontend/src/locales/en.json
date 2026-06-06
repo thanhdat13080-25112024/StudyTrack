@@ -18,5 +18,33 @@
   },
   "dashboard": {
     "welcomeLine": "Welcome to StudyTrack — start your focused study session."
+  },
+  "auth": {
+    "loginTitle": "Sign in to StudyTrack",
+    "registerTitle": "Create an account",
+    "name": "Full name",
+    "email": "Email",
+    "password": "Password",
+    "login": "Login",
+    "register": "Register",
+    "noAccount": "No account yet?",
+    "haveAccount": "Already have an account?",
+    "invalidEmail": "Invalid email",
+    "passwordTooShort": "Password must be at least 6 characters",
+    "genericError": "Something went wrong, please try again"
+  },
+  "profile": {
+    "title": "My Profile",
+    "name": "Full name",
+    "class": "Class",
+    "faculty": "Faculty",
+    "major": "Major",
+    "goal": "Goal",
+    "avatar": "Avatar",
+    "save": "Save profile"
+  },
+  "studentId": {
+    "class": "Class",
+    "major": "Major"
   }
 }

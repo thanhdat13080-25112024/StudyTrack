@@ -18,5 +18,33 @@
   },
   "dashboard": {
     "welcomeLine": "Chào mừng đến với StudyTrack — hãy bắt đầu phiên học tập trung của bạn."
+  },
+  "auth": {
+    "loginTitle": "Đăng nhập StudyTrack",
+    "registerTitle": "Tạo tài khoản",
+    "name": "Họ tên",
+    "email": "Email",
+    "password": "Mật khẩu",
+    "login": "Đăng nhập",
+    "register": "Đăng ký",
+    "noAccount": "Chưa có tài khoản?",
+    "haveAccount": "Đã có tài khoản?",
+    "invalidEmail": "Email không hợp lệ",
+    "passwordTooShort": "Mật khẩu tối thiểu 6 ký tự",
+    "genericError": "Đã có lỗi xảy ra, vui lòng thử lại"
+  },
+  "profile": {
+    "title": "Hồ sơ cá nhân",
+    "name": "Họ tên",
+    "class": "Lớp",
+    "faculty": "Khoa",
+    "major": "Ngành",
+    "goal": "Mục tiêu",
+    "avatar": "Ảnh đại diện",
+    "save": "Lưu hồ sơ"
+  },
+  "studentId": {
+    "class": "Lớp",
+    "major": "Ngành"
   }
 }
