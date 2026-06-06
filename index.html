@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StudyTrack - Tập Trung Học Tập</title>
+  <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/3135/3135810.png">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <style>
+    /* KHỞI TẠO BIẾN MÀU THEME CHUYỂN ĐỔI LINH HOẠT */
+    :root {
+      --bg-main: #0f172a;
+      --bg-sidebar: #111827;
+      --bg-card: #1e293b;
+      --text-main: #ffffff;
+      --text-muted: #cbd5e1;
+      --text-helper: #9ca3af;
+      --border-color: #1e293b;
+      --input-bg: #0f172a;
+      --id-card-bg: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+      --id-card-text: #ffffff;
+      --menu-item-bg: #1e293b;
+      --menu-item-text: #ffffff;
+      --accent-color: #2563eb;
+      --accent-hover: #1d4ed8;
+    }
+
+    [data-theme="light"] {
+      --bg-main: #15928A;
+      --bg-sidebar: #0d6e68;
+      --bg-card: #ffffff;
+      --text-main: #ffffff;
+      --text-muted: rgba(255, 255, 255, 0.85);
+      --text-helper: #1e293b;
+      --border-color: rgba(255, 255, 255, 0.2);
+      --input-bg: #f8fafc;
+      --id-card-bg: linear-gradient(135deg, #0f766e 0%, #115e59 100%);
+      --id-card-text: #ffffff;
+      --menu-item-bg: rgba(255, 255, 255, 0.1);
+      --menu-item-text: #ffffff;
+      --accent-color: #ffffff;
+      --accent-hover: rgba(255, 255, 255, 0.9);
+    }
+
+    *{ margin:0; padding:0; box-sizing:border-box; font-family:'Poppins',sans-serif; transition: background 0.3s, color 0.3s, border-color 0.3s; }
+    body{ background: var(--bg-main); color: var(--text-main); display:flex; height: 100vh; overflow: hidden; }
+
+    /* SIDEBAR */
+    .sidebar{ width:260px; background: var(--bg-sidebar); padding:30px 20px; border-right:2px solid var(--border-color); display: flex; flex-direction: column; flex-shrink: 0; box-shadow: 4px 0 20px rgba(0,0,0,0.05); }
+    .logo-container { display: flex; align-items: center; gap: 12px; margin-bottom: 30px; }
+    .logo-img { width: 40px; height: 40px; object-fit: cover; border-radius: 8px; }
+    .logo-text { font-size:26px; font-weight:700; color: #ffffff; }
+    [data-theme="dark"] .logo-text { color: var(--accent-color); }
+    
+    .menu{ list-style:none; }
+    .menu li{ padding:12px 15px; margin-bottom:10px; border-radius:12px; cursor:pointer; transition: all 0.2s ease; background: var(--menu-item-bg); color: var(--menu-item-text); border: 1.5px solid var(--border-color); font-weight: 500; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
+    
+    [data-theme="light"] .menu li:hover, [data-theme="light"] .menu li.active { background: #ffffff !important; color: #15928A !important; transform: translateX(5px); border-color: #ffffff; box-shadow: 0 4px 12px rgba(255, 255, 255, 0.25); }
+    [data-theme="dark"] .menu li:hover, [data-theme="dark"] .menu li.active { background: var(--accent-color) !important; color: #ffffff !important; transform: translateX(5px); border-color: var(--accent-color); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25); }
+
+    .sidebar-widgets { margin-top: auto; display: flex; flex-direction: column; gap: 10px; }
+    .theme-toggle-box, .lang-toggle-box { background: var(--menu-item-bg); padding: 12px; border-radius: 12px; border: 1.5px solid var(--border-color); display: flex; align-items: center; justify-content: center; cursor: pointer; gap: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
+    .theme-toggle-box span, .lang-toggle-box span { font-size: 14px; font-weight: 500; color: var(--menu-item-text); }
+    [data-theme="light"] .sidebar-widgets :hover { background: rgba(255,255,255,0.2); }
+    [data-theme="dark"] .sidebar-widgets :hover { background: var(--accent-color); }
+
+    /* MAIN WRAPPER */
+    .main-wrapper { flex: 1; display: flex; flex-direction: column; height: 100%; overflow: hidden; }
+    .topbar{ display:flex; justify-content:space-between; align-items:center; padding: 25px 30px 15px 30px; background: transparent; flex-shrink: 0; }
+    .topbar h1{ font-size:28px; font-weight: 700; }
+    .profile-box{ background: var(--bg-card); padding:10px 20px; border-radius:12px; display: flex; align-items: center; border: 1.5px solid var(--border-color); color: var(--text-main); box-shadow: 0 4px 15px rgba(0,0,0,0.04); }
+    [data-theme="light"] .profile-box { color: #15928A; border-color: #ffffff; }
+    .logout-btn { background: #ef4444; padding: 6px 12px; border-radius: 8px; font-size: 13px; margin-left: 10px; cursor: pointer; border: none; color: white; font-weight: 500; }
+
+    .scrollable-content { flex: 1; padding: 15px 30px 30px 30px; overflow-y: auto; height: 100%; }
+    .scrollable-content::-webkit-scrollbar { width: 6px; }
+    .scrollable-content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 10px; }
+
+    /* CARDS */
+    .dashboard{ display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:20px; margin-bottom:25px; }
+    .card{ background: var(--bg-card); padding:20px; border-radius:20px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); border: 1.5px solid var(--border-color); }
+    [data-theme="light"] .card h3 { color: #64748b; }
+    [data-theme="light"] .card p { color: #15928A; }
+    [data-theme="dark"] .card h3 { color: var(--text-muted); }
+    [data-theme="dark"] .card p { color: #3b82f6; }
+    .card h3{ font-size:16px; margin-bottom:8px; }
+    .card p{ font-size:32px; font-weight:800; }
+    
+    .badge-section, .chart-container, .calendar-section { background: var(--bg-card); padding: 22px; border-radius: 20px; margin-bottom: 25px; border: 1.5px solid var(--border-color); box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+    [data-theme="light"] .badge-section h3, [data-theme="light"] .chart-container h3, [data-theme="light"] .calendar-section h3 { color: #0d6e68; }
+    .badge-grid { display: flex; gap: 15px; flex-wrap: wrap; margin-top: 15px; }
+    .badge-item { background: var(--bg-main); padding: 12px 20px; border-radius: 12px; display: flex; align-items: center; gap: 10px; border: 1.5px solid var(--border-color); opacity: 0.5; filter: grayscale(1); }
+    [data-theme="light"] .badge-item { background: #f1f5f9; border-color: #e2e8f0; }
+    .badge-item.unlocked { opacity: 1; filter: grayscale(0); border-color: #eab308; background: var(--bg-card); }
+
+    /* PROFILE */
+    .profile-wrapper { display: grid; grid-template-columns: 1fr 380px; gap: 30px; align-items: start; }
+    .profile-header-box { background: var(--bg-card); padding: 25px; border-radius: 20px; border: 1.5px solid var(--border-color); display: flex; align-items: center; gap: 25px; margin-bottom: 25px; }
+    [data-theme="light"] .profile-meta h2,
+    [data-theme="light"] .profile-meta p,
+    [data-theme="light"] .upload-hint-text{
+    color:#0d6e68 !important;
+}
+    .avatar-preview-circle { width: 90px; height: 90px; border-radius: 50%; background: var(--bg-main); border: 3px solid #15928A; display: flex; align-items: center; justify-content: center; font-size: 40px; overflow: hidden; cursor: pointer; position: relative; }
+    .avatar-preview-circle img { width: 100%; height: 100%; object-fit: cover; }
+    .student-id-card { background: var(--id-card-bg); color: var(--id-card-text); border-radius: 20px; padding: 25px; position: relative; height: 240px; display: flex; flex-direction: column; justify-content: space-between; border: 1.5px solid rgba(255,255,255,0.15); }
+    .card-mid { display: flex; gap: 15px; align-items: center; }
+    .card-avatar { width: 65px; height: 65px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 30px; overflow: hidden; }
+    .card-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .card-name { font-size: 18px; font-weight: 600; text-transform: uppercase; }
+
+    /* TIMER CONTAINER */
+    .timer-container { background: var(--bg-card); border: 3px solid #10b981; border-radius: 24px; padding: 25px 15px; text-align: center; margin: 20px auto; max-width: 550px; display: none; box-shadow: 0 20px 50px rgba(16, 185, 129, 0.15); }
+    .timer-container h3{font-size: 24px;font-weight: 700;}
+    .timer-display { font-size: 56px; font-weight: 700; color: var(--text-main); margin: 15px 0; font-family: monospace; }
+    [data-theme="light"] .timer-display { color: #0f172a; }
+    [data-theme="light"] .timer-container h3,
+[data-theme="light"] .timer-container p,
+[data-theme="light"] .timer-container strong,
+[data-theme="light"] .suggestion-box,
+[data-theme="light"] .music-player-box,
+[data-theme="light"] .music-player-box h4,
+[data-theme="light"] .track-name {
+    color: #0d6e68 !important;
+}
+    
+    /* SUGGESTION BOX */
+    .suggestion-box { background: rgba(16, 185, 129, 0.1); border: 1.5px dashed #10b981; padding: 15px; border-radius: 12px; margin-top: 15px; text-align: left; font-size: 14px; }
+
+    /* MUSIC PLAYER */
+    .music-player-box { background: var(--bg-main); border: 1.5px solid var(--border-color); border-radius: 16px; padding: 15px; text-align: left; max-width: 500px; margin: 20px auto; }
+    [data-theme="light"] .music-player-box { background: #f1f5f9; border-color: #cbd5e1; }
+    .music-controls { display: flex; align-items: center; justify-content: space-between; gap: 15px; margin-top: 10px; }
+    .music-btn { background: #10b981; color: white; padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; }
+
+    .timer-btn-group { display: flex; flex-direction: column; gap: 12px; margin-top: 20px; max-width: 450px; margin-left: auto; margin-right: auto; }
+    .timer-control-row { display: flex; gap: 15px; justify-content: center; }
+    .timer-btn-group button { padding: 12px 20px; font-weight: 600; border-radius: 12px; border: none; color: white; cursor: pointer; font-size: 15px; }
+    .btn-start { background: #10b981; flex: 1; }
+    .btn-pause { background: #f59e0b; flex: 1; }
+    .btn-stop-save { background: #ef4444; width: 100%; }
+
+    body.focus-active .sidebar, body.focus-active .topbar { display: none !important; }
+    body.focus-active .scrollable-content { padding: 10px; display: flex; align-items: center; justify-content: center; height: 100vh; background: var(--bg-main); }
+
+    /* FORM TIMETABLE / CALENDAR GRID */
+    .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-top: 15px; overflow-x: auto; }
+    .calendar-day-col { background: var(--bg-main); border: 1.5px solid var(--border-color); border-radius: 10px; padding: 10px; min-height: 150px; }
+    [data-theme="light"] .calendar-day-col { background: #f1f5f9; border-color: #cbd5e1; }
+    .day-title { font-weight: 600; font-size: 14px; text-align: center; margin-bottom: 8px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px; color: #15928A;}
+    [data-theme="dark"] .day-title { color: #3b82f6; }
+    .schedule-item { background: var(--bg-card); border-left: 3px solid #10b981; padding: 6px; border-radius: 6px; font-size: 11px; margin-bottom: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); color: var(--text-helper); }
+    .schedule-item strong { color: var(--text-main); display: block; }
+    [data-theme="light"] .schedule-item strong { color: #0f172a; }
+
+    /* LAYOUT FORMS */
+    .section-title{margin-bottom:20px;font-size:26px;font-weight:700;color:#FFFFFF;}
+    .form-container{ background: var(--bg-card); padding:25px; border-radius:20px; margin-bottom:25px; border: 1.5px solid var(--border-color); }
+    [data-theme="light"] .form-container h3,
+    [data-theme="light"] .input-group label{
+    color:#0d6e68 !important;
+}
+    .helper-text { font-size: 13px; font-weight: 500; margin-bottom: 15px; color: var(--text-helper); }
+    .input-group{ margin-bottom:15px; }
+    .input-group label{ display:block; margin-bottom:6px; color: var(--text-muted); font-weight: 500; font-size: 13px; }
+    [data-theme="light"] .input-group label { color: #475569; }
+    .input-group input, .input-group textarea, .input-group select{ width:100%; padding:12px; border:1.5px solid var(--border-color); border-radius:12px; background: var(--input-bg); color: var(--text-main); outline:none; font-size:14px; }
+    [data-theme="light"] .input-group input, [data-theme="light"] .input-group textarea, [data-theme="light"] .input-group select { color: #0f172a; border-color: #cbd5e1; }
+    textarea{ resize:none; height:100px; }
+    
+    button{ background: #15928A; border:none; padding:12px 24px; border-radius:12px; color:white; font-size:15px; font-weight: 600; cursor:pointer; transition:0.3s; }
+    [data-theme="dark"] button { background: var(--accent-color); }
+    [data-theme="dark"] button:hover { background: var(--accent-hover); }
+
+    .history-item{ background: var(--bg-card); padding:15px; border-radius:15px; border-left:5px solid #15928A; margin-bottom: 15px; border-top:1.5px solid var(--border-color); border-right:1.5px solid var(--border-color); border-bottom:1.5px solid var(--border-color); }
+    [data-theme="light"] .history-item h3,
+    [data-theme="light"] .history-item p,
+    [data-theme="light"] .history-item strong{
+    color:#0d6e68 !important;
+}
+    [data-theme="dark"] .history-item { border-left-color: var(--accent-color); }
+    
+    .login-container{ width:100%; display:flex; justify-content:center; align-items:center; padding: 20px 0; }
+    .login-box{ width:420px; background: var(--bg-card); padding:35px; border-radius:20px; border: 1.5px solid var(--border-color); }
+    .login-box h2{ text-align:center; margin-bottom:25px; color: #15928A; font-size:24px; }
+    [data-theme="dark"] .login-box h2 { color: var(--accent-color); }
+    /* LOGIN / REGISTER LINK */
+.toggle-form-text{
+    text-align:center;
+    margin-top:15px;
+}
+
+.toggle-form-text span{
+    cursor:pointer;
+    font-weight:600;
+}
+/* ERROR MESSAGE */
+.error-msg{
+    color:#dc2626 !important;
+    font-weight:600;
+    margin-top:10px;
+}
+
+/* Dark Mode */
+[data-theme="dark"] .toggle-form-text span{
+    color:#60a5fa;
+}
+
+/* Light Mode */
+[data-theme="light"] .toggle-form-text span{
+    color:#0d6e68;
+}
+    /* FIX BADGE TEXT IN LIGHT MODE */
+[data-theme="light"] .badge-section h3{
+    color:#0d6e68 !important;
+}
+
+[data-theme="light"] .badge-info h4{
+    color:#0d6e68 !important;
+}
+
+[data-theme="light"] .badge-info p{
+    color:#0d6e68 !important;
+}
+    @media(max-width:1100px){
+      .profile-wrapper { grid-template-columns: 1fr; }
+    }
+    @media(max-width:900px){
+      body{ flex-direction:column; overflow: auto; height: auto; }
+      .sidebar{ width:100%; flex-direction: row; align-items: center; border-bottom: 2px solid var(--border-color); padding:10px; }
+      .logo-container{ margin-bottom: 0; }
+      .menu{ display:flex; gap:5px; }
+      .sidebar-widgets { flex-direction: row; margin-left: auto; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="sidebar">
+    <div class="logo-container">
+      <img class="logo-img" src="https://cdn-icons-png.flaticon.com/512/3135/3135810.png" alt="Logo">
+      <div class="logo-text">StudyTrack</div>
+    </div>
+    <ul class="menu">
+      <li id="nav-dashboard" onclick="navigateTo('dashboard')">Dashboard</li>
+      <li id="nav-profile" onclick="navigateTo('profile')">Profile</li>
+      <li id="nav-study" onclick="navigateTo('study')">Study Log</li>
+      <li id="nav-history" onclick="navigateTo('history')">History</li>
+      <li id="nav-login" onclick="navigateTo('login')">Login</li>
+    </ul>
+
+    <div class="sidebar-widgets">
+      <div class="lang-toggle-box" onclick="toggleLanguage()">
+        <span id="lang-status-text">🇻🇳 Tiếng Việt</span>
+      </div>
+      <div class="theme-toggle-box" onclick="toggleTheme()">
+        <span id="theme-status-text">🌙 Chế độ tối</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-wrapper">
+    <div class="topbar">
+      <h1 id="topbar-title">Study Habit Management</h1>
+      <div class="profile-box" id="user-greeting">Chưa đăng nhập 👤</div>
+    </div>
+
+    <div class="scrollable-content">
+      
+      <div id="dashboard-section" class="content-section" style="display:none;">
+        <h2 class="section-title">Dashboard</h2>
+        <div class="dashboard">
+          <div class="card">
+            <h3 id="lbl-dash-hours">Giờ học hôm nay</h3>
+            <p id="dash-hours">0.0h</p>
+          </div>
+          <div class="card">
+            <h3 id="lbl-dash-streak">Streak học tập</h3>
+            <p id="dash-streak">0 ngày</p>
+          </div>
+          <div class="card">
+            <h3 id="lbl-dash-sessions">Tổng số buổi học</h3>
+            <p id="dash-sessions">0</p>
+          </div>
+        </div>
+
+        <div class="calendar-section">
+          <h3 id="lbl-calendar-title">📅 Lịch Trình Học Tập Trong Tuần</h3>
+          <div class="calendar-grid" id="calendar-grid-container">
+            </div>
+        </div>
+
+        <div class="badge-section">
+          <h3 id="lbl-badge-title">🏆 Huy hiệu thành tựu học tập</h3>
+          <div class="badge-grid">
+            <div class="badge-item" id="badge-1">
+              <div class="badge-icon">🌱</div>
+              <div class="badge-info">
+                <h4 id="badge-1-title">Tân binh chăm chỉ</h4>
+                <p id="badge-1-desc">Có buổi học đầu tiên</p>
+              </div>
+            </div>
+            <div class="badge-item" id="badge-2">
+              <div class="badge-icon">🔥</div>
+              <div class="badge-info">
+                <h4 id="badge-2-title">Chiến thần tập trung</h4>
+                <p id="badge-2-desc">Tích lũy đủ 5 giờ học thực tế</p>
+              </div>
+            </div>
+            <div class="badge-item" id="badge-3">
+              <div class="badge-icon">👑</div>
+              <div class="badge-info">
+                <h4 id="badge-3-title">Bậc thầy bền bỉ</h4>
+                <p id="badge-3-desc">Tích lũy đủ 20 giờ học thực tế</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="chart-container">
+          <h3 style="margin-bottom: 15px;" id="chart-title-text">Biểu đồ thói quen học tập trong tuần (7 ngày qua)</h3>
+          <div style="position: relative; height:300px; width:100%;">
+            <canvas id="weeklyStudyChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div id="profile-section" class="content-section" style="display:none;">
+        <h2 class="section-title" id="lbl-profile-title">Hồ Sơ Sinh Viên</h2>
+        
+        <div class="profile-header-box">
+          <div class="avatar-upload-container">
+            <div class="avatar-preview-circle" id="profile-avatar-zone" onclick="document.getElementById('avatar-file-input').click()">
+              <span id="avatar-emoji-placeholder">👨‍🎓</span>
+            </div>
+          </div>
+          <input type="file" id="avatar-file-input" accept="image/*" style="display: none;" onchange="handleAvatarChange(this)">
+
+          <div class="profile-meta">
+            <h2 id="meta-display-name">Tên Sinh Viên</h2>
+            <p id="meta-display-email">student@domain.com</p>
+            <span class="upload-hint-text" id="lbl-upload-hint" onclick="document.getElementById('avatar-file-input').click()">Thay đổi ảnh đại diện cá nhân</span>
+          </div>
+        </div>
+
+        <div class="profile-wrapper">
+          <div class="form-container" style="margin-bottom: 0;">
+            <div class="form-grid-2">
+              <div class="input-group">
+                <label id="lbl-prof-name">Họ và tên</label>
+                <input type="text" id="profile-name" oninput="syncCardRealtime()">
+              </div>
+              <div class="input-group">
+                <label id="lbl-prof-email">Email cá nhân</label>
+                <input type="email" id="profile-email" readonly style="opacity: 0.6; cursor: not-allowed;">
+              </div>
+            </div>
+            
+            <div class="form-grid-2">
+              <div class="input-group">
+                <label id="lbl-prof-class">Lớp / Khoa</label>
+                <input type="text" id="profile-class" oninput="syncCardRealtime()">
+              </div>
+              <div class="input-group">
+                <label id="lbl-prof-major">Ngành học</label>
+                <input type="text" id="profile-major" oninput="syncCardRealtime()">
+              </div>
+            </div>
+
+            <div class="input-group">
+              <label id="lbl-prof-goal">Mục tiêu dài hạn</label>
+              <textarea id="profile-goal"></textarea>
+            </div>
+            <button onclick="handleSaveProfile()" id="btn-save-profile">Cập nhật thông tin</button>
+          </div>
+
+          <div class="student-id-card">
+            <div class="card-top">
+              <div class="card-brand">STUDENT CARD</div>
+              <div class="card-chip"></div>
+            </div>
+            <div class="card-mid">
+              <div class="card-avatar" id="card-avatar-zone">
+                <span>👨‍💻</span>
+              </div>
+              <div class="card-info-fields">
+                <div class="card-name" id="card-display-name">STUDENT NAME</div>
+                <div class="card-subtext"><span id="lbl-card-class">Lớp</span>: <span id="card-display-class">...</span></div>
+                <div class="card-subtext"><span id="lbl-card-major">Ngành</span>: <span id="card-display-major">...</span></div>
+              </div>
+            </div>
+            <div class="card-bottom">
+              <div>SYSTEM: STUDYTRACK V3.0</div>
+              <div>STATUS: ACTIVE</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="study-section" class="content-section" style="display:none;">
+        <h2 class="section-title" id="page-study-title">Ghi lại lộ trình học tập</h2>
+        
+        <div class="timer-container" id="timer-box">
+          <h3 id="lbl-timer-heading">🔥 ĐANG TRONG PHIÊN TẬP TRUNG CAO ĐỘ</h3>
+          <p style="font-size: 18px; margin-top: 5px;"><span id="lbl-timer-sub">Môn học</span>: <strong id="timer-subject-name" style="color: #10b981;">...</strong></p>
+          <div class="timer-display" id="timer-val">00:00:00</div>
+
+          <div class="suggestion-box" id="timer-suggestion-box"></div>
+
+          <div class="music-player-box">
+            <h4>🎵 <span id="lbl-music-title">Âm nhạc học tập</span>:</h4>
+            <div class="track-name"></div>Đom Đóm
+            <audio id="study-audio-element" src="dom.mp3" loop></audio>
+            <div class="music-controls">
+              <button class="music-btn" id="btn-music-toggle" onclick="toggleStudyMusic()">▶️ Play</button>
+              <div class="volume-container">
+                <input type="range" class="volume-slider" id="music-volume" min="0" max="1" step="0.1" value="1" oninput="changeMusicVolume(this.value)">
+              </div>
+            </div>
+          </div>
+
+          <div class="timer-btn-group">
+            <div class="timer-control-row">
+              <button class="btn-pause" id="btn-timer-pause" onclick="pauseCountdown()">Tạm dừng</button>
+              <button class="btn-start" id="btn-timer-start" onclick="startCountdown()" style="display:none;">Tiếp tục</button>
+            </div>
+            <button class="btn-stop-save" onclick="stopCountdown(false)" id="btn-timer-stop">Lưu & kết thúc</button>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px;" id="study-form-box">
+          
+          <div class="form-container">
+            <h3 style="margin-bottom: 15px;" id="lbl-box-instant">Kích Hoạt Phiên Học Ngay</h3>
+            <div class="input-group">
+              <label id="lbl-f-sub">Môn học mới</label>
+              <input type="text" id="study-subject" placeholder="e.g. Advanced Calculus...">
+            </div>
+            <div class="input-group">
+              <label id="lbl-f-dur">Thời gian định học (Số phút)</label>
+              <input type="number" id="study-duration" min="1" value="25">
+            </div>
+            <div class="input-group">
+              <label id="lbl-f-focus">Mức độ tập trung mong muốn (1 - 10)</label>
+              <input type="range" id="study-focus" min="1" max="10" value="7" oninput="document.getElementById('focus-val').innerText = this.value">
+              <span style="font-size:13px; font-weight: 600; color: var(--text-helper);"><span id="lbl-f-level">Mức độ</span>: <span id="focus-val">7</span>/10</span>
+            </div>
+            <div class="input-group">
+              <label id="lbl-f-method">Phương pháp áp dụng</label>
+              <select id="study-method">
+                <option value="Pomodoro">Pomodoro Technique (25/5)</option>
+                <option value="Active Recall">Active Recall (Chủ động gợi nhớ)</option>
+                <option value="Spaced Repetition">Spaced Repetition (Lặp lại ngắt quãng)</option>
+                <option value="Feynman">Feynman Technique (Giải thích đơn giản)</option>
+              </select>
+            </div>
+            <div class="input-group">
+              <label id="lbl-f-note">Ghi chú mục tiêu cụ thể</label>
+              <textarea id="study-note"></textarea>
+            </div>
+            <button onclick="triggerManualStart()" style="width: 100%;" id="btn-trigger-timer">Kích hoạt đếm giờ</button>
+          </div>
+
+          <div class="form-container">
+            <h3 style="margin-bottom: 15px;" id="lbl-box-schedule">Lên Lịch Học Theo Thời Gian</h3>
+            <div class="input-group">
+              <label id="lbl-sched-day">Chọn thứ trong tuần</label>
+              <select id="sched-day">
+                <option value="Thứ 2">Monday (Thứ 2)</option>
+                <option value="Thứ 3">Tuesday (Thứ 3)</option>
+                <option value="Thứ 4">Wednesday (Thứ 4)</option>
+                <option value="Thứ 5">Thursday (Thứ 5)</option>
+                <option value="Thứ 6">Friday (Thứ 6)</option>
+                <option value="Thứ 7">Saturday (Thứ 7)</option>
+                <option value="Chủ Nhật">Sunday (Chủ Nhật)</option>
+              </select>
+            </div>
+            <div class="input-group">
+              <label id="lbl-sched-time">Thời gian bắt đầu cụ thể</label>
+              <input type="time" id="sched-time" value="08:00">
+            </div>
+            <div class="input-group">
+              <label id="lbl-sched-sub">Môn học / Nội dung</label>
+              <input type="text" id="sched-subject" placeholder="e.g. Linear Algebra exam review">
+            </div>
+            <button onclick="handleSaveSchedule()" style="width: 100%; background: #10b981;" id="btn-add-schedule">Thêm vào lịch trình</button>
+          </div>
+
+        </div>
+      </div>
+
+      <div id="history-section" class="content-section" style="display:none;">
+        <h2 class="section-title" id="lbl-hist-title">Lịch sử học tập thực tế</h2>
+        <div class="history" id="history-list"></div>
+      </div>
+
+      <div id="login-section" class="content-section" style="display:none;">
+        <div class="login-container">
+          <div class="login-box" id="auth-login-box">
+            <h2 id="lbl-login-h">Đăng nhập</h2>
+            <div class="input-group">
+              <label>Email</label>
+              <input type="email" id="login-email">
+            </div>
+            <div class="input-group">
+              <label id="lbl-login-pass">Mật khẩu</label>
+              <input type="password" id="login-password">
+            </div>
+            <div class="error-msg" id="login-error">Error!</div>
+            <button style="width:100%;" onclick="handleLogin()" id="btn-login-submit">Đăng nhập</button>
+            <p class="toggle-form-text"><span onclick="toggleAuthForm('register')" id="lbl-go-reg">Đăng ký tài khoản mới</span></p>
+          </div>
+
+          <div class="login-box" id="auth-register-box" style="display: none;">
+            <h2 id="lbl-reg-h">Đăng ký tài khoản</h2>
+            <div class="input-group">
+              <label id="lbl-reg-name">Họ và tên</label>
+              <input type="text" id="register-name">
+            </div>
+            <div class="input-group">
+              <label>Email</label>
+              <input type="email" id="register-email">
+            </div>
+            <div class="input-group">
+              <label id="lbl-reg-pass">Mật khẩu (Tối thiểu 6 ký tự)</label>
+              <input type="password" id="register-password">
+            </div>
+            <button style="width:100%; background: #10b981;" onclick="handleRegister()" id="btn-reg-submit">Tạo tài khoản</button>
+            <p class="toggle-form-text"><span onclick="toggleAuthForm('login')" id="lbl-go-login">Quay lại đăng nhập</span></p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // TỪ ĐIỂN ĐA NGÔN NGỮ NÂNG CẤP
+    const langData = {
+      vi: {
+        nav_dashboard: " Dashboard",
+        nav_profile: " Hồ sơ",
+        nav_study: " Phiên học",
+        nav_history: " Lịch sử",
+        nav_login: " Đăng nhập",
+        topbar_title: "Quản Lý Thói Quen Học Tập",
+        not_logged_in: "Chưa đăng nhập 👤",
+        welcome: "Xin chào",
+        logout: "Đăng xuất",
+        dash_hours: "Giờ học hôm nay",
+        dash_streak: "Streak học tập",
+        dash_sessions: "Tổng số buổi",
+        calendar_title: "📅 Lịch Trình Học Tập Trong Tuần",
+        badge_title: "🏆 Huy hiệu thành tựu học tập",
+        chart_title: "Biểu đồ thói quen học tập trong tuần (7 ngày qua)",
+        prof_title: "Hồ Sơ Sinh Viên",
+        upload_hint: "Thay đổi ảnh đại diện cá nhân",
+        prof_name: "Họ và tên", prof_email: "Email cá nhân", prof_class: "Lớp / Khoa", prof_major: "Ngành học", prof_goal: "Mục tiêu dài hạn",
+        btn_save_prof: "Cập nhật thông tin", card_class: "Lớp", card_major: "Ngành",
+        page_study_title: "Thiết kế & Tối ưu lộ trình học tập",
+        timer_heading: "🔥 ĐANG TRONG PHIÊN TẬP TRUNG CAO ĐỘ",
+        timer_sub: "Môn học", music_title: "Âm nhạc học tập", btn_pause: "Tạm dừng", btn_resume: "Tiếp tục học", btn_stop: "Lưu & Kết thúc",
+        box_instant: "Kích Hoạt Phiên Học Ngay",
+        f_sub: "Môn học mới", f_dur: "Thời gian định học (Số phút)", f_focus: "Mức độ tập trung mong muốn (1 - 10)", f_level: "Mức độ",
+        f_method: "Phương pháp áp dụng", f_note: "Ghi chú mục tiêu cụ thể", btn_trigger: "Kích hoạt đếm giờ",
+        box_schedule: "Lên Lịch Học Theo Thời Gian", sched_day: "Chọn thứ trong tuần", sched_time: "Thời gian bắt đầu cụ thể", sched_sub: "Môn học / Nội dung", btn_add_sched: "Thêm vào lịch trình",
+        hist_title: "Lịch sử học tập thực tế", no_hist: "Chưa có lịch sử học tập.",
+        login_h: "Đăng nhập hệ thống", login_pass: "Mật khẩu", btn_login: "Đăng nhập", go_reg: "Chưa có tài khoản? Đăng ký ngay",
+        reg_h: "Đăng ký tài khoản", reg_name: "Họ và tên", reg_pass: "Mật khẩu (Tối thiểu 6 ký tự)", btn_reg: "Tạo tài khoản", go_login: "Đành có tài khoản? Quay lại đăng nhập",
+        alert_profile: "Đã cập nhật Profile thành công!", alert_sched: "Đã thêm lịch biểu thành công!", alert_valid: "Vui lòng điền thông tin hợp lệ!",
+        chart_dataset_lbl: "Thời gian học thực tế (Phút)"
+      },
+      en: {
+        nav_dashboard: " Dashboard",
+        nav_profile: " Profile",
+        nav_study: " Study Log",
+        nav_history: " History",
+        nav_login: " Login",
+        topbar_title: "Study Habit Management",
+        not_logged_in: "Guest Player 👤",
+        welcome: "Welcome",
+        logout: "Logout",
+        dash_hours: "Hours Today",
+        dash_streak: "Study Streak",
+        dash_sessions: "Total Sessions",
+        calendar_title: "📅 Weekly Study Calendar Schedule",
+        badge_title: "🏆 Academic Achievement Badges",
+        chart_title: "Weekly Study Habit Analytics (Past 7 Days)",
+        prof_title: "Student Profile Matrix",
+        upload_hint: "Upload custom profile avatar",
+        prof_name: "Full Name", prof_email: "Personal Email", prof_class: "Class / Cohort", prof_major: "Academic Major", prof_goal: "Strategic Long-term Goals",
+        btn_save_prof: "Update Profile Info", card_class: "Class", card_major: "Major",
+        page_study_title: "Optimize High-Focus Study Plan",
+        timer_heading: "🔥 ULTRA FOCUS SESSION ACTIVATED",
+        timer_sub: "Subject", music_title: "Focus Audio background", btn_pause: "Pause Timer", btn_resume: "Resume Focus", btn_stop: "Save & Quit",
+        box_instant: "Launch Instant Session",
+        f_sub: "Target Subject", f_dur: "Planned Duration (Minutes)", f_focus: "Target Focus Level (1 - 10)", f_level: "Level",
+        f_method: "Learning Framework Method", f_note: "Specific milestones / notes", btn_trigger: "Ignite Focus Timer",
+        box_schedule: "Schedule Fixed Study Time", sched_day: "Select Day of Week", sched_time: "Exact Start Time", sched_sub: "Subject / Content Topic", btn_add_sched: "Append to Timetable",
+        hist_title: "Empirical Focus History Logs", no_hist: "No execution data found.",
+        login_h: "Sign In Securely", login_pass: "Password", btn_login: "Sign In", go_reg: "New to platform? Sign up here",
+        reg_h: "Create New Account", reg_name: "Your Name", reg_pass: "Password (Min 6 chars)", btn_reg: "Register Now", go_login: "Already have account? Sign in",
+        alert_profile: "Profile updated dynamically!", alert_sched: "Schedule locked in successfully!", alert_valid: "Please enter valid configuration data!",
+        chart_dataset_lbl: "Actual Study Duration (Minutes)"
+      }
+    };
+
+    let currentLang = localStorage.getItem('track_lang') || 'vi';
+    let isLoggedIn = localStorage.getItem('track_isLoggedIn') === 'true';
+    let currentUser = JSON.parse(localStorage.getItem('track_currentUser')) || null;
+    let userDatabase = JSON.parse(localStorage.getItem('track_userDatabase')) || [];
+
+    let countdownInterval = null;
+    let totalSecondsLeft = 0;
+    let initialSecondsPlanned = 0;
+    let isTimerRunning = false;
+    let myChartInstance = null;
+    let currentTheme = localStorage.getItem('track_theme') || 'dark';
+
+    // ĐIỀU HƯỚNG NGÔN NGỮ
+    function toggleLanguage() {
+      currentLang = currentLang === 'vi' ? 'en' : 'vi';
+      localStorage.setItem('track_lang', currentLang);
+      applyLanguagePack();
+      if(isLoggedIn && currentUser) {
+        initOrUpdateWeeklyChart(currentUser.logs || []);
+        renderCalendar();
+      }
+    }
+
+    function applyLanguagePack() {
+      const p = langData[currentLang];
+      document.getElementById('lang-status-text').innerText = currentLang === 'vi' ? "🇻🇳 Tiếng Việt" : "🇺🇸 English";
+      
+      document.getElementById('nav-dashboard').innerText = p.nav_dashboard;
+      document.getElementById('nav-profile').innerText = p.nav_profile;
+      document.getElementById('nav-study').innerText = p.nav_study;
+      document.getElementById('nav-history').innerText = p.nav_history;
+      document.getElementById('nav-login').innerText = p.nav_login;
+      document.getElementById('topbar-title').innerText = p.topbar_title;
+
+      // Dashboard
+      document.getElementById('lbl-dash-hours').innerText = p.dash_hours;
+      document.getElementById('lbl-dash-streak').innerText = p.dash_streak;
+      document.getElementById('lbl-dash-sessions').innerText = p.dash_sessions;
+      document.getElementById('lbl-calendar-title').innerText = p.calendar_title;
+      document.getElementById('lbl-badge-title').innerText = p.badge_title;
+      document.getElementById('chart-title-text').innerText = p.chart_title;
+
+      // Profile
+      document.getElementById('lbl-profile-title').innerText = p.prof_title;
+      document.getElementById('lbl-upload-hint').innerText = p.upload_hint;
+      document.getElementById('lbl-prof-name').innerText = p.prof_name;
+      document.getElementById('lbl-prof-email').innerText = p.prof_email;
+      document.getElementById('lbl-prof-class').innerText = p.prof_class;
+      document.getElementById('lbl-prof-major').innerText = p.prof_major;
+      document.getElementById('lbl-prof-goal').innerText = p.prof_goal;
+      document.getElementById('btn-save-profile').innerText = p.btn_save_prof;
+      document.getElementById('lbl-card-class').innerText = p.card_class;
+      document.getElementById('lbl-card-major').innerText = p.card_major;
+
+      // Study & Timer
+      document.getElementById('page-study-title').innerText = p.page_study_title;
+      document.getElementById('lbl-timer-heading').innerText = p.timer_heading;
+      document.getElementById('lbl-timer-sub').innerText = p.timer_sub;
+      document.getElementById('lbl-music-title').innerText = p.music_title;
+      document.getElementById('btn-timer-pause').innerText = p.btn_pause;
+      document.getElementById('btn-timer-start').innerText = p.btn_resume;
+      document.getElementById('btn-timer-stop').innerText = p.btn_stop;
+      
+      document.getElementById('lbl-box-instant').innerText = p.box_instant;
+      document.getElementById('lbl-f-sub').innerText = p.f_sub;
+      document.getElementById('lbl-f-dur').innerText = p.f_dur;
+      document.getElementById('lbl-f-focus').innerText = p.f_focus;
+      document.getElementById('lbl-f-level').innerText = p.f_level;
+      document.getElementById('lbl-f-method').innerText = p.f_method;
+      document.getElementById('lbl-f-note').innerText = p.f_note;
+      document.getElementById('btn-trigger-timer').innerText = p.btn_trigger;
+
+      document.getElementById('lbl-box-schedule').innerText = p.box_schedule;
+      document.getElementById('lbl-sched-day').innerText = p.sched_day;
+      document.getElementById('lbl-sched-time').innerText = p.sched_time;
+      document.getElementById('lbl-sched-sub').innerText = p.sched_sub;
+      document.getElementById('btn-add-schedule').innerText = p.btn_add_sched;
+
+      // History
+      document.getElementById('lbl-hist-title').innerText = p.hist_title;
+
+      // Auth
+      document.getElementById('lbl-login-h').innerText = p.login_h;
+      document.getElementById('lbl-login-pass').innerText = p.login_pass;
+      document.getElementById('btn-login-submit').innerText = p.btn_login;
+      document.getElementById('lbl-go-reg').innerText = p.go_reg;
+      document.getElementById('lbl-reg-h').innerText = p.reg_h;
+      document.getElementById('lbl-reg-name').innerText = p.reg_name;
+      document.getElementById('lbl-reg-pass').innerText = p.reg_pass;
+      document.getElementById('btn-reg-submit').innerText = p.btn_reg;
+      document.getElementById('lbl-go-login').innerText = p.go_login;
+    }
+
+    // THEME CONFIG
+    document.body.setAttribute('data-theme', currentTheme);
+    function toggleTheme() {
+      currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      document.body.setAttribute('data-theme', currentTheme);
+      localStorage.setItem('track_theme', currentTheme);
+      syncThemeUI();
+      if (isLoggedIn && currentUser) {
+        initOrUpdateWeeklyChart(currentUser.logs || []);
+      }
+    }
+    function syncThemeUI() {
+      const txt = document.getElementById('theme-status-text');
+      if(txt) txt.innerText = currentTheme === 'dark' ? '🌙 Chế độ tối' : '☀️ Chế độ sáng';
+    }
+
+    // TỐI ƯU PHƯƠNG PHÁP HỌC & MỨC ĐỘ TẬP TRUNG (SUGGESTION SYSTEM)
+    function generateSmartSuggestion(method, focusLevel, minutesPlanned) {
+      if(currentLang === 'vi') {
+        let text = `💡 <strong>Tư vấn tối ưu:</strong> Bạn đang chọn phương pháp <strong>${method}</strong> với mức độ tập trung kỳ vọng là <strong>${focusLevel}/10</strong>. `;
+        if (method === "Pomodoro" && minutesPlanned != 25) {
+          text += `Chuẩn Pomodoro nên thiết lập chính xác 25 phút. Hệ thống sẽ áp dụng chu kỳ tự động nghỉ 5 phút sau khi kết thúc.`;
+        } else if (focusLevel >= 8) {
+          text += `Mức tập trung rất cao! Hãy chắc chắn tắt hết thông báo mạng xã hội. Kỹ thuật ${method} sẽ đạt hiệu suất tối đa.`;
+        } else {
+          text += `Để nâng cấp từ ${focusLevel}/10 lên mức cao hơn, hãy bật nhạc nền nền tần số alpha hoặc Lo-fi ngay bên dưới.`;
+        }
+        return text;
+      } else {
+        let text = `💡 <strong>Dynamic Optimization:</strong> You selected <strong>${method}</strong> framework with focus index <strong>${focusLevel}/10</strong>. `;
+        if (method === "Pomodoro" && minutesPlanned != 25) {
+          text += `Standard Pomodoro is optimized at exactly 25 minutes. Short break (5 min) is recommended.`;
+        } else if (focusLevel >= 8) {
+          text += `High concentration mode. Terminate all cellular notifications to unlock peak cognitive performance.`;
+        } else {
+          text += `To scale focus index beyond ${focusLevel}/10, toggle the binaural alpha wave music stream below.`;
+        }
+        return text;
+      }
+    }
+
+    // LÊN LỊCH THỜI GIAN CỤ THỂ (STUDY CALENDAR LOGIC)
+    const daysOfWeek = ["Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7", "Chủ Nhật"];
+    const daysOfWeekEn = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+    function renderCalendar() {
+      const container = document.getElementById('calendar-grid-container');
+      if(!container) return;
+      container.innerHTML = '';
+
+      let scheduleList = (currentUser && currentUser.schedules) ? currentUser.schedules : [];
+
+      daysOfWeek.forEach((day, index) => {
+        const col = document.createElement('div');
+        col.className = 'calendar-day-col';
+        
+        const title = document.createElement('div');
+        title.className = 'day-title';
+        title.innerText = currentLang === 'vi' ? day : daysOfWeekEn[index];
+        col.appendChild(title);
+
+        // Lọc các công việc thuộc thứ này
+        let dayItems = scheduleList.filter(s => s.day === day);
+        // Sắp xếp theo thứ tự thời gian tăng dần
+        dayItems.sort((a,b) => a.time.localeCompare(b.time));
+
+        dayItems.forEach(item => {
+          const sBox = document.createElement('div');
+          sBox.className = 'schedule-item';
+          sBox.innerHTML = `⏰ <strong>${item.time}</strong><span>${item.subject}</span>`;
+          col.appendChild(sBox);
+        });
+
+        container.appendChild(col);
+      });
+    }
+
+    function handleSaveSchedule() {
+      if(!isLoggedIn) return;
+      const day = document.getElementById('sched-day').value;
+      const time = document.getElementById('sched-time').value;
+      const subject = document.getElementById('sched-subject').value.trim();
+
+      if(!time || !subject) {
+        alert(langData[currentLang].alert_valid);
+        return;
+      }
+
+      if(!currentUser.schedules) currentUser.schedules = [];
+      currentUser.schedules.push({ day, time, subject });
+      
+      updateUserInDatabase();
+      saveState();
+      renderCalendar();
+
+      document.getElementById('sched-subject').value = '';
+      alert(langData[currentLang].alert_sched);
+    }
+
+    // CORE TIMER CONTROLS
+    function triggerManualStart() {
+      const subject = document.getElementById('study-subject').value.trim();
+      const durationInput = document.getElementById('study-duration').value;
+      const focus = document.getElementById('study-focus').value;
+      const method = document.getElementById('study-method').value;
+
+      if (!subject || !durationInput || durationInput <= 0) {
+        alert(langData[currentLang].alert_valid);
+        return;
+      }
+
+      totalSecondsLeft = parseInt(durationInput) * 60;
+      initialSecondsPlanned = totalSecondsLeft;
+      
+      // Tạo gợi ý thông minh
+      document.getElementById('timer-suggestion-box').innerHTML = generateSmartSuggestion(method, focus, durationInput);
+
+      renderTimerDisplay(totalSecondsLeft);
+      document.getElementById('study-form-box').style.display = 'none';
+      document.getElementById('page-study-title').style.display = 'none';
+      document.getElementById('timer-box').style.display = 'block';
+
+document.getElementById('timer-subject-name').innerText = subject;
+
+resetMusicPlayerUI();
+
+const audio = document.getElementById('study-audio-element');
+audio.volume = 1;
+
+audio.play().then(() => {
+    document.getElementById('btn-music-toggle').innerText = "⏸️ Pause";
+}).catch(err => {
+    console.log("Autoplay blocked:", err);
+});
+
+document.body.classList.add('focus-active');
+
+startCountdown();
+    }
+
+    function renderTimerDisplay(secs) {
+      let hrs = Math.floor(secs / 3600);
+      let mins = Math.floor((secs % 3600) / 60);
+      let remainingSecs = secs % 60;
+      document.getElementById('timer-val').innerText = 
+        `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${remainingSecs.toString().padStart(2, '0')}`;
+    }
+
+    function startCountdown() {
+      if (isTimerRunning || totalSecondsLeft <= 0) return;
+      isTimerRunning = true;
+      document.getElementById('btn-timer-start').style.display = 'none';
+      document.getElementById('btn-timer-pause').style.display = 'inline-block';
+      countdownInterval = setInterval(() => {
+        totalSecondsLeft--;
+        renderTimerDisplay(totalSecondsLeft);
+        if (totalSecondsLeft <= 0) { stopCountdown(true); }
+      }, 1000);
+    }
+
+    function pauseCountdown() {
+      isTimerRunning = false;
+      clearInterval(countdownInterval);
+      document.getElementById('btn-timer-start').style.display = 'inline-block';
+      document.getElementById('btn-timer-pause').style.display = 'none';
+    }
+
+    function stopCountdown(isFinishedNaturally = false) {
+      clearInterval(countdownInterval);
+      isTimerRunning = false;
+      document.body.classList.remove('focus-active');
+      resetMusicPlayerUI();
+
+      let secondsStudied = initialSecondsPlanned - totalSecondsLeft;
+      let minutesStudied = Math.floor(secondsStudied / 60);
+      if (secondsStudied % 60 >= 30) minutesStudied += 1; 
+      if (secondsStudied > 0 && minutesStudied === 0) minutesStudied = 1;
+
+      let minutesPlanned = Math.floor(initialSecondsPlanned / 60);
+      const subject = document.getElementById('study-subject').value.trim();
+      const focus = document.getElementById('study-focus').value;
+      const method = document.getElementById('study-method').value;
+      const note = document.getElementById('study-note').value.trim();
+
+      if (secondsStudied > 0 && subject) {
+        let today = new Date().toLocaleDateString('vi-VN');
+        let newLog = { subject, duration: minutesStudied, plannedDuration: minutesPlanned, focus, method, note, date: today };
+        if (!currentUser.logs) currentUser.logs = [];
+        currentUser.logs.unshift(newLog);
+
+        updateStreakLogic();
+        updateUserInDatabase();
+        saveState();
+        
+        if (isFinishedNaturally) {
+          confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
+        }
+      }
+
+      document.getElementById('study-subject').value = '';
+      document.getElementById('study-note').value = '';
+      document.getElementById('timer-box').style.display = 'none';
+      document.getElementById('page-study-title').style.display = 'block';
+      document.getElementById('study-form-box').style.display = 'grid';
+      navigateTo('dashboard');
+    }
+
+    // AUDIO MANAGEMENT
+    function toggleStudyMusic() {
+      const audio = document.getElementById('study-audio-element');
+      const btn = document.getElementById('btn-music-toggle');
+      if (audio.paused) {
+        audio.play().then(() => { btn.innerText = "⏸️ Pause"; }).catch(err => console.log(err));
+      } else {
+        audio.pause();
+        btn.innerText = "▶️ Play";
+      }
+    }
+    function changeMusicVolume(val) {
+      document.getElementById('study-audio-element').volume = val;
+    }
+    function resetMusicPlayerUI() {
+      const audio = document.getElementById('study-audio-element');
+      if (audio) { audio.pause(); audio.currentTime = 0; }
+      document.getElementById('btn-music-toggle').innerText = "▶️ Play";
+    }
+
+    // SYNCING PROFILE AND DATA STACK
+    function syncCardRealtime() {
+      const nameVal = document.getElementById('profile-name').value.trim();
+      const classVal = document.getElementById('profile-class').value.trim();
+      const majorVal = document.getElementById('profile-major').value.trim();
+      document.getElementById('card-display-name').innerText = nameVal || "STUDENT NAME";
+      document.getElementById('card-display-class').innerText = classVal || "...";
+      document.getElementById('card-display-major').innerText = majorVal || "...";
+    }
+
+    function handleAvatarChange(input) {
+      const file = input.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        if (!currentUser.profile) currentUser.profile = {};
+        currentUser.profile.avatarData = e.target.result;
+        renderAvatarUI(e.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function renderAvatarUI(imgData) {
+      const zoneHeader = document.getElementById('profile-avatar-zone');
+      const zoneCard = document.getElementById('card-avatar-zone');
+      if (imgData) {
+        if(zoneHeader) zoneHeader.innerHTML = `<img src="${imgData}" alt="Avatar">`;
+        if(zoneCard) zoneCard.innerHTML = `<img src="${imgData}" alt="Avatar">`;
+      } else {
+        if(zoneHeader) zoneHeader.innerHTML = `<span>👨‍🎓</span>`;
+        if(zoneCard) zoneCard.innerHTML = `<span>👨‍💻</span>`;
+      }
+    }
+
+    function handleSaveProfile() {
+      if(!currentUser) return;
+      currentUser.name = document.getElementById('profile-name').value.trim();
+      if(!currentUser.profile) currentUser.profile = {};
+      currentUser.profile.class = document.getElementById('profile-class').value.trim();
+      currentUser.profile.major = document.getElementById('profile-major').value.trim();
+      currentUser.profile.goal = document.getElementById('profile-goal').value.trim();
+      updateUserInDatabase(); saveState(); alert(langData[currentLang].alert_profile); navigateTo('dashboard');
+    }
+
+    // STREAK & DATA ANALYTICS GRAPH
+    function updateStreakLogic() {
+      if (!currentUser.logs || currentUser.logs.length === 0) { currentUser.streak = 0; return; }
+      const parseDateString = (str) => {
+        const parts = str.split('/');
+        return new Date(parts[2], parts[1] - 1, parts[0]);
+      };
+      let uniqueDates = [...new Set(currentUser.logs.map(log => log.date))]
+        .map(dStr => parseDateString(dStr)).sort((a, b) => b - a);
+      if (uniqueDates.length === 0) { currentUser.streak = 0; return; }
+      
+      let today = new Date(); today.setHours(0,0,0,0);
+      let mostRecentStudyDate = uniqueDates[0]; mostRecentStudyDate.setHours(0,0,0,0);
+      let diffDays = Math.floor((today - mostRecentStudyDate) / (1000 * 60 * 60 * 24));
+
+      if (diffDays > 1) { currentUser.streak = 0; return; }
+      let currentStreakCount = 1;
+      for (let i = 0; i < uniqueDates.length - 1; i++) {
+        let d1 = new Date(uniqueDates[i]); let d2 = new Date(uniqueDates[i+1]);
+        d1.setHours(0,0,0,0); d2.setHours(0,0,0,0);
+        let gap = Math.floor((d1 - d2) / (1000 * 60 * 60 * 24));
+        if (gap === 1) currentStreakCount++; else if (gap > 1) break;
+      }
+      currentUser.streak = currentStreakCount;
+    }
+
+    function updateBadgeUI(logs) {
+      let totalMinutes = logs.reduce((sum, item) => sum + item.duration, 0);
+      let totalHours = totalMinutes / 60;
+      let totalSessions = logs.length;
+      if (document.getElementById('badge-1')) {
+        if (totalSessions >= 1) document.getElementById('badge-1').classList.add('unlocked');
+        else document.getElementById('badge-1').classList.remove('unlocked');
+      }
+      if (document.getElementById('badge-2')) {
+        if (totalHours >= 5) document.getElementById('badge-2').classList.add('unlocked');
+        else document.getElementById('badge-2').classList.remove('unlocked');
+      }
+      if (document.getElementById('badge-3')) {
+        if (totalHours >= 20) document.getElementById('badge-3').classList.add('unlocked');
+        else document.getElementById('badge-3').classList.remove('unlocked');
+      }
+    }
+
+    function initOrUpdateWeeklyChart(logs) {
+      const canvasEl = document.getElementById('weeklyStudyChart');
+      if (!canvasEl) return;
+      const ctx = canvasEl.getContext('2d');
+      let labels = []; let dailyData = {};
+      for(let i = 6; i >= 0; i--) {
+        let d = new Date(); d.setDate(d.getDate() - i);
+        let dateString = d.toLocaleDateString('vi-VN');
+        labels.push(dateString); dailyData[dateString] = 0;
+      }
+      logs.forEach(log => { if (dailyData[log.date] !== undefined) dailyData[log.date] += parseInt(log.duration || 0); });
+      let dataValues = labels.map(date => dailyData[date]);
+      if (myChartInstance) { myChartInstance.destroy(); }
+
+      let labelTextColor = currentTheme === 'dark' ? '#cbd5e1' : '#0d6e68';
+      let gridColor = currentTheme === 'dark' ? 'rgba(30, 41, 59, 0.5)' : 'rgba(21, 146, 138, 0.15)';
+      myChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: langData[currentLang].chart_dataset_lbl,
+            data: dataValues,
+            backgroundColor: currentTheme === 'dark' ? 'rgba(59, 130, 246, 0.65)' : 'rgba(21, 146, 138, 0.75)',
+            borderColor: currentTheme === 'dark' ? 'rgba(59, 130, 246, 1)' : '#15928A',
+            borderWidth: 2, borderRadius: 8, barThickness: 25
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { labels: { color: labelTextColor } } },
+          scales: {
+            y: { beginAtZero: true, grid: { color: gridColor }, ticks: { color: labelTextColor } },
+            x: { ticks: { color: labelTextColor } }
+          }
+        }
+      });
+    }
+
+    // IDENTITY ACCOUNT MANAGEMENT
+    function handleRegister() {
+      const name = document.getElementById('register-name').value.trim();
+      const email = document.getElementById('register-email').value.trim();
+      const pass = document.getElementById('register-password').value;
+      if (!name || !email || pass.length < 6) return;
+
+      let newUser = { name, email, pass, logs: [], streak: 0, schedules: [], profile: { class: '', major: '', goal: '', avatarData: '' } };
+      userDatabase.push(newUser);
+      localStorage.setItem('track_userDatabase', JSON.stringify(userDatabase));
+      isLoggedIn = true; currentUser = newUser; saveState(); navigateTo('dashboard');
+    }
+
+    function handleLogin() {
+      const email = document.getElementById('login-email').value.trim();
+      const pass = document.getElementById('login-password').value;
+      const accountFound = userDatabase.find(u => u.email.toLowerCase() === email.toLowerCase() && u.pass === pass);
+      if (accountFound) {
+        isLoggedIn = true; currentUser = accountFound; saveState(); navigateTo('dashboard');
+      } else {
+        document.getElementById('login-error').style.display = 'block';
+      }
+    }
+
+    function handleLogout() {
+      clearInterval(countdownInterval); isTimerRunning = false;
+      resetMusicPlayerUI(); document.body.classList.remove('focus-active');
+      isLoggedIn = false; currentUser = null; saveState(); navigateTo('login');
+    }
+
+    function updateUserInDatabase() {
+      let idx = userDatabase.findIndex(u => u.email.toLowerCase() === currentUser.email.toLowerCase());
+      if (idx !== -1) userDatabase[idx] = currentUser;
+      localStorage.setItem('track_userDatabase', JSON.stringify(userDatabase));
+    }
+    function saveState() {
+      localStorage.setItem('track_isLoggedIn', isLoggedIn);
+      localStorage.setItem('track_currentUser', JSON.stringify(currentUser));
+    }
+
+    function updateUIAndDashboard() {
+      if (!currentUser) return;
+      document.getElementById('user-greeting').innerHTML = `${langData[currentLang].welcome}, ${currentUser.name} 👋 <button class="logout-btn" onclick="handleLogout()">${langData[currentLang].logout}</button>`;
+      document.getElementById('meta-display-name').innerText = currentUser.name;
+      document.getElementById('meta-display-email').innerText = currentUser.email;
+      document.getElementById('profile-email').value = currentUser.email;
+
+      if(currentUser.profile) {
+        document.getElementById('profile-class').value = currentUser.profile.class || "";
+        document.getElementById('profile-major').value = currentUser.profile.major || "";
+        document.getElementById('profile-goal').value = currentUser.profile.goal || "";
+        renderAvatarUI(currentUser.profile.avatarData || '');
+      }
+      syncCardRealtime();
+
+      let logs = currentUser.logs || [];
+      let totalMinutes = logs.reduce((sum, item) => sum + item.duration, 0);
+      document.getElementById('dash-hours').innerText = `${(totalMinutes / 60).toFixed(1)}h`;
+      document.getElementById('dash-streak').innerText = `${currentUser.streak || 0} ${currentLang === 'vi' ? 'ngày' : 'days'}`;
+      document.getElementById('dash-sessions').innerText = logs.length;
+
+      const historyList = document.getElementById('history-list');
+      if (logs.length === 0) {
+        historyList.innerHTML = `<div class="no-data">${langData[currentLang].no_hist}</div>`;
+      } else {
+        historyList.innerHTML = logs.map(item => `
+          <div class="history-item">
+            <h3>${currentLang === 'vi' ? 'Môn' : 'Subject'}: ${item.subject}</h3>
+            <p><strong>${currentLang === 'vi' ? 'Thời gian thực học' : 'Actual Time'}: ${item.duration} ${currentLang === 'vi' ? 'phút' : 'mins'}</strong></p>
+            <p>${currentLang === 'vi' ? 'Phương pháp' : 'Framework'}: ${item.method} | Focus: ${item.focus}/10</p>
+            <p style="font-size:12px; font-style:italic;">Note: ${item.note || '...'}</p>
+          </div>
+        `).join('');
+      }
+      initOrUpdateWeeklyChart(logs);
+      updateBadgeUI(logs);
+      renderCalendar();
+    }
+
+    function navigateTo(pageId) { window.location.hash = pageId; window.scrollTo(0,0); }
+    function toggleAuthForm(type) {
+      document.getElementById('auth-login-box').style.display = type === 'login' ? 'block' : 'none';
+      document.getElementById('auth-register-box').style.display = type === 'register' ? 'block' : 'none';
+    }
+
+    function renderSection() {
+      let page = window.location.hash.replace('#', '') || 'dashboard';
+      const loginMenuTab = document.getElementById('nav-login');
+      if (isLoggedIn) {
+        if (loginMenuTab) loginMenuTab.style.display = 'none'; 
+        if (page === 'login') { page = 'dashboard'; window.location.hash = 'dashboard'; }
+      } else {
+        if (loginMenuTab) loginMenuTab.style.display = 'block'; 
+        page = 'login'; window.location.hash = 'login';
+      }
+      
+      document.querySelectorAll('.content-section').forEach(sec => sec.style.display = 'none');
+      document.querySelectorAll('.menu li').forEach(li => li.classList.remove('active'));
+      
+      const targetSec = document.getElementById(`${page}-section`);
+      if (targetSec) targetSec.style.display = 'block';
+      const activeM = document.getElementById(`nav-${page}`);
+      if (activeM) activeM.classList.add('active');
+      
+      if (isLoggedIn) {
+        updateStreakLogic();
+        updateUIAndDashboard();
+      }
+    }
+
+    window.addEventListener('hashchange', renderSection);
+    window.addEventListener('DOMContentLoaded', () => {
+      syncThemeUI();
+      applyLanguagePack();
+      if (isLoggedIn && currentUser) {
+        document.getElementById('profile-name').value = currentUser.name || '';
+      }
+      renderSection();
+    });
+  </script>
+</body>
+</html>
