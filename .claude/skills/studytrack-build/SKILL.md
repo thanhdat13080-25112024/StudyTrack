@@ -62,6 +62,13 @@ Confirm the branch state: you must be on a fresh work branch off `main`, never o
 - **Push/PR is user-gated:** commit locally, then ask the user before `git push` / opening a PR (unless they say otherwise for the session).
 - Every commit message you author ends with the `Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>` footer.
 
+## Checkpoint discipline (resumability — don't lose work to limits)
+Long multi-wave work risks hitting a usage/context limit mid-flight. To make any session resumable with zero re-derivation, **checkpoint proactively** — don't wait until "near limit":
+- Maintain a single progress memory (`studytrack-phase<N>-progress`) and **refresh it at every milestone**: after each wave/agent batch completes, before any long or risky operation, and whenever context feels heavy. Record: branch state (committed vs uncommitted), what's on disk, what's verified, known blockers (with exact fix), and an ordered **NEXT ACTIONS** list.
+- When the working tree is in a consistent state, **commit a WIP checkpoint** on the feature branch (normal message, e.g. `wip: phase N <area>`) so code can't be lost; squash later before merge.
+- Capture finished subagents' key outputs (contracts, file lists, blockers) into the memory immediately — background agents' reports are lost when the session ends.
+- **On resume:** read the progress memory FIRST, re-confirm the working tree (`git status`), then continue from NEXT ACTIONS. Trigger: "tiếp tục/bắt đầu lại phase N".
+
 ## Phase map (which agents, what to build)
 - **Phase 0 — Scaffold + rails:** `devops-engineer` (lead: monorepo dirs, **`.gitignore` (clean repo — no `node_modules`/`__pycache__`/`.env`/build artifacts/`_workspace/`)**, docker-compose dev, Makefile, pre-commit, ci.yml, deploy.yml + deploy/ nginx/certbot, .env.example, gen-types, branch-protection doc, pg_dump cron doc) + `backend-engineer` (FastAPI skeleton + `core/` + Alembic init + `/api/health` + seed stub) + `frontend-engineer` (Vite+React+TS+Tailwind+shadcn init + token port from legacy + i18n bootstrap) + move legacy `index.html`/`main.*`/`dom.mp3` into `legacy/`. `qa-integrator` confirms `make dev`/`make test`/`alembic upgrade head` run and the skeleton boots. `docs-keeper` initializes `README.md`. *No brainstorming step.*
 - **Phase 1 — Auth + user:** backend (JWT+argon2, User/Profile, auth+profile routers, tests) + frontend (Auth pages, profile + virtual student-ID, i18n+theme wired) + qa + docs.
