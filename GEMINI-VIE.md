@@ -3,6 +3,8 @@
 Chào mừng bạn đến với StudyTrack, một ứng dụng web quản lý thói quen học tập. Dự án này sử dụng kiến trúc "Thành phần tệp đơn" (Single-file Component), trong đó giao diện (UI), định dạng (styling) và logic xử lý chủ yếu nằm trong tệp `index.html`.
 
 > **Lưu ý — dự án đang hoạt động nằm ở đâu:** phần tài liệu single-file chi tiết bên dưới giờ mô tả **app cũ trong `legacy/`** (`legacy/index.html`), giữ lại để tham khảo. Dự án đang hoạt động là **monorepo full-stack** (`backend/` FastAPI + Postgres, `frontend/` React/Vite, `deploy/`). Để xem kiến trúc hiện tại, lệnh chạy và quy trình Git/deploy, hãy bắt đầu từ `README.md` ở thư mục gốc, mục `## Harness: StudyTrack refactor` trong `CLAUDE.md`, và `make dev` / `make help`. Hướng dẫn single-file bên dưới vẫn đúng cho `legacy/` nhưng không mô tả stack mới.
+>
+> **Tiến độ:** Phase 0 (scaffold) và **Phase 1 (auth + nền user: JWT+argon2, User/Profile, thẻ SV ảo, đồng bộ `lang`/`theme` qua server)** đã hoàn thành. Chi tiết kiến trúc auth as-built: xem `README.md` (mục "Xác thực & API") và `CLAUDE.md` (mục "Active stack — Phase 1").
 
 ## Tổng quan Dự án
 

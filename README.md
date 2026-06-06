@@ -50,6 +50,26 @@ make dev
 - OpenAPI: `http://localhost:8000/openapi.json` · Swagger UI: `http://localhost:8000/docs`
 - DB browser tùy chọn (Adminer): `docker compose --profile tools up -d` → `http://localhost:8080`
 
+## Xác thực & API (Phase 1)
+
+Phase 1 thêm lớp đăng ký/đăng nhập thật (thay auth plaintext của bản cũ) và nền hồ sơ người dùng:
+
+- **Mật khẩu** băm bằng **argon2**; phiên đăng nhập dùng **JWT access token** (mặc định 24h, ký bằng `JWT_SECRET`).
+- **Token lưu ở frontend trong `localStorage`** (khóa `track_token`) và gửi kèm header `Authorization: Bearer <token>`; gặp 401 thì tự xóa token và quay về `/login`.
+- **Ngôn ngữ & giao diện** (`lang`/`theme`) lưu trên `User` ở server, nạp lại khi đăng nhập (đồng bộ đa thiết bị); `localStorage` là mặc định khi chưa đăng nhập.
+
+| Method | Endpoint | Mô tả |
+|--------|----------|-------|
+| `POST` | `/api/auth/register` | Đăng ký `{email, password, name}` → trả `Token` (tự đăng nhập) |
+| `POST` | `/api/auth/login` | Đăng nhập **form-urlencoded** (`username`=email, `password`) → `Token` (tương thích nút Authorize của Swagger) |
+| `GET` | `/api/auth/me` | Thông tin user + profile hiện tại (cần Bearer) |
+| `PATCH` | `/api/auth/me` | Cập nhật `{name?, lang?, theme?}` |
+| `GET` / `PUT` | `/api/profile` | Đọc / cập nhật hồ sơ (lớp, khoa, ngành, mục tiêu, avatar base64) |
+
+**Tài khoản demo** (sau khi chạy `make seed`): `demo@studytrack.app` / `studytrack`.
+
+> Ghi chú: avatar lưu dạng **base64 data-URI** trong cột `profiles.avatar_url` (giới hạn ~500KB). Trường lớp trong API tên là `class_name` (vì `class` là từ khóa Python). Bảng `profiles` đã tạo sẵn các cột học vụ (`target_cpa`, `total_credits_required`, `expected_graduation`) nhưng để trống tới Phase 3.
+
 ## Lệnh thường dùng
 
 Tất cả lệnh chuẩn hóa qua `Makefile` (chạy `make help` để xem danh sách):
@@ -98,7 +118,7 @@ Khai báo trong `.env` (copy từ `.env.example`). `.env` bị git-ignore và b�
 | Phase | Nội dung | Trạng thái |
 |-------|----------|------------|
 | **0** | Scaffold + đường ray workflow: monorepo, docker-compose dev, FastAPI skeleton + `/api/health` + Alembic, Vite+React+Tailwind+shadcn + i18n vi/en + theme, lint/pre-commit, CI/deploy Actions, OpenAPI→TS, seed, Makefile, .env.example, `legacy/` | ✅ Hoàn thành |
-| **1** | Auth + nền user: JWT + argon2, User/Profile, i18n + theme, hồ sơ + thẻ SV | ⏳ |
+| **1** | Auth + nền user: JWT + argon2, User/Profile, i18n + theme, hồ sơ + thẻ SV ảo | ✅ Hoàn thành |
 | **2** | Port thói quen học: focus timer + StudySession, history, streak, lịch tuần, dashboard KPI + biểu đồ 7 ngày (Recharts), badges | ⏳ |
 | **3** | Học vụ lõi: Course/Semester/Grade, GPA/CPA engine + xếp loại + tiến độ tín chỉ, what-if GPA & học bổng | ⏳ |
 | **4** | CTĐT & lộ trình: Prerequisite/CTĐT, roadmap engine, direction analysis, liên kết phiên học↔môn, cảnh báo môn yếu | ⏳ |

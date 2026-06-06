@@ -16,6 +16,26 @@ StudyTrack is a single-page study-habit manager (Pomodoro timer, dashboard, week
 | Date | Change | Target | Reason |
 |------|--------|--------|--------|
 | 2026-06-06 | Initial harness (5 agents + 5 domain skills + orchestrator) | all | Phase 0 of the refactor |
+| 2026-06-06 | Phase 1 shipped (auth + user foundation) | backend/, frontend/ | see "Active stack — Phase 1" below |
+
+### Active stack — Phase 1 (Auth + User) as built
+
+> This describes the **new monorepo** (`backend/`, `frontend/`), not the legacy app documented below.
+
+**Auth model (decided + built):**
+- Passwords hashed with **argon2** (`app/core/security.py`); login issues a **JWT bearer access token** (24h, `JWT_SECRET`). No refresh token yet (YAGNI).
+- `app/core/deps.py::get_current_user` is now **real** (decodes the JWT, loads the `User`); the Phase 0 stub is gone.
+- **Login endpoint takes form-urlencoded** (`OAuth2PasswordRequestForm`: `username`=email, `password`) so Swagger "Authorize" works; everything else is JSON.
+- Frontend stores the token in **`localStorage` key `track_token`**, attaches `Authorization: Bearer …` (`frontend/src/lib/apiClient.ts`), and on a 401 clears it + redirects to `/login`.
+- **`User.lang`/`User.theme` are server-persisted** and hydrated on login (`useMe` in `frontend/src/features/auth/hooks.ts` applies them); `localStorage` is the pre-login default.
+
+**Data model (`backend/app/models/`):** `User` (table `users`: id, email unique, password_hash, name, lang=`vi`, theme=`dark`, created_at) 1–1 `Profile` (table `profiles`: identity `class_name`/`faculty`/`major`/`goal`/`avatar_url`; academic `target_cpa`/`total_credits_required`/`expected_graduation` are nullable, **created now but unused until Phase 3**). **Naming:** the plan's `class` column is `class_name` everywhere (`class` is a Python keyword). Avatar is a **base64 data-URI** in `avatar_url` (cap ~500KB). Migration: `backend/alembic/versions/0001_user_profile.py`.
+
+**Endpoints:** `POST /api/auth/register` (→Token, auto-login), `POST /api/auth/login` (form→Token), `GET /api/auth/me` (→`MeOut`=user+profile), `PATCH /api/auth/me` (name/lang/theme), `GET|PUT /api/profile`. Routers in `backend/app/api/{auth,profile}.py`, mounted in `app/main.py`.
+
+**Frontend wiring:** routes `/login` `/register` (shared `components/auth/AuthForm.tsx`, RHF+zod), guarded `/dashboard` `/profile` via `components/auth/RequireAuth.tsx`; `store/authStore.ts` (Zustand) holds token+user; `components/StudentIdCard.tsx` is the virtual ID (gradient via `bg-id-card` token, name uppercased in JS). Server types come from `make gen-types` → `frontend/src/lib/api-types.ts` (do not hand-edit; the target now prettier-formats it).
+
+**Tests:** backend pytest uses **SQLite in-memory** via `tests/conftest.py` (`get_db` override) — no Postgres needed for `make test`; CI `migrate-check` covers Postgres. Demo login after `make seed`: `demo@studytrack.app` / `studytrack`.
 
 ## Running
 
