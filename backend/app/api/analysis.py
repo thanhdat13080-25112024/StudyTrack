@@ -62,17 +62,21 @@ def weak_subjects(
                 return False
         return True
 
+    # Only evaluate courses that have a grade row (taken / in_progress / failed /
+    # exempt). A course with no grade is not yet enrolled, so it can't be
+    # "under-studied" or weak — skip it (the roadmap/direction layers cover it).
     rows = []
-    for cid, c in courses.items():
-        g = latest.get(cid)
-        status = g.status if g else "in_progress"
+    for cid, g in latest.items():
+        c = courses.get(cid)
+        if c is None:
+            continue
         rows.append(
             weak_subject.WeakInput(
                 course_id=cid,
                 code=c.code,
                 name=c.name,
                 credits=c.credits,
-                status=status,
+                status=g.status,
                 grade_4=_grade4(g),
                 linked_minutes=minutes.get(cid, 0),
                 prereq_satisfied=prereq_ok(cid),

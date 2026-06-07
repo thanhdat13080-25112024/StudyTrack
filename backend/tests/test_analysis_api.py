@@ -43,6 +43,14 @@ def test_weak_subjects_flags_failed_course(client):
     assert any(w["course_id"] == c and w["priority"] == "red" for w in out)
 
 
+def test_untaken_course_not_flagged_weak(client):
+    # A course with no grade row is not yet enrolled -> must not appear as weak.
+    h = _auth(client, "ut@x.io")
+    _course(client, h, "FUTURE")
+    out = client.get("/api/analysis/weak-subjects", headers=h).json()
+    assert out == []
+
+
 def test_direction_strongest_category(client):
     h = _auth(client)
     s = _sem(client, h, "2024-1")
