@@ -3,8 +3,14 @@ from app.services.weak_subject import WeakInput, detect_weak_subjects
 
 def _w(cid=1, status="in_progress", grade_4=None, credits=3, minutes=0, prereq_ok=True):
     return WeakInput(
-        course_id=cid, code=f"C{cid}", name=f"C{cid}", credits=credits,
-        status=status, grade_4=grade_4, linked_minutes=minutes, prereq_satisfied=prereq_ok,
+        course_id=cid,
+        code=f"C{cid}",
+        name=f"C{cid}",
+        credits=credits,
+        status=status,
+        grade_4=grade_4,
+        linked_minutes=minutes,
+        prereq_satisfied=prereq_ok,
     )
 
 
