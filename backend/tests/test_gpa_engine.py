@@ -103,3 +103,47 @@ def test_gpa_summary_shape():
     assert out["classification"] == classify(out["cpa"])
     assert [s["code"] for s in out["semesters"]] == ["2024-1", "2024-2"]
     assert out["credits"]["earned"] == 6
+
+
+from app.services.gpa_engine import goal_seek, project  # noqa: E402
+
+
+def test_goal_seek_required_avg():
+    # current 3.0 over 90 cr, target 3.3 over 140 cr → need on remaining 50
+    out = goal_seek(current_cpa=3.0, completed_credits=90, target_cpa=3.3, total_required=140)
+    assert out["remaining_credits"] == 50
+    assert out["required_avg"] == round((3.3 * 140 - 3.0 * 90) / 50, 2)  # 3.84
+    assert out["feasible"] is True
+    assert out["already_met"] is False
+    assert out["target_tier"] == "gioi"
+
+
+def test_goal_seek_infeasible():
+    out = goal_seek(current_cpa=2.0, completed_credits=120, target_cpa=3.9, total_required=140)
+    assert out["feasible"] is False  # required_avg > 4.0
+    assert out["max_reachable_cpa"] == round((2.0 * 120 + 4.0 * 20) / 140, 2)
+
+
+def test_goal_seek_already_met():
+    out = goal_seek(current_cpa=3.6, completed_credits=100, target_cpa=3.2, total_required=140)
+    assert out["already_met"] is True  # required_avg <= 0
+
+
+def test_goal_seek_no_remaining_credits():
+    out = goal_seek(current_cpa=3.1, completed_credits=140, target_cpa=3.2, total_required=140)
+    assert out["remaining_credits"] == 0
+    assert out["required_avg"] is None
+    assert out["feasible"] is False  # 3.1 < 3.2 and nothing left to change
+
+
+def test_project():
+    out = project(current_cpa=3.0, completed_credits=90, hypotheticals=[
+        {"credits": 3, "grade_10": 8.0}, {"credits": 4, "grade_10": 7.0},
+    ])  # +3.5*3 + 3.0*4 over 90+7
+    assert out["projected_cpa"] == round((3.0 * 90 + 3.5 * 3 + 3.0 * 4) / 97, 2)
+    assert out["projected_tier"] == classify(out["projected_cpa"])
+
+
+def test_project_empty_base():
+    out = project(current_cpa=0.0, completed_credits=0, hypotheticals=[{"credits": 3, "grade_10": 9.0}])
+    assert out["projected_cpa"] == 4.0

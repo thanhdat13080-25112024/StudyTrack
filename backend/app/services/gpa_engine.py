@@ -154,3 +154,41 @@ def gpa_summary(rows: list[GradeRow], total_required: int | None,
         "credits": credit_progress(rows, total_required),
         "semesters": semesters,
     }
+
+
+def goal_seek(current_cpa: float, completed_credits: int, target_cpa: float,
+              total_required: int | None, scale: GradeScale = DEFAULT_SCALE) -> dict:
+    """completed_credits = the CPA denominator (graded credits so far). v1 does
+    not subtract exempt credits from `remaining` — documented simplification."""
+    remaining = max(0, (total_required or 0) - completed_credits)
+    target_tier = classify(target_cpa, scale)
+    if remaining == 0:
+        met = current_cpa >= target_cpa
+        return {
+            "required_avg": None,
+            "feasible": met,
+            "already_met": met,
+            "max_reachable_cpa": round(current_cpa, 2),
+            "remaining_credits": 0,
+            "target_tier": target_tier,
+        }
+    total = completed_credits + remaining
+    required_avg = (target_cpa * total - current_cpa * completed_credits) / remaining
+    max_reachable = (current_cpa * completed_credits + 4.0 * remaining) / total
+    return {
+        "required_avg": round(required_avg, 2),
+        "feasible": required_avg <= 4.0,
+        "already_met": current_cpa >= target_cpa,
+        "max_reachable_cpa": round(max_reachable, 2),
+        "remaining_credits": remaining,
+        "target_tier": target_tier,
+    }
+
+
+def project(current_cpa: float, completed_credits: int,
+            hypotheticals: list[dict], scale: GradeScale = DEFAULT_SCALE) -> dict:
+    add_qp = sum(grade_to_grade4(h["grade_10"], scale) * h["credits"] for h in hypotheticals)
+    add_cr = sum(h["credits"] for h in hypotheticals)
+    denom = completed_credits + add_cr
+    projected = (current_cpa * completed_credits + add_qp) / denom if denom else 0.0
+    return {"projected_cpa": round(projected, 2), "projected_tier": classify(projected, scale)}
