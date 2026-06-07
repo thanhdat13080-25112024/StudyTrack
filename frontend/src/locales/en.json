@@ -124,6 +124,76 @@
       "elective": "Elective"
     }
   },
+  "grades": {
+    "title": "Grades & GPA",
+    "allSemesters": "All semesters",
+    "semesterLabel": "Semester",
+    "manageSemesters": "Manage semesters",
+    "addGradeTitle": "Record a grade",
+    "courseLabel": "Course",
+    "selectCourse": "Select course",
+    "selectSemester": "Select semester",
+    "gradeLabel": "Grade (0–10)",
+    "statusLabel": "Status",
+    "preview": "Converts to",
+    "add": "Save grade",
+    "save": "Save changes",
+    "cancel": "Cancel",
+    "edit": "Edit grade",
+    "delete": "Delete grade",
+    "deleteConfirm": "Delete this grade?",
+    "empty": "No grades for this selection yet.",
+    "noCourses": "Add courses on the Courses page first.",
+    "noSemesters": "Create a semester before recording grades.",
+    "colCourse": "Course",
+    "colSemester": "Semester",
+    "colGrade": "Grade",
+    "colLetter": "Letter",
+    "colGrade4": "4.0",
+    "colStatus": "Status",
+    "status": {
+      "in_progress": "In progress",
+      "passed": "Passed",
+      "failed": "Failed",
+      "exempt": "Exempt"
+    },
+    "sem": {
+      "addTitle": "Add / Edit semester",
+      "code": "Semester code",
+      "codeHint": "e.g. 2024-1",
+      "name": "Name (optional)",
+      "add": "Add semester",
+      "save": "Save",
+      "cancel": "Cancel",
+      "empty": "No semesters yet.",
+      "edit": "Edit semester",
+      "delete": "Delete semester",
+      "deleteConfirm": "Delete this semester? All its grades will be removed.",
+      "close": "Close"
+    }
+  },
+  "gpa": {
+    "title": "Academic Results",
+    "cpa": "Cumulative CPA",
+    "classification": "Classification",
+    "creditsTitle": "Credit Progress",
+    "earned": "Earned",
+    "inProgress": "In progress",
+    "remaining": "Remaining",
+    "required": "Required",
+    "perSemester": "GPA by semester",
+    "noData": "No grade data yet.",
+    "trendTitle": "GPA trend by semester",
+    "cardViewGrades": "View grades",
+    "cardEmpty": "No grades yet — record your first grade.",
+    "tier": {
+      "xuat_sac": "Excellent",
+      "gioi": "Very good",
+      "kha": "Good",
+      "trung_binh": "Average",
+      "yeu": "Weak"
+    }
+  },
   "badges": {
     "title": "🏆 Academic Achievement Badges",
     "first_session": {

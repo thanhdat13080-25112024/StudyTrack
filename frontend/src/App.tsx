@@ -7,6 +7,7 @@ import Focus from '@/pages/Focus';
 import History from '@/pages/History';
 import Schedule from '@/pages/Schedule';
 import Courses from '@/pages/Courses';
+import Grades from '@/pages/Grades';
 import { RequireAuth } from '@/components/auth/RequireAuth';
 import { useAuthStore } from '@/store/authStore';
 import { useMe } from '@/features/auth/hooks';
@@ -37,6 +38,7 @@ export default function App() {
         <Route path="/history" element={<History />} />
         <Route path="/schedule" element={<Schedule />} />
         <Route path="/courses" element={<Courses />} />
+        <Route path="/grades" element={<Grades />} />
         <Route path="/profile" element={<Profile />} />
       </Route>
       <Route
