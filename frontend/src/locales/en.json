@@ -7,17 +7,130 @@
     "dashboard": "Dashboard",
     "profile": "Profile",
     "study": "Study Log",
+    "focus": "Focus",
     "history": "History",
+    "schedule": "Schedule",
     "login": "Login"
   },
   "common": {
     "welcome": "Welcome",
     "logout": "Logout",
     "toggleTheme": "Toggle theme",
-    "toggleLanguage": "Toggle language"
+    "toggleLanguage": "Toggle language",
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "add": "Add",
+    "loading": "Loading...",
+    "minutes": "minutes",
+    "minutesShort": "min",
+    "hours": "hours"
   },
   "dashboard": {
-    "welcomeLine": "Welcome to StudyTrack — start your focused study session."
+    "welcomeLine": "Welcome to StudyTrack — start your focused study session.",
+    "greeting": "Hello, {{name}} 👋",
+    "streak": "{{count}} day streak",
+    "streak_zero": "No streak yet",
+    "kpiToday": "Hours Today",
+    "kpiTotalHours": "Total Hours",
+    "kpiTotalSessions": "Total Sessions",
+    "kpiStreak": "Study Streak",
+    "chartTitle": "Weekly Study Habit Analytics (Past 7 Days)",
+    "recentTitle": "Recent History",
+    "recentEmpty": "No sessions yet. Start your first focus session!",
+    "viewAllHistory": "View all history",
+    "startFocus": "Start Focus",
+    "openSchedule": "Weekly Schedule",
+    "loading": "Loading dashboard..."
+  },
+  "focus": {
+    "title": "Optimize High-Focus Study Plan",
+    "subjectLabel": "Subject",
+    "subjectPlaceholder": "Target Subject",
+    "durationLabel": "Planned Duration (Minutes)",
+    "focusLabel": "Target Focus Level (1 - 10)",
+    "methodLabel": "Learning Framework Method",
+    "noteLabel": "Specific milestones / notes",
+    "start": "Ignite Focus Timer",
+    "pause": "Pause Timer",
+    "resume": "Resume Focus",
+    "stop": "Save & Quit",
+    "heading": "🔥 ULTRA FOCUS SESSION ACTIVATED",
+    "invalid": "Please enter a valid subject and duration!",
+    "music": "Focus Audio",
+    "musicPlay": "Play music",
+    "musicPause": "Pause music",
+    "volume": "Volume"
+  },
+  "history": {
+    "title": "Empirical Focus History Logs",
+    "empty": "No execution data found.",
+    "colSubject": "Subject",
+    "colDate": "Date",
+    "colDuration": "Duration",
+    "colFocus": "Focus",
+    "colMethod": "Method",
+    "colNote": "Note",
+    "delete": "Delete session",
+    "actualOfPlanned": "{{actual}}/{{planned}} min",
+    "focusValue": "{{focus}}/10"
+  },
+  "schedule": {
+    "title": "Weekly Study Calendar Schedule",
+    "empty": "No schedule items yet.",
+    "addTitle": "Schedule Fixed Study Time",
+    "dayLabel": "Select Day of Week",
+    "timeLabel": "Start Time",
+    "subjectLabel": "Subject / Content Topic",
+    "add": "Append to Timetable",
+    "edit": "Edit item",
+    "delete": "Delete item",
+    "save": "Save changes",
+    "cancel": "Cancel",
+    "noItems": "Empty"
+  },
+  "badges": {
+    "title": "🏆 Academic Achievement Badges",
+    "first_session": {
+      "title": "Eager Rookie",
+      "desc": "Logged your first session"
+    },
+    "focused_5h": {
+      "title": "Focus Warrior",
+      "desc": "Accumulated 5 hours of real study"
+    },
+    "master_20h": {
+      "title": "Persistence Master",
+      "desc": "Accumulated 20 hours of real study"
+    }
+  },
+  "suggestions": {
+    "intro": "💡 Dynamic Optimization: You selected the {{method}} framework with focus index {{focus}}/10.",
+    "pomodoro_not_25": "Standard Pomodoro is optimized at exactly 25 minutes. A short break (5 min) is recommended.",
+    "high_focus": "High concentration mode. Terminate all social notifications to unlock peak performance with {{method}}.",
+    "boost_focus": "To scale focus index beyond {{focus}}/10, toggle the alpha-wave or Lo-fi music stream below."
+  },
+  "methods": {
+    "Pomodoro": "Pomodoro (25/5)",
+    "Deep Work": "Deep Work",
+    "Active Recall": "Active Recall"
+  },
+  "days": {
+    "mon": "Monday",
+    "tue": "Tuesday",
+    "wed": "Wednesday",
+    "thu": "Thursday",
+    "fri": "Friday",
+    "sat": "Saturday",
+    "sun": "Sunday",
+    "monShort": "Mon",
+    "tueShort": "Tue",
+    "wedShort": "Wed",
+    "thuShort": "Thu",
+    "friShort": "Fri",
+    "satShort": "Sat",
+    "sunShort": "Sun"
   },
   "auth": {
     "loginTitle": "Sign in to StudyTrack",
