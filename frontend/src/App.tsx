@@ -3,6 +3,9 @@ import Dashboard from '@/pages/Dashboard';
 import Login from '@/pages/Login';
 import Register from '@/pages/Register';
 import Profile from '@/pages/Profile';
+import Focus from '@/pages/Focus';
+import History from '@/pages/History';
+import Schedule from '@/pages/Schedule';
 import { RequireAuth } from '@/components/auth/RequireAuth';
 import { useAuthStore } from '@/store/authStore';
 import { useMe } from '@/features/auth/hooks';
@@ -29,6 +32,9 @@ export default function App() {
       />
       <Route element={<RequireAuth />}>
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/focus" element={<Focus />} />
+        <Route path="/history" element={<History />} />
+        <Route path="/schedule" element={<Schedule />} />
         <Route path="/profile" element={<Profile />} />
       </Route>
       <Route
