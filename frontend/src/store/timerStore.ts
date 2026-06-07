@@ -18,6 +18,7 @@ export interface TimerConfig {
   focus: number;
   method: StudyMethod;
   note: string;
+  courseId: number | null;
 }
 
 interface TimerState {
@@ -25,6 +26,7 @@ interface TimerState {
   focus: number;
   method: StudyMethod;
   note: string;
+  courseId: number | null;
   plannedSeconds: number;
   secondsLeft: number;
   running: boolean;
@@ -45,6 +47,7 @@ const DEFAULTS = {
   focus: 8,
   method: 'Pomodoro' as StudyMethod,
   note: '',
+  courseId: null as number | null,
   plannedSeconds: 0,
   secondsLeft: 0,
   running: false,
@@ -72,6 +75,7 @@ export const useTimerStore = create<TimerState>()(
           focus: cfg.focus,
           method: cfg.method,
           note: cfg.note,
+          courseId: cfg.courseId,
           plannedSeconds: cfg.minutes * 60,
           secondsLeft: cfg.minutes * 60,
           running: false,
@@ -102,6 +106,7 @@ export const useTimerStore = create<TimerState>()(
         focus: s.focus,
         method: s.method,
         note: s.note,
+        courseId: s.courseId,
         plannedSeconds: s.plannedSeconds,
         secondsLeft: s.secondsLeft,
         running: s.running,

@@ -25,6 +25,13 @@ export interface SessionFormValues {
   focus: number;
   method: StudyMethod;
   note: string;
+  courseId: number | null;
+}
+
+export interface SessionCourseOption {
+  id: number;
+  code: string;
+  name: string;
 }
 
 interface SessionFormProps {
@@ -33,9 +40,19 @@ interface SessionFormProps {
   onStart: () => void;
   error?: string | null;
   suggestion?: string | null;
+  courses?: SessionCourseOption[];
 }
 
-export function SessionForm({ values, onChange, onStart, error, suggestion }: SessionFormProps) {
+const NO_COURSE = 'none';
+
+export function SessionForm({
+  values,
+  onChange,
+  onStart,
+  error,
+  suggestion,
+  courses = [],
+}: SessionFormProps) {
   const { t } = useTranslation();
 
   return (
@@ -111,6 +128,39 @@ export function SessionForm({ values, onChange, onStart, error, suggestion }: Se
           />
         </div>
       </div>
+
+      {courses.length > 0 && (
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="course">{t('focus.courseLabel')}</Label>
+          <Select
+            value={values.courseId === null ? NO_COURSE : String(values.courseId)}
+            onValueChange={(v) => {
+              if (v === NO_COURSE) {
+                onChange({ courseId: null });
+                return;
+              }
+              const id = Number(v);
+              const picked = courses.find((c) => c.id === id);
+              onChange({
+                courseId: id,
+                ...(picked && !values.subject.trim() ? { subject: picked.name } : {}),
+              });
+            }}
+          >
+            <SelectTrigger id="course">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={NO_COURSE}>{t('focus.noCourse')}</SelectItem>
+              {courses.map((c) => (
+                <SelectItem key={c.id} value={String(c.id)}>
+                  {c.code} — {c.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
 
       {suggestion && (
         <div className="flex gap-2 rounded-token border border-dashed border-brand-emerald bg-brand-emerald/10 p-4 text-sm text-text-helper">
