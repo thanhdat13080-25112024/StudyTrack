@@ -7,6 +7,7 @@
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
+  Activity,
   BookOpen,
   CalendarDays,
   GraduationCap,
@@ -15,6 +16,7 @@ import {
   LayoutDashboard,
   LogOut,
   Moon,
+  Route,
   Sun,
   Timer as TimerIcon,
   UserRound,
@@ -32,6 +34,8 @@ const NAV = [
   { to: '/schedule', key: 'nav.schedule', icon: CalendarDays },
   { to: '/courses', key: 'nav.courses', icon: BookOpen },
   { to: '/grades', key: 'nav.grades', icon: GraduationCap },
+  { to: '/roadmap', key: 'nav.roadmap', icon: Route },
+  { to: '/analysis', key: 'nav.analysis', icon: Activity },
 ] as const;
 
 export function AppHeader() {
