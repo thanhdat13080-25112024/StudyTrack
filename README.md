@@ -70,6 +70,37 @@ Phase 1 thêm lớp đăng ký/đăng nhập thật (thay auth plaintext của b
 
 > Ghi chú: avatar lưu dạng **base64 data-URI** trong cột `profiles.avatar_url` (giới hạn ~500KB). Trường lớp trong API tên là `class_name` (vì `class` là từ khóa Python). Bảng `profiles` đã tạo sẵn các cột học vụ (`target_cpa`, `total_credits_required`, `expected_graduation`) nhưng để trống tới Phase 3.
 
+## Thói quen học & API (Phase 2)
+
+Phase 2 port toàn bộ lớp **thói quen học** từ bản single-file cũ sang full-stack: phiên tập trung (focus session), lịch sử, chuỗi ngày học (streak), lịch tuần, dashboard và gợi ý thông minh.
+
+**Hai model mới** (migration `0002_study_sessions_schedule`):
+
+- **`StudySession`** (bảng `study_sessions`) — một phiên học đã ghi nhận (port của `Log` cũ): `user_id` (FK→users, CASCADE), `subject`, `planned_minutes`, `actual_minutes`, `focus` (1–10), `method` (`Pomodoro` / `Deep Work` / `Active Recall`), `note`, `started_at` / `ended_at` (timestamptz, UTC, nullable), `session_date` (DATE — **ngày lịch theo giờ địa phương của client**, là cơ sở tính streak/KPI/biểu đồ), `created_at`. `course_id` là cột nullable **chưa có FK** (FK + UI liên kết môn để Phase 4).
+- **`ScheduleItem`** (bảng `schedule_items`) — một mục lịch tuần lặp lại: `user_id` (FK→users, CASCADE), `day_of_week` (int 0–6, **Thứ 2 = 0**), `time` (chuỗi `"HH:MM"` 24h), `subject`, `recurring` (bool, mặc định true), `created_at`. `course_id` nullable, chưa FK (Phase 4).
+
+**Mô hình "đếm giờ phía client, ghi 1 phiên khi dừng":** bộ đếm giờ chạy hoàn toàn ở frontend (Zustand, lưu trạng thái vào `localStorage` khóa `track_timer` để refresh giữa phiên vẫn khôi phục được UI) — **không có tick phía server**. Khi dừng, frontend `POST /api/sessions` đúng **một** bản ghi `StudySession`; `session_date` lấy theo ngày địa phương (`localDateISO()`) để khớp với cách gom nhóm streak/KPI/biểu đồ. Confetti bắn khi phiên kết thúc tự nhiên; nhạc lofi tập trung dùng `dom.mp3`.
+
+| Method | Endpoint | Mô tả |
+|--------|----------|-------|
+| `POST` | `/api/sessions` | Ghi một phiên học (gọi khi bộ đếm dừng) |
+| `GET` | `/api/sessions` | Liệt kê phiên học của user (hỗ trợ `?limit`), mới nhất trước |
+| `DELETE` | `/api/sessions/{id}` | Xóa một phiên học |
+| `GET` | `/api/schedule` | Liệt kê mục lịch tuần |
+| `POST` | `/api/schedule` | Thêm mục lịch |
+| `PUT` | `/api/schedule/{id}` | Sửa mục lịch |
+| `DELETE` | `/api/schedule/{id}` | Xóa mục lịch |
+| `GET` | `/api/dashboard` | KPI (`today_minutes`, `total_minutes`, `total_sessions`, `streak`) + biểu đồ 7 ngày + 3 huy hiệu + 5 phiên gần nhất |
+| `POST` | `/api/suggestions` | Gợi ý thông minh có cấu trúc cho form focus (FE render text vi/en) |
+
+Tất cả endpoint Phase 2 đều yêu cầu Bearer auth.
+
+**Các trang frontend mới** (route được bảo vệ): **Focus** (`/focus` — bộ đếm + chọn môn/phút/phương pháp, nhạc lofi), **History** (`/history` — danh sách phiên), **Schedule** (`/schedule` — lưới tuần CRUD đầy đủ), và **Dashboard** thật (KPI + biểu đồ cột 7 ngày bằng **Recharts** thay cho Chart.js + 3 huy hiệu + xem nhanh phiên gần đây).
+
+> Quyết định chính: **huy hiệu được suy ra phía server** (`first_session` ≥1 phiên, `focused_5h` ≥300 phút thực học, `master_20h` ≥1200 phút) — không lưu trong DB. `session_date` do client cung cấp (giờ địa phương), còn dashboard dùng `today = date.today()` của server (chấp nhận sai lệch nhỏ quanh ranh giới ngày). `streak` = số ngày học liên tiếp tính tới ngày học gần nhất, bằng 0 nếu ngày học gần nhất cách hôm nay hơn 1 ngày.
+
+**Dữ liệu demo** (sau `make seed`): tài khoản `demo@studytrack.app` / `studytrack` có sẵn **5 phiên học** + **3 mục lịch tuần** để dashboard/biểu đồ có dữ liệu ngay.
+
 ## Lệnh thường dùng
 
 Tất cả lệnh chuẩn hóa qua `Makefile` (chạy `make help` để xem danh sách):
@@ -119,7 +150,7 @@ Khai báo trong `.env` (copy từ `.env.example`). `.env` bị git-ignore và b�
 |-------|----------|------------|
 | **0** | Scaffold + đường ray workflow: monorepo, docker-compose dev, FastAPI skeleton + `/api/health` + Alembic, Vite+React+Tailwind+shadcn + i18n vi/en + theme, lint/pre-commit, CI/deploy Actions, OpenAPI→TS, seed, Makefile, .env.example, `legacy/` | ✅ Hoàn thành |
 | **1** | Auth + nền user: JWT + argon2, User/Profile, i18n + theme, hồ sơ + thẻ SV ảo | ✅ Hoàn thành |
-| **2** | Port thói quen học: focus timer + StudySession, history, streak, lịch tuần, dashboard KPI + biểu đồ 7 ngày (Recharts), badges | ⏳ |
+| **2** | Port thói quen học: focus timer + StudySession, history, streak, lịch tuần, dashboard KPI + biểu đồ 7 ngày (Recharts), badges | ✅ Hoàn thành |
 | **3** | Học vụ lõi: Course/Semester/Grade, GPA/CPA engine + xếp loại + tiến độ tín chỉ, what-if GPA & học bổng | ⏳ |
 | **4** | CTĐT & lộ trình: Prerequisite/CTĐT, roadmap engine, direction analysis, liên kết phiên học↔môn, cảnh báo môn yếu | ⏳ |
 | **5** | Deadline + realtime: Deadline/lịch thi, WebSocket notifications/nhắc nhở | ⏳ |

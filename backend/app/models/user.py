@@ -12,6 +12,8 @@ from app.core.db import Base
 
 if TYPE_CHECKING:
     from app.models.profile import Profile
+    from app.models.schedule_item import ScheduleItem
+    from app.models.study_session import StudySession
 
 
 class User(Base):
@@ -29,4 +31,10 @@ class User(Base):
 
     profile: Mapped[Profile] = relationship(
         back_populates="user", uselist=False, cascade="all, delete-orphan"
+    )
+    study_sessions: Mapped[list[StudySession]] = relationship(
+        back_populates="user", cascade="all, delete-orphan"
+    )
+    schedule_items: Mapped[list[ScheduleItem]] = relationship(
+        back_populates="user", cascade="all, delete-orphan"
     )

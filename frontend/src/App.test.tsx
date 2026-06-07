@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { MemoryRouter } from 'react-router-dom';
@@ -7,6 +7,12 @@ import { I18nextProvider } from 'react-i18next';
 import App from '@/App';
 import i18n from '@/lib/i18n';
 import { useAuthStore } from '@/store/authStore';
+
+// The Dashboard fetches /api/dashboard on render; stub the hook so the routing
+// test stays a pure render check (no network), independent of the API shape.
+vi.mock('@/features/sessions/hooks', () => ({
+  useDashboard: () => ({ data: undefined, isLoading: true }),
+}));
 
 function renderApp(initialPath: string) {
   const queryClient = new QueryClient({

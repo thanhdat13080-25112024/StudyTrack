@@ -1,73 +1,141 @@
+/**
+ * Dashboard — greeting + streak, KPI cards, 7-day chart, achievement badges,
+ * and a recent-history preview. All derived data comes from `GET /api/dashboard`
+ * (computed by the tested backend services); this page only renders it.
+ */
 import { useTranslation } from 'react-i18next';
-import { Link, useNavigate } from 'react-router-dom';
-import { Languages, LogOut, Moon, Sun, UserRound } from 'lucide-react';
-import { useQueryClient } from '@tanstack/react-query';
+import { Link } from 'react-router-dom';
+import { ArrowRight, Clock, Flame, Layers, Timer as TimerIcon } from 'lucide-react';
+import { AppHeader } from '@/components/AppHeader';
 import { Button } from '@/components/ui/button';
-import { useUiStore } from '@/store/uiStore';
+import { Card } from '@/components/ui/card';
+import { WeeklyChart } from '@/components/dashboard/WeeklyChart';
+import { BadgeGrid } from '@/components/dashboard/BadgeGrid';
+import { useDashboard } from '@/features/sessions/hooks';
 import { useAuthStore } from '@/store/authStore';
 
-/**
- * Phase 0 smoke page, extended in Phase 1 with profile navigation + logout.
- * Real dashboard (KPIs, chart, badges, calendar) arrives in a later phase.
- */
+function KpiCard({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
+  return (
+    <Card className="flex items-center gap-4 p-5">
+      <div className="flex h-11 w-11 items-center justify-center rounded-token bg-accent/15 text-accent">
+        {icon}
+      </div>
+      <div className="flex flex-col">
+        <span className="text-2xl font-bold text-text-helper">{value}</span>
+        <span className="text-xs uppercase tracking-wide text-text-muted">{label}</span>
+      </div>
+    </Card>
+  );
+}
+
 export default function Dashboard() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
-  const queryClient = useQueryClient();
-  const theme = useUiStore((s) => s.theme);
-  const lang = useUiStore((s) => s.lang);
-  const toggleTheme = useUiStore((s) => s.toggleTheme);
-  const toggleLang = useUiStore((s) => s.toggleLang);
-  const logout = useAuthStore((s) => s.logout);
+  const { data, isLoading } = useDashboard();
+  const name = useAuthStore((s) => s.user?.user.name ?? '');
 
-  const handleLogout = () => {
-    logout();
-    queryClient.clear();
-    navigate('/login', { replace: true });
-  };
+  const streak = data?.kpis.streak ?? 0;
 
   return (
     <main className="min-h-full bg-bg-main text-text-main">
-      <div className="mx-auto flex max-w-3xl flex-col gap-6 px-6 py-12">
-        <header className="flex items-center justify-between">
-          <span className="text-2xl font-bold text-accent">{t('app.name')}</span>
-          <div className="flex gap-3">
-            <Button variant="outline" size="sm" asChild>
-              <Link to="/profile">
-                <UserRound className="h-4 w-4" aria-hidden />
-                {t('nav.profile')}
-              </Link>
-            </Button>
-            <Button variant="outline" size="sm" onClick={toggleLang}>
-              <Languages className="h-4 w-4" aria-hidden />
-              {lang.toUpperCase()}
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={toggleTheme}
-              aria-label={t('common.toggleTheme')}
-            >
-              {theme === 'dark' ? (
-                <Sun className="h-4 w-4" aria-hidden />
-              ) : (
-                <Moon className="h-4 w-4" aria-hidden />
-              )}
-            </Button>
-            <Button variant="outline" size="sm" onClick={handleLogout}>
-              <LogOut className="h-4 w-4" aria-hidden />
-              {t('common.logout')}
-            </Button>
-          </div>
-        </header>
+      <div className="mx-auto flex max-w-5xl flex-col gap-8 px-6 py-8">
+        <AppHeader />
 
-        <section className="rounded-card border border-border bg-bg-card p-8 shadow-card">
-          <h1 className="text-text-helper text-sm font-semibold uppercase tracking-wide">
-            {t('app.tagline')}
-          </h1>
-          <p className="mt-3 text-lg text-text-main">{t('common.welcome')} 👋</p>
-          <p className="mt-2 text-text-helper">{t('dashboard.welcomeLine')}</p>
+        <section className="flex flex-col gap-1">
+          <h1 className="text-2xl font-bold text-text-main">{t('dashboard.greeting', { name })}</h1>
+          <p className="flex items-center gap-1.5 text-text-muted">
+            <Flame className="h-4 w-4 text-brand-gold" aria-hidden />
+            {streak > 0 ? t('dashboard.streak', { count: streak }) : t('dashboard.streak_zero')}
+          </p>
         </section>
+
+        {isLoading || !data ? (
+          <p className="text-text-muted">{t('dashboard.loading')}</p>
+        ) : (
+          <>
+            <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              <KpiCard
+                icon={<Clock className="h-5 w-5" aria-hidden />}
+                label={t('dashboard.kpiToday')}
+                value={`${data.kpis.today_minutes} ${t('common.minutesShort')}`}
+              />
+              <KpiCard
+                icon={<TimerIcon className="h-5 w-5" aria-hidden />}
+                label={t('dashboard.kpiTotalHours')}
+                value={`${(data.kpis.total_minutes / 60).toFixed(1)} ${t('common.hours')}`}
+              />
+              <KpiCard
+                icon={<Layers className="h-5 w-5" aria-hidden />}
+                label={t('dashboard.kpiTotalSessions')}
+                value={String(data.kpis.total_sessions)}
+              />
+              <KpiCard
+                icon={<Flame className="h-5 w-5" aria-hidden />}
+                label={t('dashboard.kpiStreak')}
+                value={String(data.kpis.streak)}
+              />
+            </section>
+
+            <div className="flex flex-wrap gap-3">
+              <Button asChild>
+                <Link to="/focus">
+                  <TimerIcon className="h-4 w-4" aria-hidden />
+                  {t('dashboard.startFocus')}
+                </Link>
+              </Button>
+              <Button variant="outline" asChild>
+                <Link to="/schedule">{t('dashboard.openSchedule')}</Link>
+              </Button>
+            </div>
+
+            <section className="rounded-card border border-border bg-bg-card p-6 shadow-card">
+              <h2 className="mb-4 text-base font-semibold text-text-helper">
+                {t('dashboard.chartTitle')}
+              </h2>
+              <WeeklyChart data={data.chart} />
+            </section>
+
+            <section className="flex flex-col gap-3">
+              <h2 className="text-base font-semibold text-text-main">{t('badges.title')}</h2>
+              <BadgeGrid badges={data.badges} />
+            </section>
+
+            <section className="flex flex-col gap-3">
+              <div className="flex items-center justify-between">
+                <h2 className="text-base font-semibold text-text-main">
+                  {t('dashboard.recentTitle')}
+                </h2>
+                <Link
+                  to="/history"
+                  className="inline-flex items-center gap-1 text-sm font-medium text-accent"
+                >
+                  {t('dashboard.viewAllHistory')}
+                  <ArrowRight className="h-3.5 w-3.5" aria-hidden />
+                </Link>
+              </div>
+              {data.recent_sessions.length === 0 ? (
+                <Card className="p-6 text-center text-text-muted">
+                  {t('dashboard.recentEmpty')}
+                </Card>
+              ) : (
+                <div className="flex flex-col gap-2">
+                  {data.recent_sessions.map((s) => (
+                    <Card key={s.id} className="flex items-center justify-between gap-4 p-4">
+                      <div className="flex flex-col">
+                        <span className="font-semibold text-text-helper">{s.subject}</span>
+                        <span className="text-xs text-text-muted">
+                          {s.session_date} · {t(`methods.${s.method}`)}
+                        </span>
+                      </div>
+                      <span className="text-sm font-medium text-text-muted">
+                        {s.actual_minutes} {t('common.minutesShort')}
+                      </span>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </section>
+          </>
+        )}
       </div>
     </main>
   );

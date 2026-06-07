@@ -7,17 +7,131 @@
     "dashboard": "Dashboard",
     "profile": "Hồ sơ",
     "study": "Phiên học",
+    "focus": "Phiên học",
     "history": "Lịch sử",
+    "schedule": "Lịch học",
     "login": "Đăng nhập"
   },
   "common": {
     "welcome": "Xin chào",
     "logout": "Đăng xuất",
     "toggleTheme": "Đổi giao diện",
-    "toggleLanguage": "Đổi ngôn ngữ"
+    "toggleLanguage": "Đổi ngôn ngữ",
+    "save": "Lưu",
+    "cancel": "Hủy",
+    "edit": "Sửa",
+    "delete": "Xóa",
+    "add": "Thêm",
+    "loading": "Đang tải...",
+    "minutes": "phút",
+    "minutesShort": "ph",
+    "hours": "giờ",
+    "actionFailed": "Thao tác thất bại, vui lòng thử lại"
   },
   "dashboard": {
-    "welcomeLine": "Chào mừng đến với StudyTrack — hãy bắt đầu phiên học tập trung của bạn."
+    "welcomeLine": "Chào mừng đến với StudyTrack — hãy bắt đầu phiên học tập trung của bạn.",
+    "greeting": "Xin chào, {{name}} 👋",
+    "streak": "{{count}} ngày chuỗi học",
+    "streak_zero": "Chưa có chuỗi học nào",
+    "kpiToday": "Giờ học hôm nay",
+    "kpiTotalHours": "Tổng giờ học",
+    "kpiTotalSessions": "Tổng số buổi",
+    "kpiStreak": "Chuỗi học tập",
+    "chartTitle": "Biểu đồ thói quen học tập trong tuần (7 ngày qua)",
+    "recentTitle": "Lịch sử học gần đây",
+    "recentEmpty": "Chưa có buổi học nào. Bắt đầu phiên đầu tiên nào!",
+    "viewAllHistory": "Xem tất cả lịch sử",
+    "startFocus": "Bắt đầu học",
+    "openSchedule": "Lịch học tuần",
+    "loading": "Đang tải dashboard..."
+  },
+  "focus": {
+    "title": "Thiết kế & Tối ưu lộ trình học tập",
+    "subjectLabel": "Môn học",
+    "subjectPlaceholder": "Môn học mới",
+    "durationLabel": "Thời gian định học (số phút)",
+    "focusLabel": "Mức độ tập trung mong muốn (1 - 10)",
+    "methodLabel": "Phương pháp áp dụng",
+    "noteLabel": "Ghi chú mục tiêu cụ thể",
+    "start": "Kích hoạt đếm giờ",
+    "pause": "Tạm dừng",
+    "resume": "Tiếp tục học",
+    "stop": "Lưu & Kết thúc",
+    "heading": "🔥 ĐANG TRONG PHIÊN TẬP TRUNG CAO ĐỘ",
+    "invalid": "Vui lòng điền môn học và thời gian hợp lệ!",
+    "music": "Âm nhạc học tập",
+    "musicPlay": "Phát nhạc",
+    "musicPause": "Tạm dừng nhạc",
+    "volume": "Âm lượng"
+  },
+  "history": {
+    "title": "Lịch sử học tập thực tế",
+    "empty": "Chưa có lịch sử học tập.",
+    "colSubject": "Môn học",
+    "colDate": "Ngày",
+    "colDuration": "Thời lượng",
+    "colFocus": "Tập trung",
+    "colMethod": "Phương pháp",
+    "colNote": "Ghi chú",
+    "delete": "Xóa buổi học",
+    "actualOfPlanned": "{{actual}}/{{planned}} phút",
+    "focusValue": "{{focus}}/10"
+  },
+  "schedule": {
+    "title": "Lịch Trình Học Tập Trong Tuần",
+    "empty": "Chưa có lịch học nào.",
+    "addTitle": "Lên Lịch Học Theo Thời Gian",
+    "dayLabel": "Chọn thứ trong tuần",
+    "timeLabel": "Thời gian bắt đầu",
+    "subjectLabel": "Môn học / Nội dung",
+    "add": "Thêm vào lịch trình",
+    "edit": "Sửa lịch",
+    "delete": "Xóa lịch",
+    "save": "Lưu thay đổi",
+    "cancel": "Hủy",
+    "noItems": "Trống"
+  },
+  "badges": {
+    "title": "🏆 Huy hiệu thành tựu học tập",
+    "first_session": {
+      "title": "Tân binh chăm chỉ",
+      "desc": "Có buổi học đầu tiên"
+    },
+    "focused_5h": {
+      "title": "Chiến thần tập trung",
+      "desc": "Tích lũy đủ 5 giờ học thực tế"
+    },
+    "master_20h": {
+      "title": "Bậc thầy bền bỉ",
+      "desc": "Tích lũy đủ 20 giờ học thực tế"
+    }
+  },
+  "suggestions": {
+    "intro": "💡 Tư vấn tối ưu: Bạn đang chọn phương pháp {{method}} với mức độ tập trung kỳ vọng là {{focus}}/10.",
+    "pomodoro_not_25": "Chuẩn Pomodoro nên thiết lập chính xác 25 phút. Hệ thống sẽ áp dụng chu kỳ tự động nghỉ 5 phút sau khi kết thúc.",
+    "high_focus": "Mức tập trung rất cao! Hãy chắc chắn tắt hết thông báo mạng xã hội. Kỹ thuật {{method}} sẽ đạt hiệu suất tối đa.",
+    "boost_focus": "Để nâng cấp từ {{focus}}/10 lên mức cao hơn, hãy bật nhạc nền tần số alpha hoặc Lo-fi ngay bên dưới."
+  },
+  "methods": {
+    "Pomodoro": "Pomodoro (25/5)",
+    "Deep Work": "Deep Work (Tập trung sâu)",
+    "Active Recall": "Active Recall (Chủ động gợi nhớ)"
+  },
+  "days": {
+    "mon": "Thứ 2",
+    "tue": "Thứ 3",
+    "wed": "Thứ 4",
+    "thu": "Thứ 5",
+    "fri": "Thứ 6",
+    "sat": "Thứ 7",
+    "sun": "Chủ Nhật",
+    "monShort": "T2",
+    "tueShort": "T3",
+    "wedShort": "T4",
+    "thuShort": "T5",
+    "friShort": "T6",
+    "satShort": "T7",
+    "sunShort": "CN"
   },
   "auth": {
     "loginTitle": "Đăng nhập StudyTrack",

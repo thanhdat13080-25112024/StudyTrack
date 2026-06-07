@@ -13,6 +13,8 @@ from __future__ import annotations
 
 from app.core.db import Base  # noqa: F401  (re-exported for convenience)
 from app.models.profile import Profile  # noqa: F401
+from app.models.schedule_item import ScheduleItem  # noqa: F401
+from app.models.study_session import StudySession  # noqa: F401
 from app.models.user import User  # noqa: F401
 
-__all__ = ["Base", "User", "Profile"]
+__all__ = ["Base", "User", "Profile", "StudySession", "ScheduleItem"]
