@@ -66,3 +66,21 @@ def test_invalid_method_rejected(client: TestClient) -> None:
 def test_sessions_require_auth(client: TestClient) -> None:
     assert client.get("/api/sessions").status_code == 401
     assert client.post("/api/sessions", json=SESSION).status_code == 401
+
+
+def test_session_links_to_owned_course(client: TestClient) -> None:
+    h = _auth(client)
+    c = client.post("/api/courses", json={"code": "LNK", "name": "LNK", "credits": 3}, headers=h)
+    cid = c.json()["id"]
+    resp = client.post("/api/sessions", json={**SESSION, "course_id": cid}, headers=h)
+    assert resp.status_code == 201
+    assert resp.json()["course"]["code"] == "LNK"
+
+
+def test_session_rejects_foreign_course(client: TestClient) -> None:
+    h1 = _auth(client, "a@studytrack.app")
+    h2 = _auth(client, "b@studytrack.app")
+    c = client.post("/api/courses", json={"code": "F", "name": "F", "credits": 3}, headers=h2)
+    cid = c.json()["id"]
+    resp = client.post("/api/sessions", json={**SESSION, "course_id": cid}, headers=h1)
+    assert resp.status_code == 422
