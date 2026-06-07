@@ -12,6 +12,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api import (
+    analysis,
     auth,
     courses,
     dashboard,
@@ -57,6 +58,7 @@ app.include_router(grades.router, prefix="/api/grades", tags=["grades"])
 app.include_router(gpa.router, prefix="/api/gpa", tags=["gpa"])
 app.include_router(prerequisites.router, prefix="/api/prerequisites", tags=["prerequisites"])
 app.include_router(roadmap.router, prefix="/api/roadmap", tags=["roadmap"])
+app.include_router(analysis.router, prefix="/api/analysis", tags=["analysis"])
 
 # --- WebSocket mount point (Phase 5) ----------------------------------------
 # Real-time notifications/deadlines will be served at ``/ws``. Wire it here:
