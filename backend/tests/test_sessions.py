@@ -6,15 +6,18 @@ from fastapi.testclient import TestClient
 
 REG = {"email": "s@studytrack.app", "password": "secret123", "name": "Sam"}
 SESSION = {
-    "subject": "Calculus", "planned_minutes": 25, "actual_minutes": 25,
-    "focus": 8, "method": "Pomodoro", "note": "ch.3", "session_date": "2026-06-07",
+    "subject": "Calculus",
+    "planned_minutes": 25,
+    "actual_minutes": 25,
+    "focus": 8,
+    "method": "Pomodoro",
+    "note": "ch.3",
+    "session_date": "2026-06-07",
 }
 
 
 def _auth(client: TestClient, email: str = REG["email"]) -> dict:
-    token = client.post(
-        "/api/auth/register", json={**REG, "email": email}
-    ).json()["access_token"]
+    token = client.post("/api/auth/register", json={**REG, "email": email}).json()["access_token"]
     return {"Authorization": f"Bearer {token}"}
 
 
@@ -29,8 +32,12 @@ def test_create_session(client: TestClient) -> None:
 
 def test_list_sessions_newest_first(client: TestClient) -> None:
     h = _auth(client)
-    client.post("/api/sessions", json={**SESSION, "subject": "A", "session_date": "2026-06-05"}, headers=h)
-    client.post("/api/sessions", json={**SESSION, "subject": "B", "session_date": "2026-06-07"}, headers=h)
+    client.post(
+        "/api/sessions", json={**SESSION, "subject": "A", "session_date": "2026-06-05"}, headers=h
+    )
+    client.post(
+        "/api/sessions", json={**SESSION, "subject": "B", "session_date": "2026-06-07"}, headers=h
+    )
     resp = client.get("/api/sessions", headers=h)
     assert resp.status_code == 200
     subjects = [s["subject"] for s in resp.json()]

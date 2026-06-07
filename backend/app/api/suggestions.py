@@ -13,7 +13,5 @@ router = APIRouter()
 
 
 @router.post("", response_model=SuggestionOut)
-def suggest(
-    data: SuggestionIn, current: User = Depends(get_current_user)
-) -> dict:
+def suggest(data: SuggestionIn, current: User = Depends(get_current_user)) -> dict:
     return build_suggestion(data.method, data.focus, data.planned_minutes)

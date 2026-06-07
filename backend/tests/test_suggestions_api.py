@@ -23,6 +23,9 @@ def test_suggestion_pomodoro(client: TestClient) -> None:
 
 
 def test_suggestion_requires_auth(client: TestClient) -> None:
-    assert client.post(
-        "/api/suggestions", json={"method": "Pomodoro", "focus": 9, "planned_minutes": 30}
-    ).status_code == 401
+    assert (
+        client.post(
+            "/api/suggestions", json={"method": "Pomodoro", "focus": 9, "planned_minutes": 30}
+        ).status_code
+        == 401
+    )

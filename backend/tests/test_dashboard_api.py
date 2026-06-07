@@ -16,8 +16,12 @@ def _auth(client: TestClient) -> dict:
 
 def _session(subject: str, minutes: int, d: str) -> dict:
     return {
-        "subject": subject, "planned_minutes": minutes, "actual_minutes": minutes,
-        "focus": 7, "method": "Deep Work", "session_date": d,
+        "subject": subject,
+        "planned_minutes": minutes,
+        "actual_minutes": minutes,
+        "focus": 7,
+        "method": "Deep Work",
+        "session_date": d,
     }
 
 

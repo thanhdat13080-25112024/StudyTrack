@@ -47,7 +47,9 @@ def test_seven_day_buckets_sums_and_ignores_old() -> None:
 def test_badges_thresholds() -> None:
     none = badges([])
     assert {b["key"]: b["unlocked"] for b in none} == {
-        "first_session": False, "focused_5h": False, "master_20h": False,
+        "first_session": False,
+        "focused_5h": False,
+        "master_20h": False,
     }
     one = badges([_s(10, TODAY)])
     flags = {b["key"]: b["unlocked"] for b in one}
