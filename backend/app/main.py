@@ -11,7 +11,7 @@ from __future__ import annotations
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import auth, dashboard, health, profile, schedule, sessions
+from app.api import auth, dashboard, health, profile, schedule, sessions, suggestions
 from app.core.config import settings
 
 app = FastAPI(
@@ -36,6 +36,7 @@ app.include_router(profile.router, prefix="/api/profile", tags=["profile"])
 app.include_router(sessions.router, prefix="/api/sessions", tags=["sessions"])
 app.include_router(schedule.router, prefix="/api/schedule", tags=["schedule"])
 app.include_router(dashboard.router, prefix="/api/dashboard", tags=["dashboard"])
+app.include_router(suggestions.router, prefix="/api/suggestions", tags=["suggestions"])
 
 # --- WebSocket mount point (Phase 5) ----------------------------------------
 # Real-time notifications/deadlines will be served at ``/ws``. Wire it here:
