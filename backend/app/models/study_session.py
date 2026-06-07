@@ -14,6 +14,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.core.db import Base
 
 if TYPE_CHECKING:
+    from app.models.course import Course
     from app.models.user import User
 
 
@@ -24,7 +25,9 @@ class StudySession(Base):
     user_id: Mapped[int] = mapped_column(
         ForeignKey("users.id", ondelete="CASCADE"), index=True, nullable=False
     )
-    course_id: Mapped[int | None] = mapped_column(Integer, nullable=True)  # FK in Phase 4
+    course_id: Mapped[int | None] = mapped_column(
+        ForeignKey("courses.id", ondelete="SET NULL"), nullable=True
+    )
     subject: Mapped[str] = mapped_column(String(200), nullable=False)
     planned_minutes: Mapped[int] = mapped_column(Integer, nullable=False)
     actual_minutes: Mapped[int] = mapped_column(Integer, nullable=False)
@@ -39,3 +42,4 @@ class StudySession(Base):
     )
 
     user: Mapped[User] = relationship(back_populates="study_sessions")
+    course: Mapped[Course | None] = relationship()

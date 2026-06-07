@@ -14,6 +14,7 @@ from __future__ import annotations
 from app.core.db import Base  # noqa: F401  (re-exported for convenience)
 from app.models.course import Course  # noqa: F401
 from app.models.grade import Grade  # noqa: F401
+from app.models.prerequisite import Prerequisite  # noqa: F401
 from app.models.profile import Profile  # noqa: F401
 from app.models.schedule_item import ScheduleItem  # noqa: F401
 from app.models.semester import Semester  # noqa: F401
@@ -29,4 +30,5 @@ __all__ = [
     "Semester",
     "Course",
     "Grade",
+    "Prerequisite",
 ]

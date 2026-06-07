@@ -34,5 +34,6 @@ class Profile(Base):
     target_cpa: Mapped[float | None] = mapped_column(Float, nullable=True)
     total_credits_required: Mapped[int | None] = mapped_column(Integer, nullable=True)
     expected_graduation: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    max_credits_per_semester: Mapped[int | None] = mapped_column(Integer, nullable=True)
 
     user: Mapped[User] = relationship(back_populates="profile")
