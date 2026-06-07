@@ -14,15 +14,7 @@ import { BadgeGrid } from '@/components/dashboard/BadgeGrid';
 import { useDashboard } from '@/features/sessions/hooks';
 import { useAuthStore } from '@/store/authStore';
 
-function KpiCard({
-  icon,
-  label,
-  value,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-}) {
+function KpiCard({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
     <Card className="flex items-center gap-4 p-5">
       <div className="flex h-11 w-11 items-center justify-center rounded-token bg-accent/15 text-accent">
@@ -49,9 +41,7 @@ export default function Dashboard() {
         <AppHeader />
 
         <section className="flex flex-col gap-1">
-          <h1 className="text-2xl font-bold text-text-main">
-            {t('dashboard.greeting', { name })}
-          </h1>
+          <h1 className="text-2xl font-bold text-text-main">{t('dashboard.greeting', { name })}</h1>
           <p className="flex items-center gap-1.5 text-text-muted">
             <Flame className="h-4 w-4 text-brand-gold" aria-hidden />
             {streak > 0 ? t('dashboard.streak', { count: streak }) : t('dashboard.streak_zero')}
@@ -129,10 +119,7 @@ export default function Dashboard() {
               ) : (
                 <div className="flex flex-col gap-2">
                   {data.recent_sessions.map((s) => (
-                    <Card
-                      key={s.id}
-                      className="flex items-center justify-between gap-4 p-4"
-                    >
+                    <Card key={s.id} className="flex items-center justify-between gap-4 p-4">
                       <div className="flex flex-col">
                         <span className="font-semibold text-text-helper">{s.subject}</span>
                         <span className="text-xs text-text-muted">

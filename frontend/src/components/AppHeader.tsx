@@ -62,9 +62,7 @@ export function AppHeader() {
                 to={to}
                 className={cn(
                   'inline-flex items-center gap-1.5 rounded-token px-3 py-1.5 text-sm font-medium transition-colors',
-                  active
-                    ? 'bg-accent text-white'
-                    : 'text-text-main hover:bg-menu-item',
+                  active ? 'bg-accent text-white' : 'text-text-main hover:bg-menu-item',
                 )}
               >
                 <Icon className="h-4 w-4" aria-hidden />

@@ -32,7 +32,12 @@ describe('renderSuggestion', () => {
     params ? `${key}|${JSON.stringify(params)}` : key;
 
   it('combines the intro key with the type key, passing method + focus', () => {
-    const s: Suggestion = { type: 'high_focus', method: 'Deep Work', focus: 8, planned_minutes: 60 };
+    const s: Suggestion = {
+      type: 'high_focus',
+      method: 'Deep Work',
+      focus: 8,
+      planned_minutes: 60,
+    };
     const out = renderSuggestion(fakeT, s);
     expect(out).toContain('suggestions.intro');
     expect(out).toContain('suggestions.high_focus');

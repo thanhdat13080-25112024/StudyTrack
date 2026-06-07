@@ -15,8 +15,7 @@ export function useSchedule() {
 export function useCreateScheduleItem() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (data: ScheduleItemCreate) =>
-      apiClient.post<ScheduleItem>('/api/schedule', data),
+    mutationFn: (data: ScheduleItemCreate) => apiClient.post<ScheduleItem>('/api/schedule', data),
     onSuccess: () => void qc.invalidateQueries({ queryKey: SCHEDULE_KEY }),
   });
 }

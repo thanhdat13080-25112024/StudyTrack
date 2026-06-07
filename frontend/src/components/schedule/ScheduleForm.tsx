@@ -30,13 +30,7 @@ interface ScheduleFormProps {
   onCancel: () => void;
 }
 
-export function ScheduleForm({
-  values,
-  editing,
-  onChange,
-  onSubmit,
-  onCancel,
-}: ScheduleFormProps) {
+export function ScheduleForm({ values, editing, onChange, onSubmit, onCancel }: ScheduleFormProps) {
   const { t } = useTranslation();
 
   return (

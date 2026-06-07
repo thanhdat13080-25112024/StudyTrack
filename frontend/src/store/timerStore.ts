@@ -83,9 +83,7 @@ export const useTimerStore = create<TimerState>()(
           startedAt: s.startedAt ?? new Date().toISOString(),
         })),
       tick: () =>
-        set((s) =>
-          s.running && s.secondsLeft > 0 ? { secondsLeft: s.secondsLeft - 1 } : {},
-        ),
+        set((s) => (s.running && s.secondsLeft > 0 ? { secondsLeft: s.secondsLeft - 1 } : {})),
       pause: () => set({ running: false }),
       resume: () =>
         set((s) => ({ running: true, startedAt: s.startedAt ?? new Date().toISOString() })),

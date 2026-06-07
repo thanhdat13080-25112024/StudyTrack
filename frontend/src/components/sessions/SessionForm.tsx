@@ -35,13 +35,7 @@ interface SessionFormProps {
   suggestion?: string | null;
 }
 
-export function SessionForm({
-  values,
-  onChange,
-  onStart,
-  error,
-  suggestion,
-}: SessionFormProps) {
+export function SessionForm({ values, onChange, onStart, error, suggestion }: SessionFormProps) {
   const { t } = useTranslation();
 
   return (
