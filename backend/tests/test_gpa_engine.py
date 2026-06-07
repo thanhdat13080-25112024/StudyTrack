@@ -33,3 +33,73 @@ def test_grade_to_grade4(grade, g4):
 )
 def test_classify_boundaries(cpa, tier):
     assert classify(cpa) == tier
+
+
+from app.services.gpa_engine import (  # noqa: E402
+    GradeRow,
+    credit_progress,
+    cumulative_cpa,
+    gpa_summary,
+    semester_gpa,
+)
+
+
+def _row(course_id, sem, credits, grade_10, status):
+    return GradeRow(
+        course_id=course_id, semester_id=sem, semester_code=f"2024-{sem}",
+        credits=credits, grade_10=grade_10, status=status,
+    )
+
+
+def test_semester_gpa_weighted():
+    rows = [_row(1, 1, 3, 8.0, "passed"), _row(2, 1, 2, 6.0, "passed")]  # 3.5*3 + 2.0*2
+    out = semester_gpa(rows)
+    assert out["credits"] == 5
+    assert out["gpa"] == round((3.5 * 3 + 2.0 * 2) / 5, 2)  # 2.9
+
+
+def test_failed_counts_zero_in_denominator():
+    rows = [_row(1, 1, 3, 8.0, "passed"), _row(2, 1, 3, 3.0, "failed")]
+    out = semester_gpa(rows)
+    assert out["credits"] == 6
+    assert out["gpa"] == round((3.5 * 3 + 0.0 * 3) / 6, 2)  # 1.75
+
+
+def test_in_progress_and_exempt_excluded_from_average():
+    rows = [
+        _row(1, 1, 3, 8.0, "passed"),
+        _row(2, 1, 3, None, "in_progress"),
+        _row(3, 1, 3, None, "exempt"),
+    ]
+    out = semester_gpa(rows)
+    assert out["credits"] == 3 and out["gpa"] == 3.5
+
+
+def test_retake_latest_wins_for_cpa():
+    rows = [_row(1, 1, 3, 4.0, "failed"), _row(1, 2, 3, 7.5, "passed")]  # latest = B (3.0)
+    assert cumulative_cpa(rows)["cpa"] == 3.0
+    assert cumulative_cpa(rows)["credits"] == 3
+
+
+def test_cpa_empty():
+    assert cumulative_cpa([])["cpa"] == 0.0
+
+
+def test_credit_progress():
+    rows = [
+        _row(1, 1, 3, 8.0, "passed"),
+        _row(2, 1, 2, None, "exempt"),
+        _row(3, 1, 4, None, "in_progress"),
+        _row(4, 1, 3, 3.0, "failed"),
+    ]
+    out = credit_progress(rows, total_required=140)
+    assert out == {"earned": 5, "in_progress": 4, "remaining": 135, "required": 140}
+
+
+def test_gpa_summary_shape():
+    rows = [_row(1, 1, 3, 8.0, "passed"), _row(2, 2, 3, 6.0, "passed")]
+    out = gpa_summary(rows, total_required=140)
+    assert out["cpa"] == round((3.5 * 3 + 2.0 * 3) / 6, 2)
+    assert out["classification"] == classify(out["cpa"])
+    assert [s["code"] for s in out["semesters"]] == ["2024-1", "2024-2"]
+    assert out["credits"]["earned"] == 6

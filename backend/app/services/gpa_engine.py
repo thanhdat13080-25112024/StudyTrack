@@ -72,3 +72,85 @@ def classify(cpa: float, scale: GradeScale = DEFAULT_SCALE) -> str:
         if cpa >= tier.min_cpa:
             return tier.key
     return scale.tiers[-1].key
+
+
+GRADED_STATUSES = {"passed", "failed"}
+CREDIT_EARNING_STATUSES = {"passed", "exempt"}
+
+
+@dataclass(frozen=True)
+class GradeRow:
+    course_id: int
+    semester_id: int
+    semester_code: str  # sortable; "latest" retake = max code
+    credits: int
+    grade_10: float | None
+    status: str
+
+
+def _in_gpa(row: GradeRow) -> bool:
+    return row.status in GRADED_STATUSES and row.grade_10 is not None
+
+
+def _weighted(rows: list[GradeRow], scale: GradeScale) -> dict:
+    credits = sum(r.credits for r in rows)
+    if credits == 0:
+        return {"gpa": 0.0, "credits": 0}
+    qp = sum(grade_to_grade4(r.grade_10, scale) * r.credits for r in rows)  # type: ignore[arg-type]
+    return {"gpa": round(qp / credits, 2), "credits": credits}
+
+
+def semester_gpa(rows: list[GradeRow], scale: GradeScale = DEFAULT_SCALE) -> dict:
+    return _weighted([r for r in rows if _in_gpa(r)], scale)
+
+
+def _latest_per_course(rows: list[GradeRow]) -> list[GradeRow]:
+    best: dict[int, GradeRow] = {}
+    for r in rows:
+        if not _in_gpa(r):
+            continue
+        cur = best.get(r.course_id)
+        if cur is None or r.semester_code > cur.semester_code:
+            best[r.course_id] = r
+    return list(best.values())
+
+
+def cumulative_cpa(rows: list[GradeRow], scale: GradeScale = DEFAULT_SCALE) -> dict:
+    out = _weighted(_latest_per_course(rows), scale)
+    return {"cpa": out["gpa"], "credits": out["credits"]}
+
+
+def credit_progress(rows: list[GradeRow], total_required: int | None) -> dict:
+    earned_by_course: dict[int, int] = {}
+    for r in rows:
+        if r.status in CREDIT_EARNING_STATUSES:
+            earned_by_course[r.course_id] = r.credits
+    in_progress = sum(
+        r.credits for r in rows if r.status == "in_progress" and r.course_id not in earned_by_course
+    )
+    earned = sum(earned_by_course.values())
+    required = total_required or 0
+    remaining = max(0, required - earned) if total_required else 0
+    return {"earned": earned, "in_progress": in_progress, "remaining": remaining, "required": required}
+
+
+def gpa_summary(rows: list[GradeRow], total_required: int | None,
+                scale: GradeScale = DEFAULT_SCALE) -> dict:
+    code_by_sem: dict[int, str] = {}
+    by_sem: dict[int, list[GradeRow]] = {}
+    for r in rows:
+        code_by_sem.setdefault(r.semester_id, r.semester_code)
+        by_sem.setdefault(r.semester_id, []).append(r)
+    semesters = []
+    for sid in sorted(by_sem, key=lambda s: code_by_sem[s]):
+        sg = semester_gpa(by_sem[sid], scale)
+        semesters.append(
+            {"semester_id": sid, "code": code_by_sem[sid], "gpa": sg["gpa"], "credits": sg["credits"]}
+        )
+    cpa = cumulative_cpa(rows, scale)["cpa"]
+    return {
+        "cpa": cpa,
+        "classification": classify(cpa, scale),
+        "credits": credit_progress(rows, total_required),
+        "semesters": semesters,
+    }
