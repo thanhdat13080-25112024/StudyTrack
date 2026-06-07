@@ -29,6 +29,9 @@ class ProfileUpdate(BaseModel):
     major: str | None = Field(default=None, max_length=120)
     goal: str | None = Field(default=None, max_length=2000)
     avatar_url: str | None = Field(default=None, max_length=MAX_AVATAR_LEN)
+    target_cpa: float | None = Field(default=None, ge=0, le=4)
+    total_credits_required: int | None = Field(default=None, ge=0)
+    expected_graduation: str | None = Field(default=None, max_length=32)
 
 
 class MeOut(BaseModel):

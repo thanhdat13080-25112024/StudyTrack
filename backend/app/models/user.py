@@ -11,8 +11,11 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.core.db import Base
 
 if TYPE_CHECKING:
+    from app.models.course import Course
+    from app.models.grade import Grade
     from app.models.profile import Profile
     from app.models.schedule_item import ScheduleItem
+    from app.models.semester import Semester
     from app.models.study_session import StudySession
 
 
@@ -38,3 +41,10 @@ class User(Base):
     schedule_items: Mapped[list[ScheduleItem]] = relationship(
         back_populates="user", cascade="all, delete-orphan"
     )
+    semesters: Mapped[list[Semester]] = relationship(
+        back_populates="user", cascade="all, delete-orphan"
+    )
+    courses: Mapped[list[Course]] = relationship(
+        back_populates="user", cascade="all, delete-orphan"
+    )
+    grades: Mapped[list[Grade]] = relationship(back_populates="user", cascade="all, delete-orphan")

@@ -5,13 +5,14 @@
  */
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Clock, Flame, Layers, Timer as TimerIcon } from 'lucide-react';
+import { ArrowRight, Clock, Flame, GraduationCap, Layers, Timer as TimerIcon } from 'lucide-react';
 import { AppHeader } from '@/components/AppHeader';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { WeeklyChart } from '@/components/dashboard/WeeklyChart';
 import { BadgeGrid } from '@/components/dashboard/BadgeGrid';
 import { useDashboard } from '@/features/sessions/hooks';
+import { useGpa } from '@/features/grades/hooks';
 import { useAuthStore } from '@/store/authStore';
 
 function KpiCard({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
@@ -31,9 +32,11 @@ function KpiCard({ icon, label, value }: { icon: React.ReactNode; label: string;
 export default function Dashboard() {
   const { t } = useTranslation();
   const { data, isLoading } = useDashboard();
+  const { data: gpa } = useGpa();
   const name = useAuthStore((s) => s.user?.user.name ?? '');
 
   const streak = data?.kpis.streak ?? 0;
+  const hasGrades = !!gpa && (gpa.semesters.length > 0 || gpa.cpa > 0);
 
   return (
     <main className="min-h-full bg-bg-main text-text-main">
@@ -86,6 +89,38 @@ export default function Dashboard() {
                 <Link to="/schedule">{t('dashboard.openSchedule')}</Link>
               </Button>
             </div>
+
+            {gpa && (
+              <Card className="flex flex-wrap items-center justify-between gap-4 p-5">
+                <div className="flex items-center gap-4">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-token bg-brand-emerald/15 text-brand-emerald">
+                    <GraduationCap className="h-5 w-5" aria-hidden />
+                  </div>
+                  {hasGrades ? (
+                    <div className="flex flex-col">
+                      <span className="text-2xl font-bold text-text-helper">
+                        {gpa.cpa.toFixed(2)}
+                        <span className="ml-2 text-sm font-medium text-text-muted">
+                          {t(`gpa.tier.${gpa.classification}`)}
+                        </span>
+                      </span>
+                      <span className="text-xs uppercase tracking-wide text-text-muted">
+                        {t('gpa.cpa')}
+                      </span>
+                    </div>
+                  ) : (
+                    <span className="text-sm text-text-muted">{t('gpa.cardEmpty')}</span>
+                  )}
+                </div>
+                <Link
+                  to="/grades"
+                  className="inline-flex items-center gap-1 text-sm font-medium text-accent"
+                >
+                  {t('gpa.cardViewGrades')}
+                  <ArrowRight className="h-3.5 w-3.5" aria-hidden />
+                </Link>
+              </Card>
+            )}
 
             <section className="rounded-card border border-border bg-bg-card p-6 shadow-card">
               <h2 className="mb-4 text-base font-semibold text-text-helper">

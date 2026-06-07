@@ -7,8 +7,11 @@ from datetime import date, timedelta
 import app.models  # noqa: F401  (register models on Base.metadata)
 from app.core.db import SessionLocal
 from app.core.security import hash_password
+from app.models.course import Course
+from app.models.grade import Grade
 from app.models.profile import Profile
 from app.models.schedule_item import ScheduleItem
+from app.models.semester import Semester
 from app.models.study_session import StudySession
 from app.models.user import User
 from sqlalchemy import select
@@ -28,7 +31,33 @@ def seed() -> None:
             email=DEMO_EMAIL,
             password_hash=hash_password(DEMO_PASSWORD),
             name="Demo Student",
-            profile=Profile(class_name="K65-CNTT", faculty="CNTT", major="KHMT", goal="GPA 3.6+"),
+            profile=Profile(
+                class_name="K65-CNTT",
+                faculty="CNTT",
+                major="KHMT",
+                goal="GPA 3.6+",
+                target_cpa=3.6,
+                total_credits_required=140,
+                expected_graduation="2027-06",
+            ),
+            semesters=[
+                Semester(code="2024-1", name="HK1 2024-2025"),
+                Semester(code="2024-2", name="HK2 2024-2025"),
+            ],
+            courses=[
+                Course(code="CS101", name="Nhập môn CNTT", credits=3, category="foundation"),
+                Course(code="MA101", name="Giải tích 1", credits=4, category="general"),
+                Course(code="EN101", name="Tiếng Anh 1", credits=3, category="general"),
+                Course(
+                    code="PE101",
+                    name="Giáo dục thể chất",
+                    credits=0,
+                    category="general",
+                    is_required=False,
+                ),
+                Course(code="CS201", name="Cấu trúc dữ liệu", credits=4, category="specialized"),
+                Course(code="CS102", name="Lập trình C", credits=3, category="foundation"),
+            ],
             study_sessions=[
                 StudySession(
                     subject="Giải tích",
@@ -83,6 +112,58 @@ def seed() -> None:
             ],
         )
         db.add(user)
+        db.commit()
+
+        # Grades need course/semester IDs, so attach them after the first commit.
+        db.refresh(user)
+        sem = {s.code: s.id for s in user.semesters}
+        crs = {c.code: c.id for c in user.courses}
+        db.add_all(
+            [
+                Grade(
+                    user_id=user.id,
+                    course_id=crs["CS101"],
+                    semester_id=sem["2024-1"],
+                    grade_10=8.5,
+                    status="passed",
+                ),
+                Grade(
+                    user_id=user.id,
+                    course_id=crs["MA101"],
+                    semester_id=sem["2024-1"],
+                    grade_10=6.0,
+                    status="passed",
+                ),
+                Grade(
+                    user_id=user.id,
+                    course_id=crs["EN101"],
+                    semester_id=sem["2024-1"],
+                    grade_10=3.5,
+                    status="failed",
+                ),
+                Grade(
+                    user_id=user.id,
+                    course_id=crs["PE101"],
+                    semester_id=sem["2024-1"],
+                    grade_10=None,
+                    status="exempt",
+                ),
+                Grade(
+                    user_id=user.id,
+                    course_id=crs["EN101"],
+                    semester_id=sem["2024-2"],
+                    grade_10=7.0,
+                    status="passed",
+                ),  # retake
+                Grade(
+                    user_id=user.id,
+                    course_id=crs["CS201"],
+                    semester_id=sem["2024-2"],
+                    grade_10=None,
+                    status="in_progress",
+                ),
+            ]
+        )
         db.commit()
         print(f"StudyTrack seed: created demo user {DEMO_EMAIL} / {DEMO_PASSWORD}")
     finally:

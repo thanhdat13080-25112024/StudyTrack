@@ -101,6 +101,39 @@ Tất cả endpoint Phase 2 đều yêu cầu Bearer auth.
 
 **Dữ liệu demo** (sau `make seed`): tài khoản `demo@studytrack.app` / `studytrack` có sẵn **5 phiên học** + **3 mục lịch tuần** để dashboard/biểu đồ có dữ liệu ngay.
 
+## Học vụ lõi & API (Phase 3)
+
+Phase 3 thêm lớp **quản lý học vụ**: học phần (CTĐT), học kỳ, điểm số, một **engine GPA/CPA có test** (quy đổi hệ 10 → chữ → hệ 4, xếp loại, tiến độ tín chỉ) và **bộ what-if** (tính ngược điểm trung bình cần đạt cho mục tiêu + dự phóng điểm giả định).
+
+**Ba model mới** (migration `0003_courses_semesters_grades`, tất cả FK CASCADE, index `user_id`):
+
+- **`Semester`** (bảng `semesters`) — học kỳ: `code` ("2024-1", sắp xếp được), `name`, `start_date`/`end_date` (nullable). Unique `(user_id, code)`.
+- **`Course`** (bảng `courses`) — học phần trong CTĐT: `code`, `name`, `credits` (≥0), `category` (general/foundation/specialized/elective, nullable), `is_required` (mặc định true), `planned_semester_id` (cột tiến tới — chưa dùng ở Phase 3, phục vụ roadmap Phase 4). Unique `(user_id, code)`.
+- **`Grade`** (bảng `grades`) — điểm của một học phần trong một học kỳ: `grade_10` (float, nullable), `status` (`in_progress`/`passed`/`failed`/`exempt`). Unique `(user_id, course_id, semester_id)`. **`letter`/`grade_4` không lưu trong DB** — engine tính khi đọc (nguồn chân lý = `grade_10` + thang điểm).
+
+**Engine GPA/CPA** (`backend/app/services/gpa_engine.py`, viết test-first):
+
+- Quy đổi hệ 10 → chữ (A/B+/B/C+/C/D+/D/F) → hệ 4 theo thang VN mặc định (`GradeScale` cấu hình được để mở rộng sau).
+- GPA học kỳ + **CPA tích lũy** (trung bình có trọng số theo tín chỉ); **học lại lấy lần gần nhất** (latest-wins theo `semester_code`); môn `failed` tính 0 vào mẫu số, `exempt`/`in_progress` loại khỏi trung bình.
+- Tiến độ tín chỉ (đã đạt = passed+exempt, đang học, còn lại) + xếp loại (Xuất sắc ≥3.6 / Giỏi ≥3.2 / Khá ≥2.5 / Trung bình ≥2.0 / Yếu).
+- **What-if:** *goal-seek* (điểm trung bình cần đạt trên số tín chỉ còn lại để chạm CPA mục tiêu + tính khả thi + CPA tối đa có thể đạt) và *dự phóng* (nhập điểm giả định → CPA dự phóng).
+
+| Method | Endpoint | Mô tả |
+|--------|----------|-------|
+| `GET` / `POST` / `PUT` / `DELETE` | `/api/semesters`(`/{id}`) | CRUD học kỳ |
+| `GET` / `POST` / `PUT` / `DELETE` | `/api/courses`(`/{id}`) | CRUD học phần (CTĐT) |
+| `GET` / `POST` / `PUT` / `DELETE` | `/api/grades`(`/{id}`, `?semester_id`) | CRUD điểm; response nhúng `course`/`semester` + `letter`/`grade_4` tính sẵn |
+| `GET` | `/api/gpa` | Tổng hợp CPA + xếp loại + tiến độ tín chỉ + GPA từng học kỳ |
+| `POST` | `/api/gpa/what-if` | Goal-seek + dự phóng |
+
+Tất cả endpoint Phase 3 đều yêu cầu Bearer auth và chỉ thao tác trên dữ liệu của chính user. `PUT /api/profile` nay nhận thêm `target_cpa` / `total_credits_required` / `expected_graduation` (mục tiêu học bổng dùng cho what-if).
+
+**Các trang frontend mới** (route được bảo vệ): **Courses** (`/courses` — CRUD CTĐT) và **Grades** (`/grades` — quản lý học kỳ, nhập điểm với **xem trước chữ/hệ-4 tức thời** qua `lib/gpa.ts`, bảng tổng hợp GPA/CPA + xếp loại + thanh tiến độ tín chỉ, biểu đồ xu hướng GPA theo học kỳ, panel what-if). Dashboard có thêm **thẻ CPA** nhanh.
+
+> `frontend/src/lib/gpa.ts` là **bản sao client** của engine (chỉ phần quy đổi + xếp loại) để xem trước tức thời; backend vẫn là nguồn chân lý. `gpa.test.ts` (Vitest) khẳng định bản sao khớp engine tại mọi ngưỡng biên.
+
+**Dữ liệu demo** (sau `make seed`): tài khoản demo có thêm **2 học kỳ + 6 học phần + 6 điểm** (gồm một môn học lại, một môn đang học, một môn miễn) để bảng điểm/GPA có dữ liệu ngay; profile đặt `target_cpa=3.6`, `total_credits_required=140`.
+
 ## Lệnh thường dùng
 
 Tất cả lệnh chuẩn hóa qua `Makefile` (chạy `make help` để xem danh sách):
@@ -117,7 +150,7 @@ Tất cả lệnh chuẩn hóa qua `Makefile` (chạy `make help` để xem danh
 | `make migrate` | Áp dụng tất cả migration Alembic (`alembic upgrade head`) |
 | `make migrate-rev m="message"` | Tự sinh một revision migration mới |
 | `make seed` | Nạp dữ liệu demo qua `backend/seed.py` |
-| `make gen-types` | Boot FastAPI, dump OpenAPI, sinh lại `frontend/src/lib/api-types.ts` |
+| `make gen-types` | Dump OpenAPI (không cần chạy server) và sinh lại `frontend/src/lib/api-types.ts` |
 | `make deploy` | Trigger deploy prod cục bộ (CI thường tự chạy khi merge main) |
 | `make clean` | Xóa container + volume DB dev (PHÁ HỦY: mất dữ liệu dev) |
 
@@ -151,7 +184,7 @@ Khai báo trong `.env` (copy từ `.env.example`). `.env` bị git-ignore và b�
 | **0** | Scaffold + đường ray workflow: monorepo, docker-compose dev, FastAPI skeleton + `/api/health` + Alembic, Vite+React+Tailwind+shadcn + i18n vi/en + theme, lint/pre-commit, CI/deploy Actions, OpenAPI→TS, seed, Makefile, .env.example, `legacy/` | ✅ Hoàn thành |
 | **1** | Auth + nền user: JWT + argon2, User/Profile, i18n + theme, hồ sơ + thẻ SV ảo | ✅ Hoàn thành |
 | **2** | Port thói quen học: focus timer + StudySession, history, streak, lịch tuần, dashboard KPI + biểu đồ 7 ngày (Recharts), badges | ✅ Hoàn thành |
-| **3** | Học vụ lõi: Course/Semester/Grade, GPA/CPA engine + xếp loại + tiến độ tín chỉ, what-if GPA & học bổng | ⏳ |
+| **3** | Học vụ lõi: Course/Semester/Grade, GPA/CPA engine + xếp loại + tiến độ tín chỉ, what-if GPA & học bổng | ✅ Hoàn thành |
 | **4** | CTĐT & lộ trình: Prerequisite/CTĐT, roadmap engine, direction analysis, liên kết phiên học↔môn, cảnh báo môn yếu | ⏳ |
 | **5** | Deadline + realtime: Deadline/lịch thi, WebSocket notifications/nhắc nhở | ⏳ |
 | **6** | Lớp AI: service Claude API (proxy qua backend, giấu key) nâng cấp phân tích điểm yếu / lộ trình / tư vấn chọn môn | ⏳ |
