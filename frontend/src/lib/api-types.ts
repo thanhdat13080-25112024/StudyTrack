@@ -94,10 +94,122 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api/sessions': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** List Sessions */
+    get: operations['list_sessions_api_sessions_get'];
+    put?: never;
+    /** Create Session */
+    post: operations['create_session_api_sessions_post'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/sessions/{session_id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    /** Delete Session */
+    delete: operations['delete_session_api_sessions__session_id__delete'];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/schedule': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** List Items */
+    get: operations['list_items_api_schedule_get'];
+    put?: never;
+    /** Create Item */
+    post: operations['create_item_api_schedule_post'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/schedule/{item_id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    /** Update Item */
+    put: operations['update_item_api_schedule__item_id__put'];
+    post?: never;
+    /** Delete Item */
+    delete: operations['delete_item_api_schedule__item_id__delete'];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/dashboard': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Get Dashboard */
+    get: operations['get_dashboard_api_dashboard_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/suggestions': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Suggest */
+    post: operations['suggest_api_suggestions_post'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
   schemas: {
+    /** BadgeOut */
+    BadgeOut: {
+      /** Key */
+      key: string;
+      /** Unlocked */
+      unlocked: boolean;
+    };
     /** Body_login_api_auth_login_post */
     Body_login_api_auth_login_post: {
       /** Grant Type */
@@ -122,10 +234,38 @@ export interface components {
        */
       client_secret?: string | null;
     };
+    /** ChartPointOut */
+    ChartPointOut: {
+      /** Date */
+      date: string;
+      /** Minutes */
+      minutes: number;
+    };
+    /** DashboardOut */
+    DashboardOut: {
+      kpis: components['schemas']['KpiOut'];
+      /** Chart */
+      chart: components['schemas']['ChartPointOut'][];
+      /** Badges */
+      badges: components['schemas']['BadgeOut'][];
+      /** Recent Sessions */
+      recent_sessions: components['schemas']['StudySessionOut'][];
+    };
     /** HTTPValidationError */
     HTTPValidationError: {
       /** Detail */
       detail?: components['schemas']['ValidationError'][];
+    };
+    /** KpiOut */
+    KpiOut: {
+      /** Today Minutes */
+      today_minutes: number;
+      /** Total Minutes */
+      total_minutes: number;
+      /** Total Sessions */
+      total_sessions: number;
+      /** Streak */
+      streak: number;
     };
     /** MeOut */
     MeOut: {
@@ -163,6 +303,136 @@ export interface components {
       goal?: string | null;
       /** Avatar Url */
       avatar_url?: string | null;
+    };
+    /** ScheduleItemCreate */
+    ScheduleItemCreate: {
+      /** Day Of Week */
+      day_of_week: number;
+      /** Time */
+      time: string;
+      /** Subject */
+      subject: string;
+      /** Course Id */
+      course_id?: number | null;
+      /**
+       * Recurring
+       * @default true
+       */
+      recurring: boolean;
+    };
+    /** ScheduleItemOut */
+    ScheduleItemOut: {
+      /** Id */
+      id: number;
+      /** Day Of Week */
+      day_of_week: number;
+      /** Time */
+      time: string;
+      /** Subject */
+      subject: string;
+      /** Course Id */
+      course_id: number | null;
+      /** Recurring */
+      recurring: boolean;
+    };
+    /** ScheduleItemUpdate */
+    ScheduleItemUpdate: {
+      /** Day Of Week */
+      day_of_week?: number | null;
+      /** Time */
+      time?: string | null;
+      /** Subject */
+      subject?: string | null;
+      /** Course Id */
+      course_id?: number | null;
+      /** Recurring */
+      recurring?: boolean | null;
+    };
+    /** StudySessionCreate */
+    StudySessionCreate: {
+      /** Subject */
+      subject: string;
+      /** Planned Minutes */
+      planned_minutes: number;
+      /** Actual Minutes */
+      actual_minutes: number;
+      /** Focus */
+      focus: number;
+      /**
+       * Method
+       * @enum {string}
+       */
+      method: 'Pomodoro' | 'Deep Work' | 'Active Recall';
+      /**
+       * Note
+       * @default
+       */
+      note: string;
+      /**
+       * Session Date
+       * Format: date
+       */
+      session_date: string;
+      /** Started At */
+      started_at?: string | null;
+      /** Ended At */
+      ended_at?: string | null;
+      /** Course Id */
+      course_id?: number | null;
+    };
+    /** StudySessionOut */
+    StudySessionOut: {
+      /** Id */
+      id: number;
+      /** Subject */
+      subject: string;
+      /** Planned Minutes */
+      planned_minutes: number;
+      /** Actual Minutes */
+      actual_minutes: number;
+      /** Focus */
+      focus: number;
+      /** Method */
+      method: string;
+      /** Note */
+      note: string;
+      /**
+       * Session Date
+       * Format: date
+       */
+      session_date: string;
+      /** Started At */
+      started_at: string | null;
+      /** Ended At */
+      ended_at: string | null;
+      /** Course Id */
+      course_id: number | null;
+    };
+    /** SuggestionIn */
+    SuggestionIn: {
+      /**
+       * Method
+       * @enum {string}
+       */
+      method: 'Pomodoro' | 'Deep Work' | 'Active Recall';
+      /** Focus */
+      focus: number;
+      /** Planned Minutes */
+      planned_minutes: number;
+    };
+    /** SuggestionOut */
+    SuggestionOut: {
+      /**
+       * Type
+       * @enum {string}
+       */
+      type: 'pomodoro_not_25' | 'high_focus' | 'boost_focus';
+      /** Method */
+      method: string;
+      /** Focus */
+      focus: number;
+      /** Planned Minutes */
+      planned_minutes: number;
     };
     /** Token */
     Token: {
@@ -419,6 +689,269 @@ export interface operations {
         };
         content: {
           'application/json': components['schemas']['ProfileOut'];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
+    };
+  };
+  list_sessions_api_sessions_get: {
+    parameters: {
+      query?: {
+        limit?: number | null;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['StudySessionOut'][];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
+    };
+  };
+  create_session_api_sessions_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['StudySessionCreate'];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['StudySessionOut'];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
+    };
+  };
+  delete_session_api_sessions__session_id__delete: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        session_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
+    };
+  };
+  list_items_api_schedule_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ScheduleItemOut'][];
+        };
+      };
+    };
+  };
+  create_item_api_schedule_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ScheduleItemCreate'];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ScheduleItemOut'];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
+    };
+  };
+  update_item_api_schedule__item_id__put: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        item_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ScheduleItemUpdate'];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ScheduleItemOut'];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
+    };
+  };
+  delete_item_api_schedule__item_id__delete: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        item_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
+    };
+  };
+  get_dashboard_api_dashboard_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DashboardOut'];
+        };
+      };
+    };
+  };
+  suggest_api_suggestions_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['SuggestionIn'];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['SuggestionOut'];
         };
       };
       /** @description Validation Error */
