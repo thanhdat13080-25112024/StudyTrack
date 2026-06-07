@@ -67,28 +67,39 @@ export default function Focus() {
       const state = useTimerStore.getState();
       const actual = computeActualMinutes(state.elapsedSeconds());
       const subject = state.subject;
-      if (actual > 0 && subject) {
-        createSession.mutate({
-          subject,
-          planned_minutes: Math.round(state.plannedSeconds / 60),
-          actual_minutes: actual,
-          focus: state.focus,
-          method: state.method,
-          note: state.note,
-          session_date: localDateISO(),
-          started_at: state.startedAt ?? new Date().toISOString(),
-          ended_at: new Date().toISOString(),
-        });
-      }
-      if (finishedNaturally) {
-        try {
-          confetti({ particleCount: 140, spread: 80, origin: { y: 0.6 } });
-        } catch {
-          // confetti is best-effort; ignore if unavailable.
+
+      const fireConfettiThenLeave = () => {
+        if (finishedNaturally) {
+          try {
+            confetti({ particleCount: 140, spread: 80, origin: { y: 0.6 } });
+          } catch {
+            // confetti is best-effort; ignore if unavailable.
+          }
         }
+        useTimerStore.getState().reset();
+        navigate('/dashboard');
+      };
+
+      if (actual > 0 && subject) {
+        // Keep the timer state + this page on error so the inline error shows;
+        // only reset + navigate once the session is recorded.
+        createSession.mutate(
+          {
+            subject,
+            planned_minutes: Math.round(state.plannedSeconds / 60),
+            actual_minutes: actual,
+            focus: state.focus,
+            method: state.method,
+            note: state.note,
+            session_date: localDateISO(),
+            started_at: state.startedAt ?? new Date().toISOString(),
+            ended_at: new Date().toISOString(),
+          },
+          { onSuccess: fireConfettiThenLeave },
+        );
+      } else {
+        fireConfettiThenLeave();
       }
-      state.reset();
-      navigate('/dashboard');
     },
     [clearTick, createSession, navigate],
   );
@@ -96,7 +107,12 @@ export default function Focus() {
   // On mount: resume the timer UI if a running session survived a refresh.
   useEffect(() => {
     const s = useTimerStore.getState();
-    if (s.running && s.secondsLeft > 0) {
+    if (s.running && s.secondsLeft === 0 && s.plannedSeconds > 0) {
+      // Edge: closed exactly at finish — rehydrated frozen at 00:00:00. The
+      // tick won't restart (needs secondsLeft>0) and auto-stop won't fire, so
+      // finalize here (natural-finish path) to save + navigate instead of freeze.
+      finalize(true);
+    } else if (s.running && s.secondsLeft > 0) {
       startTick();
     }
     return clearTick;
@@ -197,6 +213,9 @@ export default function Focus() {
                 {t('focus.stop')}
               </Button>
             </div>
+            {createSession.isError && (
+              <span className="text-sm text-red-400">{t('common.actionFailed')}</span>
+            )}
             <div className="w-full max-w-md">
               <MusicPlayer autoPlay />
             </div>

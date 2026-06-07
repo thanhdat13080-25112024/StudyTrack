@@ -25,7 +25,8 @@
     "loading": "Loading...",
     "minutes": "minutes",
     "minutesShort": "min",
-    "hours": "hours"
+    "hours": "hours",
+    "actionFailed": "Action failed, please try again"
   },
   "dashboard": {
     "welcomeLine": "Welcome to StudyTrack — start your focused study session.",

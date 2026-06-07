@@ -12,7 +12,8 @@ import type { Dashboard } from '@/features/sessions/types';
 
 type ChartPoint = Dashboard['chart'][number];
 
-const DAY_KEYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'] as const;
+// `Date.getDay()`-ordered (Sun=0), distinct from the schedule's Mon-first DAY_KEYS.
+const JS_DAY_KEYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'] as const;
 
 function readVar(name: string, fallback: string): string {
   if (typeof window === 'undefined') return fallback;
@@ -40,7 +41,7 @@ export function WeeklyChart({ data }: WeeklyChartProps) {
 
   const rows = data.map((p) => {
     const d = new Date(`${p.date}T00:00:00`);
-    return { label: t(`days.${DAY_KEYS[d.getDay()]}Short`), minutes: p.minutes };
+    return { label: t(`days.${JS_DAY_KEYS[d.getDay()]}Short`), minutes: p.minutes };
   });
 
   return (

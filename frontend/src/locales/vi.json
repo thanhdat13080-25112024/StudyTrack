@@ -25,7 +25,8 @@
     "loading": "Đang tải...",
     "minutes": "phút",
     "minutesShort": "ph",
-    "hours": "giờ"
+    "hours": "giờ",
+    "actionFailed": "Thao tác thất bại, vui lòng thử lại"
   },
   "dashboard": {
     "welcomeLine": "Chào mừng đến với StudyTrack — hãy bắt đầu phiên học tập trung của bạn.",

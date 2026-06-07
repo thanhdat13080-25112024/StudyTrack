@@ -34,6 +34,7 @@ function SessionRow({ session }: { session: StudySession }) {
           <span>{t('history.focusValue', { focus: session.focus })}</span>
         </div>
         {session.note && <p className="text-sm text-text-muted">{session.note}</p>}
+        {del.isError && <span className="text-sm text-red-400">{t('common.actionFailed')}</span>}
       </div>
       <Button
         variant="outline"

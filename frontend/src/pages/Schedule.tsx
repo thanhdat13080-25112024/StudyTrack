@@ -77,6 +77,9 @@ export default function Schedule() {
             onSubmit={handleSubmit}
             onCancel={resetForm}
           />
+          {(create.isError || update.isError || remove.isError) && (
+            <span className="mt-3 block text-sm text-red-400">{t('common.actionFailed')}</span>
+          )}
         </section>
 
         <section className="flex flex-col gap-4">
