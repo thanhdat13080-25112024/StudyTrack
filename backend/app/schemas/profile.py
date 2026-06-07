@@ -21,6 +21,7 @@ class ProfileOut(BaseModel):
     target_cpa: float | None
     total_credits_required: int | None
     expected_graduation: str | None
+    max_credits_per_semester: int | None
 
 
 class ProfileUpdate(BaseModel):
@@ -32,6 +33,7 @@ class ProfileUpdate(BaseModel):
     target_cpa: float | None = Field(default=None, ge=0, le=4)
     total_credits_required: int | None = Field(default=None, ge=0)
     expected_graduation: str | None = Field(default=None, max_length=32)
+    max_credits_per_semester: int | None = Field(default=None, ge=1, le=50)
 
 
 class MeOut(BaseModel):
