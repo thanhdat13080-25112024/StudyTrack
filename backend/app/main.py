@@ -11,7 +11,7 @@ from __future__ import annotations
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import auth, health, profile
+from app.api import auth, health, profile, sessions
 from app.core.config import settings
 
 app = FastAPI(
@@ -33,6 +33,7 @@ app.add_middleware(
 app.include_router(health.router, prefix="/api")
 app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
 app.include_router(profile.router, prefix="/api/profile", tags=["profile"])
+app.include_router(sessions.router, prefix="/api/sessions", tags=["sessions"])
 
 # Future domain routers (Phases 1-6) are mounted here, e.g.:
 # app.include_router(dashboard.router, prefix="/api/dashboard", tags=["dashboard"])
