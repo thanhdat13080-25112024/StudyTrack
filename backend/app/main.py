@@ -18,6 +18,7 @@ from app.api import (
     gpa,
     grades,
     health,
+    prerequisites,
     profile,
     schedule,
     semesters,
@@ -53,6 +54,7 @@ app.include_router(semesters.router, prefix="/api/semesters", tags=["semesters"]
 app.include_router(courses.router, prefix="/api/courses", tags=["courses"])
 app.include_router(grades.router, prefix="/api/grades", tags=["grades"])
 app.include_router(gpa.router, prefix="/api/gpa", tags=["gpa"])
+app.include_router(prerequisites.router, prefix="/api/prerequisites", tags=["prerequisites"])
 
 # --- WebSocket mount point (Phase 5) ----------------------------------------
 # Real-time notifications/deadlines will be served at ``/ws``. Wire it here:
