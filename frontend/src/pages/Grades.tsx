@@ -78,10 +78,7 @@ export default function Grades() {
   const update = useUpdateGrade();
   const remove = useDeleteGrade();
 
-  const courseById = useMemo(
-    () => new Map((courses ?? []).map((c) => [c.id, c])),
-    [courses],
-  );
+  const courseById = useMemo(() => new Map((courses ?? []).map((c) => [c.id, c])), [courses]);
 
   const change = (patch: Partial<GradeFormValues>) => setForm((prev) => ({ ...prev, ...patch }));
 
@@ -196,10 +193,7 @@ export default function Grades() {
               <div className="grid gap-5 md:grid-cols-2">
                 <div className="flex flex-col gap-1.5">
                   <Label htmlFor="g-course">{t('grades.courseLabel')}</Label>
-                  <Select
-                    value={form.course_id}
-                    onValueChange={(v) => change({ course_id: v })}
-                  >
+                  <Select value={form.course_id} onValueChange={(v) => change({ course_id: v })}>
                     <SelectTrigger id="g-course">
                       <SelectValue placeholder={t('grades.selectCourse')} />
                     </SelectTrigger>
@@ -267,8 +261,8 @@ export default function Grades() {
                     />
                     {preview && (
                       <span className="whitespace-nowrap text-sm text-text-muted">
-                        {t('grades.preview')}:{' '}
-                        <b className="text-text-helper">{preview.letter}</b> ({preview.grade4})
+                        {t('grades.preview')}: <b className="text-text-helper">{preview.letter}</b>{' '}
+                        ({preview.grade4})
                       </span>
                     )}
                   </div>

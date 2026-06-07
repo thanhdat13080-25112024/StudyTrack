@@ -17,7 +17,10 @@ function useInvalidate() {
 }
 
 export function useCourses() {
-  return useQuery({ queryKey: COURSES_KEY, queryFn: () => apiClient.get<Course[]>('/api/courses') });
+  return useQuery({
+    queryKey: COURSES_KEY,
+    queryFn: () => apiClient.get<Course[]>('/api/courses'),
+  });
 }
 
 export function useCreateCourse() {

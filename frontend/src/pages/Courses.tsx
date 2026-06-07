@@ -198,7 +198,9 @@ export default function Courses() {
                   <tr className="border-b border-border text-text-muted">
                     <th className="px-4 py-3 font-semibold">{t('courses.colCode')}</th>
                     <th className="px-4 py-3 font-semibold">{t('courses.colName')}</th>
-                    <th className="px-4 py-3 text-center font-semibold">{t('courses.colCredits')}</th>
+                    <th className="px-4 py-3 text-center font-semibold">
+                      {t('courses.colCredits')}
+                    </th>
                     <th className="px-4 py-3 font-semibold">{t('courses.colCategory')}</th>
                     <th className="px-4 py-3" />
                   </tr>

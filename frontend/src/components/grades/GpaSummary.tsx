@@ -57,12 +57,12 @@ export function GpaSummary({ data }: GpaSummaryProps) {
         </div>
         <div className="flex flex-wrap gap-x-6 gap-y-1 text-xs text-text-muted">
           <span>
-            <span className="inline-block h-2 w-2 rounded-full bg-brand-emerald" /> {t('gpa.earned')}:{' '}
-            <b className="text-text-helper">{earned}</b>
+            <span className="inline-block h-2 w-2 rounded-full bg-brand-emerald" />{' '}
+            {t('gpa.earned')}: <b className="text-text-helper">{earned}</b>
           </span>
           <span>
-            <span className="inline-block h-2 w-2 rounded-full bg-accent/60" /> {t('gpa.inProgress')}:{' '}
-            <b className="text-text-helper">{in_progress}</b>
+            <span className="inline-block h-2 w-2 rounded-full bg-accent/60" />{' '}
+            {t('gpa.inProgress')}: <b className="text-text-helper">{in_progress}</b>
           </span>
           {required > 0 && (
             <span>
