@@ -192,6 +192,28 @@
       "kha": "Khá",
       "trung_binh": "Trung bình",
       "yeu": "Yếu"
+    },
+    "whatif": {
+      "title": "Mô phỏng mục tiêu (What-if)",
+      "targetCpa": "CPA mục tiêu",
+      "totalCredits": "Tổng tín chỉ cần",
+      "compute": "Tính toán",
+      "saveTarget": "Lưu làm mục tiêu",
+      "requiredAvg": "CPA trung bình cần đạt cho phần còn lại",
+      "remainingCredits": "Tín chỉ còn lại",
+      "maxReachable": "CPA tối đa có thể đạt",
+      "feasible": "Khả thi",
+      "infeasible": "Không khả thi",
+      "alreadyMet": "Đã đạt mục tiêu",
+      "targetTier": "Xếp loại mục tiêu",
+      "projectionTitle": "Dự phóng điểm giả định",
+      "addRow": "Thêm học phần giả định",
+      "removeRow": "Xóa",
+      "hypCredits": "Tín chỉ",
+      "hypGrade": "Điểm (hệ 10)",
+      "projectedCpa": "CPA dự phóng",
+      "noTarget": "Nhập CPA mục tiêu để xem cần đạt bao nhiêu.",
+      "saved": "Đã lưu mục tiêu"
     }
   },
   "badges": {

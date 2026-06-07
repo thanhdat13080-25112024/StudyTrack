@@ -20,6 +20,7 @@ import {
 } from '@/components/ui/select';
 import { GpaSummary } from '@/components/grades/GpaSummary';
 import { SemesterManager } from '@/components/grades/SemesterManager';
+import { WhatIfPanel } from '@/components/grades/WhatIfPanel';
 import { useCourses } from '@/features/courses/hooks';
 import { useSemesters } from '@/features/semesters/hooks';
 import {
@@ -172,6 +173,8 @@ export default function Grades() {
             {t('gpa.noData')}
           </p>
         )}
+
+        <WhatIfPanel />
 
         <section className="rounded-card border border-border bg-bg-card p-6 shadow-card">
           <h2 className="mb-4 text-lg font-bold text-text-helper">{t('grades.addGradeTitle')}</h2>

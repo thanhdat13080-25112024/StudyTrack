@@ -192,6 +192,28 @@
       "kha": "Good",
       "trung_binh": "Average",
       "yeu": "Weak"
+    },
+    "whatif": {
+      "title": "What-if planner",
+      "targetCpa": "Target CPA",
+      "totalCredits": "Total credits required",
+      "compute": "Compute",
+      "saveTarget": "Save as my target",
+      "requiredAvg": "Required average on remaining credits",
+      "remainingCredits": "Remaining credits",
+      "maxReachable": "Max reachable CPA",
+      "feasible": "Feasible",
+      "infeasible": "Not reachable",
+      "alreadyMet": "Target already met",
+      "targetTier": "Target classification",
+      "projectionTitle": "Project hypothetical grades",
+      "addRow": "Add hypothetical course",
+      "removeRow": "Remove",
+      "hypCredits": "Credits",
+      "hypGrade": "Grade (0–10)",
+      "projectedCpa": "Projected CPA",
+      "noTarget": "Enter a target CPA to see what you need.",
+      "saved": "Target saved"
     }
   },
   "badges": {
