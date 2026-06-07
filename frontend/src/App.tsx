@@ -6,6 +6,7 @@ import Profile from '@/pages/Profile';
 import Focus from '@/pages/Focus';
 import History from '@/pages/History';
 import Schedule from '@/pages/Schedule';
+import Courses from '@/pages/Courses';
 import { RequireAuth } from '@/components/auth/RequireAuth';
 import { useAuthStore } from '@/store/authStore';
 import { useMe } from '@/features/auth/hooks';
@@ -35,6 +36,7 @@ export default function App() {
         <Route path="/focus" element={<Focus />} />
         <Route path="/history" element={<History />} />
         <Route path="/schedule" element={<Schedule />} />
+        <Route path="/courses" element={<Courses />} />
         <Route path="/profile" element={<Profile />} />
       </Route>
       <Route

@@ -7,7 +7,9 @@
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
+  BookOpen,
   CalendarDays,
+  GraduationCap,
   History,
   Languages,
   LayoutDashboard,
@@ -28,6 +30,8 @@ const NAV = [
   { to: '/focus', key: 'nav.focus', icon: TimerIcon },
   { to: '/history', key: 'nav.history', icon: History },
   { to: '/schedule', key: 'nav.schedule', icon: CalendarDays },
+  { to: '/courses', key: 'nav.courses', icon: BookOpen },
+  { to: '/grades', key: 'nav.grades', icon: GraduationCap },
 ] as const;
 
 export function AppHeader() {

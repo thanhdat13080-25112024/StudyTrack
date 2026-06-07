@@ -10,6 +10,8 @@
     "focus": "Phiên học",
     "history": "Lịch sử",
     "schedule": "Lịch học",
+    "courses": "Học phần",
+    "grades": "Điểm số",
     "login": "Đăng nhập"
   },
   "common": {
@@ -90,6 +92,37 @@
     "save": "Lưu thay đổi",
     "cancel": "Hủy",
     "noItems": "Trống"
+  },
+  "courses": {
+    "title": "Chương trình đào tạo (CTĐT)",
+    "addTitle": "Thêm / Sửa học phần",
+    "code": "Mã học phần",
+    "name": "Tên học phần",
+    "credits": "Số tín chỉ",
+    "category": "Nhóm học phần",
+    "categoryNone": "Không phân loại",
+    "required": "Bắt buộc",
+    "requiredShort": "BB",
+    "electiveShort": "TC",
+    "add": "Thêm học phần",
+    "save": "Lưu thay đổi",
+    "cancel": "Hủy",
+    "edit": "Sửa học phần",
+    "delete": "Xóa học phần",
+    "deleteConfirm": "Xóa học phần này? Mọi điểm liên quan cũng sẽ bị xóa.",
+    "empty": "Chưa có học phần nào. Hãy thêm học phần đầu tiên.",
+    "creditsValue": "{{count}} tín chỉ",
+    "colCode": "Mã",
+    "colName": "Tên học phần",
+    "colCredits": "TC",
+    "colCategory": "Nhóm",
+    "colActions": "",
+    "cat": {
+      "general": "Đại cương",
+      "foundation": "Cơ sở ngành",
+      "specialized": "Chuyên ngành",
+      "elective": "Tự chọn"
+    }
   },
   "badges": {
     "title": "🏆 Huy hiệu thành tựu học tập",

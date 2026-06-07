@@ -10,6 +10,8 @@
     "focus": "Focus",
     "history": "History",
     "schedule": "Schedule",
+    "courses": "Courses",
+    "grades": "Grades",
     "login": "Login"
   },
   "common": {
@@ -90,6 +92,37 @@
     "save": "Save changes",
     "cancel": "Cancel",
     "noItems": "Empty"
+  },
+  "courses": {
+    "title": "Curriculum (Courses)",
+    "addTitle": "Add / Edit course",
+    "code": "Course code",
+    "name": "Course name",
+    "credits": "Credits",
+    "category": "Category",
+    "categoryNone": "Uncategorized",
+    "required": "Required",
+    "requiredShort": "REQ",
+    "electiveShort": "ELE",
+    "add": "Add course",
+    "save": "Save changes",
+    "cancel": "Cancel",
+    "edit": "Edit course",
+    "delete": "Delete course",
+    "deleteConfirm": "Delete this course? All related grades will be removed too.",
+    "empty": "No courses yet. Add your first course.",
+    "creditsValue": "{{count}} credits",
+    "colCode": "Code",
+    "colName": "Course name",
+    "colCredits": "Cr",
+    "colCategory": "Category",
+    "colActions": "",
+    "cat": {
+      "general": "General",
+      "foundation": "Foundation",
+      "specialized": "Specialized",
+      "elective": "Elective"
+    }
   },
   "badges": {
     "title": "🏆 Academic Achievement Badges",
