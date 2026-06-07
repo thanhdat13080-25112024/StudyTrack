@@ -199,6 +199,148 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api/semesters': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** List Semesters */
+    get: operations['list_semesters_api_semesters_get'];
+    put?: never;
+    /** Create Semester */
+    post: operations['create_semester_api_semesters_post'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/semesters/{semester_id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    /** Update Semester */
+    put: operations['update_semester_api_semesters__semester_id__put'];
+    post?: never;
+    /** Delete Semester */
+    delete: operations['delete_semester_api_semesters__semester_id__delete'];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/courses': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** List Courses */
+    get: operations['list_courses_api_courses_get'];
+    put?: never;
+    /** Create Course */
+    post: operations['create_course_api_courses_post'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/courses/{course_id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    /** Update Course */
+    put: operations['update_course_api_courses__course_id__put'];
+    post?: never;
+    /** Delete Course */
+    delete: operations['delete_course_api_courses__course_id__delete'];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/grades': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** List Grades */
+    get: operations['list_grades_api_grades_get'];
+    put?: never;
+    /** Create Grade */
+    post: operations['create_grade_api_grades_post'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/grades/{grade_id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    /** Update Grade */
+    put: operations['update_grade_api_grades__grade_id__put'];
+    post?: never;
+    /** Delete Grade */
+    delete: operations['delete_grade_api_grades__grade_id__delete'];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/gpa': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Get Gpa */
+    get: operations['get_gpa_api_gpa_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/gpa/what-if': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** What If */
+    post: operations['what_if_api_gpa_what_if_post'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -241,6 +383,86 @@ export interface components {
       /** Minutes */
       minutes: number;
     };
+    /** CourseCreate */
+    CourseCreate: {
+      /** Code */
+      code: string;
+      /** Name */
+      name: string;
+      /** Credits */
+      credits: number;
+      /** Category */
+      category?: ('general' | 'foundation' | 'specialized' | 'elective') | null;
+      /**
+       * Is Required
+       * @default true
+       */
+      is_required: boolean;
+      /** Planned Semester Id */
+      planned_semester_id?: number | null;
+    };
+    /** CourseOut */
+    CourseOut: {
+      /** Code */
+      code: string;
+      /** Name */
+      name: string;
+      /** Credits */
+      credits: number;
+      /** Category */
+      category?: ('general' | 'foundation' | 'specialized' | 'elective') | null;
+      /**
+       * Is Required
+       * @default true
+       */
+      is_required: boolean;
+      /** Planned Semester Id */
+      planned_semester_id?: number | null;
+      /** Id */
+      id: number;
+    };
+    /** CourseSummary */
+    CourseSummary: {
+      /** Id */
+      id: number;
+      /** Code */
+      code: string;
+      /** Name */
+      name: string;
+      /** Credits */
+      credits: number;
+      /** Category */
+      category: string | null;
+    };
+    /** CourseUpdate */
+    CourseUpdate: {
+      /** Code */
+      code: string;
+      /** Name */
+      name: string;
+      /** Credits */
+      credits: number;
+      /** Category */
+      category?: ('general' | 'foundation' | 'specialized' | 'elective') | null;
+      /**
+       * Is Required
+       * @default true
+       */
+      is_required: boolean;
+      /** Planned Semester Id */
+      planned_semester_id?: number | null;
+    };
+    /** CreditProgress */
+    CreditProgress: {
+      /** Earned */
+      earned: number;
+      /** In Progress */
+      in_progress: number;
+      /** Remaining */
+      remaining: number;
+      /** Required */
+      required: number;
+    };
     /** DashboardOut */
     DashboardOut: {
       kpis: components['schemas']['KpiOut'];
@@ -251,10 +473,89 @@ export interface components {
       /** Recent Sessions */
       recent_sessions: components['schemas']['StudySessionOut'][];
     };
+    /** GoalSeekOut */
+    GoalSeekOut: {
+      /** Required Avg */
+      required_avg: number | null;
+      /** Feasible */
+      feasible: boolean;
+      /** Already Met */
+      already_met: boolean;
+      /** Max Reachable Cpa */
+      max_reachable_cpa: number;
+      /** Remaining Credits */
+      remaining_credits: number;
+      /** Target Tier */
+      target_tier: string;
+    };
+    /** GpaSummaryOut */
+    GpaSummaryOut: {
+      /** Cpa */
+      cpa: number;
+      /** Classification */
+      classification: string;
+      credits: components['schemas']['CreditProgress'];
+      /** Semesters */
+      semesters: components['schemas']['SemesterGpa'][];
+    };
+    /** GradeCreate */
+    GradeCreate: {
+      /** Course Id */
+      course_id: number;
+      /** Semester Id */
+      semester_id: number;
+      /** Grade 10 */
+      grade_10?: number | null;
+      /**
+       * Status
+       * @enum {string}
+       */
+      status: 'in_progress' | 'passed' | 'failed' | 'exempt';
+    };
+    /** GradeOut */
+    GradeOut: {
+      /** Id */
+      id: number;
+      /** Course Id */
+      course_id: number;
+      /** Semester Id */
+      semester_id: number;
+      /** Grade 10 */
+      grade_10: number | null;
+      /** Status */
+      status: string;
+      /** Letter */
+      letter: string | null;
+      /** Grade 4 */
+      grade_4: number | null;
+      course: components['schemas']['CourseSummary'];
+      semester: components['schemas']['SemesterSummary'];
+    };
+    /** GradeUpdate */
+    GradeUpdate: {
+      /** Course Id */
+      course_id: number;
+      /** Semester Id */
+      semester_id: number;
+      /** Grade 10 */
+      grade_10?: number | null;
+      /**
+       * Status
+       * @enum {string}
+       */
+      status: 'in_progress' | 'passed' | 'failed' | 'exempt';
+    };
     /** HTTPValidationError */
     HTTPValidationError: {
       /** Detail */
       detail?: components['schemas']['ValidationError'][];
+    };
+    /** Hypothetical */
+    Hypothetical: {
+      /** Credits */
+      credits: number;
+      /** Grade 10 */
+      grade_10: number;
     };
     /** KpiOut */
     KpiOut: {
@@ -303,6 +604,19 @@ export interface components {
       goal?: string | null;
       /** Avatar Url */
       avatar_url?: string | null;
+      /** Target Cpa */
+      target_cpa?: number | null;
+      /** Total Credits Required */
+      total_credits_required?: number | null;
+      /** Expected Graduation */
+      expected_graduation?: string | null;
+    };
+    /** ProjectionOut */
+    ProjectionOut: {
+      /** Projected Cpa */
+      projected_cpa: number;
+      /** Projected Tier */
+      projected_tier: string;
     };
     /** ScheduleItemCreate */
     ScheduleItemCreate: {
@@ -347,6 +661,59 @@ export interface components {
       course_id?: number | null;
       /** Recurring */
       recurring?: boolean | null;
+    };
+    /** SemesterCreate */
+    SemesterCreate: {
+      /** Code */
+      code: string;
+      /** Name */
+      name?: string | null;
+      /** Start Date */
+      start_date?: string | null;
+      /** End Date */
+      end_date?: string | null;
+    };
+    /** SemesterGpa */
+    SemesterGpa: {
+      /** Semester Id */
+      semester_id: number;
+      /** Code */
+      code: string;
+      /** Gpa */
+      gpa: number;
+      /** Credits */
+      credits: number;
+    };
+    /** SemesterOut */
+    SemesterOut: {
+      /** Code */
+      code: string;
+      /** Name */
+      name?: string | null;
+      /** Start Date */
+      start_date?: string | null;
+      /** End Date */
+      end_date?: string | null;
+      /** Id */
+      id: number;
+    };
+    /** SemesterSummary */
+    SemesterSummary: {
+      /** Id */
+      id: number;
+      /** Code */
+      code: string;
+    };
+    /** SemesterUpdate */
+    SemesterUpdate: {
+      /** Code */
+      code: string;
+      /** Name */
+      name?: string | null;
+      /** Start Date */
+      start_date?: string | null;
+      /** End Date */
+      end_date?: string | null;
     };
     /** StudySessionCreate */
     StudySessionCreate: {
@@ -498,6 +865,20 @@ export interface components {
       input?: unknown;
       /** Context */
       ctx?: Record<string, never>;
+    };
+    /** WhatIfIn */
+    WhatIfIn: {
+      /** Target Cpa */
+      target_cpa?: number | null;
+      /** Total Credits Required */
+      total_credits_required?: number | null;
+      /** Hypotheticals */
+      hypotheticals?: components['schemas']['Hypothetical'][];
+    };
+    /** WhatIfOut */
+    WhatIfOut: {
+      goal_seek: components['schemas']['GoalSeekOut'] | null;
+      projection: components['schemas']['ProjectionOut'] | null;
     };
   };
   responses: never;
@@ -952,6 +1333,421 @@ export interface operations {
         };
         content: {
           'application/json': components['schemas']['SuggestionOut'];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
+    };
+  };
+  list_semesters_api_semesters_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['SemesterOut'][];
+        };
+      };
+    };
+  };
+  create_semester_api_semesters_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['SemesterCreate'];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['SemesterOut'];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
+    };
+  };
+  update_semester_api_semesters__semester_id__put: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        semester_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['SemesterUpdate'];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['SemesterOut'];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
+    };
+  };
+  delete_semester_api_semesters__semester_id__delete: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        semester_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
+    };
+  };
+  list_courses_api_courses_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CourseOut'][];
+        };
+      };
+    };
+  };
+  create_course_api_courses_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CourseCreate'];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CourseOut'];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
+    };
+  };
+  update_course_api_courses__course_id__put: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        course_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CourseUpdate'];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CourseOut'];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
+    };
+  };
+  delete_course_api_courses__course_id__delete: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        course_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
+    };
+  };
+  list_grades_api_grades_get: {
+    parameters: {
+      query?: {
+        semester_id?: number | null;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['GradeOut'][];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
+    };
+  };
+  create_grade_api_grades_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['GradeCreate'];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['GradeOut'];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
+    };
+  };
+  update_grade_api_grades__grade_id__put: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        grade_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['GradeUpdate'];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['GradeOut'];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
+    };
+  };
+  delete_grade_api_grades__grade_id__delete: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        grade_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
+    };
+  };
+  get_gpa_api_gpa_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['GpaSummaryOut'];
+        };
+      };
+    };
+  };
+  what_if_api_gpa_what_if_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['WhatIfIn'];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['WhatIfOut'];
         };
       };
       /** @description Validation Error */

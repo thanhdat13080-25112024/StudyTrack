@@ -15,9 +15,7 @@ router = APIRouter()
 
 
 def _get_owned(db: Session, user: User, semester_id: int) -> Semester:
-    obj = db.scalar(
-        select(Semester).where(Semester.id == semester_id, Semester.user_id == user.id)
-    )
+    obj = db.scalar(select(Semester).where(Semester.id == semester_id, Semester.user_id == user.id))
     if obj is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Semester not found")
     return obj
@@ -28,9 +26,7 @@ def list_semesters(
     current: User = Depends(get_current_user), db: Session = Depends(get_db)
 ) -> list[Semester]:
     return list(
-        db.scalars(
-            select(Semester).where(Semester.user_id == current.id).order_by(Semester.code)
-        )
+        db.scalars(select(Semester).where(Semester.user_id == current.id).order_by(Semester.code))
     )
 
 

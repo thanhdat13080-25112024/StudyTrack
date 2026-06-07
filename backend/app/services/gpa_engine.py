@@ -131,11 +131,17 @@ def credit_progress(rows: list[GradeRow], total_required: int | None) -> dict:
     earned = sum(earned_by_course.values())
     required = total_required or 0
     remaining = max(0, required - earned) if total_required else 0
-    return {"earned": earned, "in_progress": in_progress, "remaining": remaining, "required": required}
+    return {
+        "earned": earned,
+        "in_progress": in_progress,
+        "remaining": remaining,
+        "required": required,
+    }
 
 
-def gpa_summary(rows: list[GradeRow], total_required: int | None,
-                scale: GradeScale = DEFAULT_SCALE) -> dict:
+def gpa_summary(
+    rows: list[GradeRow], total_required: int | None, scale: GradeScale = DEFAULT_SCALE
+) -> dict:
     code_by_sem: dict[int, str] = {}
     by_sem: dict[int, list[GradeRow]] = {}
     for r in rows:
@@ -145,7 +151,12 @@ def gpa_summary(rows: list[GradeRow], total_required: int | None,
     for sid in sorted(by_sem, key=lambda s: code_by_sem[s]):
         sg = semester_gpa(by_sem[sid], scale)
         semesters.append(
-            {"semester_id": sid, "code": code_by_sem[sid], "gpa": sg["gpa"], "credits": sg["credits"]}
+            {
+                "semester_id": sid,
+                "code": code_by_sem[sid],
+                "gpa": sg["gpa"],
+                "credits": sg["credits"],
+            }
         )
     cpa = cumulative_cpa(rows, scale)["cpa"]
     return {
@@ -156,8 +167,13 @@ def gpa_summary(rows: list[GradeRow], total_required: int | None,
     }
 
 
-def goal_seek(current_cpa: float, completed_credits: int, target_cpa: float,
-              total_required: int | None, scale: GradeScale = DEFAULT_SCALE) -> dict:
+def goal_seek(
+    current_cpa: float,
+    completed_credits: int,
+    target_cpa: float,
+    total_required: int | None,
+    scale: GradeScale = DEFAULT_SCALE,
+) -> dict:
     """completed_credits = the CPA denominator (graded credits so far). v1 does
     not subtract exempt credits from `remaining` — documented simplification."""
     remaining = max(0, (total_required or 0) - completed_credits)
@@ -185,8 +201,12 @@ def goal_seek(current_cpa: float, completed_credits: int, target_cpa: float,
     }
 
 
-def project(current_cpa: float, completed_credits: int,
-            hypotheticals: list[dict], scale: GradeScale = DEFAULT_SCALE) -> dict:
+def project(
+    current_cpa: float,
+    completed_credits: int,
+    hypotheticals: list[dict],
+    scale: GradeScale = DEFAULT_SCALE,
+) -> dict:
     add_qp = sum(grade_to_grade4(h["grade_10"], scale) * h["credits"] for h in hypotheticals)
     add_cr = sum(h["credits"] for h in hypotheticals)
     denom = completed_credits + add_cr

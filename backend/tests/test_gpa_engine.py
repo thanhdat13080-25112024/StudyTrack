@@ -1,14 +1,26 @@
 import pytest
-
 from app.services.gpa_engine import classify, grade_to_grade4, grade_to_letter
 
 
 @pytest.mark.parametrize(
     "grade,letter",
     [
-        (10, "A"), (8.5, "A"), (8.4, "B+"), (8.0, "B+"), (7.9, "B"),
-        (7.0, "B"), (6.9, "C+"), (6.5, "C+"), (6.4, "C"), (5.5, "C"),
-        (5.4, "D+"), (5.0, "D+"), (4.9, "D"), (4.0, "D"), (3.9, "F"), (0, "F"),
+        (10, "A"),
+        (8.5, "A"),
+        (8.4, "B+"),
+        (8.0, "B+"),
+        (7.9, "B"),
+        (7.0, "B"),
+        (6.9, "C+"),
+        (6.5, "C+"),
+        (6.4, "C"),
+        (5.5, "C"),
+        (5.4, "D+"),
+        (5.0, "D+"),
+        (4.9, "D"),
+        (4.0, "D"),
+        (3.9, "F"),
+        (0, "F"),
     ],
 )
 def test_grade_to_letter_boundaries(grade, letter):
@@ -26,9 +38,16 @@ def test_grade_to_grade4(grade, g4):
 @pytest.mark.parametrize(
     "cpa,tier",
     [
-        (4.0, "xuat_sac"), (3.6, "xuat_sac"), (3.59, "gioi"), (3.2, "gioi"),
-        (3.19, "kha"), (2.5, "kha"), (2.49, "trung_binh"), (2.0, "trung_binh"),
-        (1.99, "yeu"), (0.0, "yeu"),
+        (4.0, "xuat_sac"),
+        (3.6, "xuat_sac"),
+        (3.59, "gioi"),
+        (3.2, "gioi"),
+        (3.19, "kha"),
+        (2.5, "kha"),
+        (2.49, "trung_binh"),
+        (2.0, "trung_binh"),
+        (1.99, "yeu"),
+        (0.0, "yeu"),
     ],
 )
 def test_classify_boundaries(cpa, tier):
@@ -46,8 +65,12 @@ from app.services.gpa_engine import (  # noqa: E402
 
 def _row(course_id, sem, credits, grade_10, status):
     return GradeRow(
-        course_id=course_id, semester_id=sem, semester_code=f"2024-{sem}",
-        credits=credits, grade_10=grade_10, status=status,
+        course_id=course_id,
+        semester_id=sem,
+        semester_code=f"2024-{sem}",
+        credits=credits,
+        grade_10=grade_10,
+        status=status,
     )
 
 
@@ -137,13 +160,20 @@ def test_goal_seek_no_remaining_credits():
 
 
 def test_project():
-    out = project(current_cpa=3.0, completed_credits=90, hypotheticals=[
-        {"credits": 3, "grade_10": 8.0}, {"credits": 4, "grade_10": 7.0},
-    ])  # +3.5*3 + 3.0*4 over 90+7
+    out = project(
+        current_cpa=3.0,
+        completed_credits=90,
+        hypotheticals=[
+            {"credits": 3, "grade_10": 8.0},
+            {"credits": 4, "grade_10": 7.0},
+        ],
+    )  # +3.5*3 + 3.0*4 over 90+7
     assert out["projected_cpa"] == round((3.0 * 90 + 3.5 * 3 + 3.0 * 4) / 97, 2)
     assert out["projected_tier"] == classify(out["projected_cpa"])
 
 
 def test_project_empty_base():
-    out = project(current_cpa=0.0, completed_credits=0, hypotheticals=[{"credits": 3, "grade_10": 9.0}])
+    out = project(
+        current_cpa=0.0, completed_credits=0, hypotheticals=[{"credits": 3, "grade_10": 9.0}]
+    )
     assert out["projected_cpa"] == 4.0

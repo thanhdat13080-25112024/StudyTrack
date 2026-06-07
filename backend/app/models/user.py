@@ -47,6 +47,4 @@ class User(Base):
     courses: Mapped[list[Course]] = relationship(
         back_populates="user", cascade="all, delete-orphan"
     )
-    grades: Mapped[list[Grade]] = relationship(
-        back_populates="user", cascade="all, delete-orphan"
-    )
+    grades: Mapped[list[Grade]] = relationship(back_populates="user", cascade="all, delete-orphan")

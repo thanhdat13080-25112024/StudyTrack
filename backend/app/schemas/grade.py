@@ -19,7 +19,7 @@ class GradeBase(BaseModel):
     status: GradeStatus
 
     @model_validator(mode="after")
-    def _grade_status_consistent(self) -> "GradeBase":
+    def _grade_status_consistent(self) -> GradeBase:
         graded = self.status in ("passed", "failed")
         if graded and self.grade_10 is None:
             raise ValueError("grade_10 is required when status is passed/failed")

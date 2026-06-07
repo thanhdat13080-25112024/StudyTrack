@@ -37,9 +37,7 @@ def _rows(db: Session, user: User) -> list[gpa_engine.GradeRow]:
 
 
 @router.get("", response_model=GpaSummaryOut)
-def get_gpa(
-    current: User = Depends(get_current_user), db: Session = Depends(get_db)
-) -> dict:
+def get_gpa(current: User = Depends(get_current_user), db: Session = Depends(get_db)) -> dict:
     total_required = current.profile.total_credits_required if current.profile else None
     return gpa_engine.gpa_summary(_rows(db, current), total_required)
 
@@ -53,7 +51,11 @@ def what_if(
     rows = _rows(db, current)
     cpa_info = gpa_engine.cumulative_cpa(rows)
     profile = current.profile
-    target = data.target_cpa if data.target_cpa is not None else (profile.target_cpa if profile else None)
+    target = (
+        data.target_cpa
+        if data.target_cpa is not None
+        else (profile.target_cpa if profile else None)
+    )
     total = (
         data.total_credits_required
         if data.total_credits_required is not None
@@ -70,7 +72,8 @@ def what_if(
     if data.hypotheticals:
         projection = ProjectionOut(
             **gpa_engine.project(
-                cpa_info["cpa"], cpa_info["credits"],
+                cpa_info["cpa"],
+                cpa_info["credits"],
                 [h.model_dump() for h in data.hypotheticals],
             )
         )
