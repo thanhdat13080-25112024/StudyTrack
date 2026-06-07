@@ -80,8 +80,7 @@ export default function Analysis() {
                       )}
                       {w.metrics.minutes_per_credit !== undefined && (
                         <span>
-                          {t('weakSubject.metric.minutesPerCredit')}:{' '}
-                          {w.metrics.minutes_per_credit}
+                          {t('weakSubject.metric.minutesPerCredit')}: {w.metrics.minutes_per_credit}
                         </span>
                       )}
                     </div>

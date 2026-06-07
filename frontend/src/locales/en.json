@@ -12,6 +12,8 @@
     "schedule": "Schedule",
     "courses": "Courses",
     "grades": "Grades",
+    "roadmap": "Roadmap",
+    "analysis": "Analysis",
     "login": "Login"
   },
   "common": {
@@ -55,6 +57,8 @@
     "focusLabel": "Target Focus Level (1 - 10)",
     "methodLabel": "Learning Framework Method",
     "noteLabel": "Specific milestones / notes",
+    "courseLabel": "Link to a course (optional)",
+    "noCourse": "No linked course",
     "start": "Ignite Focus Timer",
     "pause": "Pause Timer",
     "resume": "Resume Focus",
@@ -122,6 +126,53 @@
       "foundation": "Foundation",
       "specialized": "Specialized",
       "elective": "Elective"
+    },
+    "prereq": {
+      "title": "Prerequisites",
+      "none": "No prerequisites",
+      "add": "Pick a course…",
+      "addBtn": "Add",
+      "remove": "Remove prerequisite"
+    }
+  },
+  "roadmap": {
+    "title": "Study roadmap",
+    "subtitle": "Lays out the remaining courses across semesters by prerequisites and the per-semester credit cap.",
+    "capLabel": "Credits / semester",
+    "generate": "Generate",
+    "apply": "Apply",
+    "applied": "Roadmap saved",
+    "hint": "Press “Generate” to see a suggested semester-by-semester plan.",
+    "empty": "No courses to schedule — you have completed or are taking them all.",
+    "creditsShort": "cr",
+    "warningsTitle": "Warnings",
+    "warning": {
+      "cycle": "Prerequisite cycle, cannot schedule: course {{ids}}",
+      "exceeds_graduation": "Semester {{code}} is past your expected graduation"
+    }
+  },
+  "analysis": {
+    "weakTitle": "Subjects to watch",
+    "directionTitle": "Direction analysis",
+    "noWeak": "No subjects of concern. Nice work!",
+    "noData": "Not enough grade data to analyze yet.",
+    "strongest": "Top strength",
+    "overloaded": "Overloaded semesters",
+    "missingPrereq": "Missing prerequisites"
+  },
+  "weakSubject": {
+    "priority": {
+      "red": "Critical",
+      "yellow": "Watch"
+    },
+    "signal": {
+      "low_grade": "Low grade",
+      "low_study": "Low study time",
+      "failed_prereq": "Missing prerequisite"
+    },
+    "metric": {
+      "grade4": "Grade (4.0)",
+      "minutesPerCredit": "Minutes/credit"
     }
   },
   "grades": {

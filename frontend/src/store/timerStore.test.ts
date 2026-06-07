@@ -33,7 +33,14 @@ describe('timerStore', () => {
 
   it('start then tick decrements', () => {
     const st = useTimerStore.getState();
-    st.configure({ subject: 'Math', minutes: 1, focus: 8, method: 'Pomodoro', note: '', courseId: null });
+    st.configure({
+      subject: 'Math',
+      minutes: 1,
+      focus: 8,
+      method: 'Pomodoro',
+      note: '',
+      courseId: null,
+    });
     st.start();
     st.tick();
     expect(useTimerStore.getState().secondsLeft).toBe(59);
@@ -42,7 +49,14 @@ describe('timerStore', () => {
 
   it('start records startedAt once and keeps it on resume', () => {
     const st = useTimerStore.getState();
-    st.configure({ subject: 'Math', minutes: 1, focus: 8, method: 'Pomodoro', note: '', courseId: null });
+    st.configure({
+      subject: 'Math',
+      minutes: 1,
+      focus: 8,
+      method: 'Pomodoro',
+      note: '',
+      courseId: null,
+    });
     st.start();
     const started = useTimerStore.getState().startedAt;
     expect(started).not.toBeNull();
@@ -53,7 +67,14 @@ describe('timerStore', () => {
 
   it('tick does not decrement when paused', () => {
     const st = useTimerStore.getState();
-    st.configure({ subject: 'Math', minutes: 1, focus: 8, method: 'Pomodoro', note: '', courseId: null });
+    st.configure({
+      subject: 'Math',
+      minutes: 1,
+      focus: 8,
+      method: 'Pomodoro',
+      note: '',
+      courseId: null,
+    });
     st.start();
     st.tick();
     st.pause();
@@ -64,7 +85,14 @@ describe('timerStore', () => {
 
   it('tick stops at zero, never negative', () => {
     const st = useTimerStore.getState();
-    st.configure({ subject: 'Math', minutes: 0, focus: 8, method: 'Pomodoro', note: '', courseId: null });
+    st.configure({
+      subject: 'Math',
+      minutes: 0,
+      focus: 8,
+      method: 'Pomodoro',
+      note: '',
+      courseId: null,
+    });
     st.start();
     st.tick();
     expect(useTimerStore.getState().secondsLeft).toBe(0);
@@ -72,7 +100,14 @@ describe('timerStore', () => {
 
   it('elapsedSeconds reflects planned - left', () => {
     const st = useTimerStore.getState();
-    st.configure({ subject: 'Math', minutes: 1, focus: 8, method: 'Pomodoro', note: '', courseId: null });
+    st.configure({
+      subject: 'Math',
+      minutes: 1,
+      focus: 8,
+      method: 'Pomodoro',
+      note: '',
+      courseId: null,
+    });
     st.start();
     st.tick();
     st.tick();
@@ -81,7 +116,14 @@ describe('timerStore', () => {
 
   it('stop clears running but keeps elapsed', () => {
     const st = useTimerStore.getState();
-    st.configure({ subject: 'Math', minutes: 1, focus: 8, method: 'Pomodoro', note: '', courseId: null });
+    st.configure({
+      subject: 'Math',
+      minutes: 1,
+      focus: 8,
+      method: 'Pomodoro',
+      note: '',
+      courseId: null,
+    });
     st.start();
     st.tick();
     st.stop();
@@ -112,7 +154,14 @@ describe('timerStore', () => {
 
   it('persists running state to localStorage key track_timer', () => {
     const st = useTimerStore.getState();
-    st.configure({ subject: 'Math', minutes: 1, focus: 8, method: 'Pomodoro', note: '', courseId: null });
+    st.configure({
+      subject: 'Math',
+      minutes: 1,
+      focus: 8,
+      method: 'Pomodoro',
+      note: '',
+      courseId: null,
+    });
     st.start();
     st.tick();
     const raw = window.localStorage.getItem('track_timer');

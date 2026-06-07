@@ -16,8 +16,10 @@ import { useApplyRoadmap, useGenerateRoadmap } from '@/features/roadmap/hooks';
 import type { RoadmapPlan, RoadmapWarning } from '@/features/roadmap/types';
 
 function warningText(w: RoadmapWarning, t: (k: string, o?: Record<string, unknown>) => string) {
-  if (w.type === 'cycle') return t('roadmap.warning.cycle', { ids: (w.course_ids ?? []).join(', ') });
-  if (w.type === 'exceeds_graduation') return t('roadmap.warning.exceeds_graduation', { code: w.detail });
+  if (w.type === 'cycle')
+    return t('roadmap.warning.cycle', { ids: (w.course_ids ?? []).join(', ') });
+  if (w.type === 'exceeds_graduation')
+    return t('roadmap.warning.exceeds_graduation', { code: w.detail });
   return w.type;
 }
 

@@ -12,6 +12,8 @@
     "schedule": "Lịch học",
     "courses": "Học phần",
     "grades": "Điểm số",
+    "roadmap": "Lộ trình",
+    "analysis": "Phân tích",
     "login": "Đăng nhập"
   },
   "common": {
@@ -55,6 +57,8 @@
     "focusLabel": "Mức độ tập trung mong muốn (1 - 10)",
     "methodLabel": "Phương pháp áp dụng",
     "noteLabel": "Ghi chú mục tiêu cụ thể",
+    "courseLabel": "Gắn với học phần (tùy chọn)",
+    "noCourse": "Không gắn học phần",
     "start": "Kích hoạt đếm giờ",
     "pause": "Tạm dừng",
     "resume": "Tiếp tục học",
@@ -122,6 +126,53 @@
       "foundation": "Cơ sở ngành",
       "specialized": "Chuyên ngành",
       "elective": "Tự chọn"
+    },
+    "prereq": {
+      "title": "Môn tiên quyết",
+      "none": "Chưa có tiên quyết",
+      "add": "Chọn môn…",
+      "addBtn": "Thêm",
+      "remove": "Xóa tiên quyết"
+    }
+  },
+  "roadmap": {
+    "title": "Lộ trình học",
+    "subtitle": "Sắp xếp các môn còn lại qua các kỳ theo môn tiên quyết và trần tín chỉ.",
+    "capLabel": "Trần tín chỉ / kỳ",
+    "generate": "Tạo lộ trình",
+    "apply": "Áp dụng",
+    "applied": "Đã lưu lộ trình",
+    "hint": "Nhấn “Tạo lộ trình” để xem gợi ý sắp xếp các kỳ.",
+    "empty": "Không có môn nào cần xếp — bạn đã hoàn thành hoặc đang học hết các môn.",
+    "creditsShort": "TC",
+    "warningsTitle": "Cảnh báo",
+    "warning": {
+      "cycle": "Có vòng lặp tiên quyết, không xếp được: môn {{ids}}",
+      "exceeds_graduation": "Kỳ {{code}} vượt quá thời điểm tốt nghiệp dự kiến"
+    }
+  },
+  "analysis": {
+    "weakTitle": "Môn cần chú ý",
+    "directionTitle": "Phân tích hướng học",
+    "noWeak": "Không có môn nào đáng lo. Làm tốt lắm!",
+    "noData": "Chưa đủ dữ liệu điểm để phân tích.",
+    "strongest": "Thế mạnh nổi bật",
+    "overloaded": "Kỳ quá tải tín chỉ",
+    "missingPrereq": "Thiếu môn tiên quyết"
+  },
+  "weakSubject": {
+    "priority": {
+      "red": "Nguy cấp",
+      "yellow": "Cần chú ý"
+    },
+    "signal": {
+      "low_grade": "Điểm thấp",
+      "low_study": "Giờ học ít",
+      "failed_prereq": "Thiếu tiên quyết"
+    },
+    "metric": {
+      "grade4": "Điểm hệ 4",
+      "minutesPerCredit": "Phút/tín chỉ"
     }
   },
   "grades": {

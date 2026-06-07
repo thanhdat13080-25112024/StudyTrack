@@ -47,8 +47,7 @@ export function PrerequisiteEditor({ courses }: { courses: Course[] }) {
               className="flex flex-col gap-2 p-4 md:flex-row md:items-center md:gap-4"
             >
               <div className="min-w-[180px] font-mono text-sm font-semibold text-text-helper">
-                {c.code}{' '}
-                <span className="font-sans font-normal text-text-muted">{c.name}</span>
+                {c.code} <span className="font-sans font-normal text-text-muted">{c.name}</span>
               </div>
               <div className="flex flex-1 flex-wrap items-center gap-2">
                 {mine.length === 0 && (
@@ -73,10 +72,7 @@ export function PrerequisiteEditor({ courses }: { courses: Course[] }) {
               </div>
               {options.length > 0 && (
                 <div className="flex items-center gap-2">
-                  <Select
-                    value={sel}
-                    onValueChange={(v) => setDraft((d) => ({ ...d, [c.id]: v }))}
-                  >
+                  <Select value={sel} onValueChange={(v) => setDraft((d) => ({ ...d, [c.id]: v }))}>
                     <SelectTrigger className="w-44">
                       <SelectValue placeholder={t('courses.prereq.add')} />
                     </SelectTrigger>
