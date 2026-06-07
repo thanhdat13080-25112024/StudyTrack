@@ -19,6 +19,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { GpaSummary } from '@/components/grades/GpaSummary';
+import { GpaTrendChart } from '@/components/grades/GpaTrendChart';
 import { SemesterManager } from '@/components/grades/SemesterManager';
 import { WhatIfPanel } from '@/components/grades/WhatIfPanel';
 import { useCourses } from '@/features/courses/hooks';
@@ -173,6 +174,8 @@ export default function Grades() {
             {t('gpa.noData')}
           </p>
         )}
+
+        {gpa && gpa.semesters.length >= 2 && <GpaTrendChart semesters={gpa.semesters} />}
 
         <WhatIfPanel />
 
