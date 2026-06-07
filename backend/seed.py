@@ -9,6 +9,7 @@ from app.core.db import SessionLocal
 from app.core.security import hash_password
 from app.models.course import Course
 from app.models.grade import Grade
+from app.models.prerequisite import Prerequisite
 from app.models.profile import Profile
 from app.models.schedule_item import ScheduleItem
 from app.models.semester import Semester
@@ -39,6 +40,7 @@ def seed() -> None:
                 target_cpa=3.6,
                 total_credits_required=140,
                 expected_graduation="2027-06",
+                max_credits_per_semester=24,
             ),
             semesters=[
                 Semester(code="2024-1", name="HK1 2024-2025"),
@@ -161,6 +163,35 @@ def seed() -> None:
                     semester_id=sem["2024-2"],
                     grade_10=None,
                     status="in_progress",
+                ),
+            ]
+        )
+        db.commit()
+
+        # Phase 4: prerequisites (CS101 -> CS102 -> CS201) + a course-linked
+        # study session with low hours so the weak-subject + roadmap demos have data.
+        db.add_all(
+            [
+                Prerequisite(
+                    user_id=user.id,
+                    course_id=crs["CS102"],
+                    prereq_course_id=crs["CS101"],
+                ),
+                Prerequisite(
+                    user_id=user.id,
+                    course_id=crs["CS201"],
+                    prereq_course_id=crs["CS102"],
+                ),
+                StudySession(
+                    user_id=user.id,
+                    course_id=crs["CS201"],
+                    subject="Cấu trúc dữ liệu",
+                    planned_minutes=30,
+                    actual_minutes=20,  # 5 min/credit over 4 credits -> low_study
+                    focus=5,
+                    method="Pomodoro",
+                    note="",
+                    session_date=today,
                 ),
             ]
         )

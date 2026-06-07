@@ -26,7 +26,7 @@ def test_generate_orders_by_prereq(client):
 
 def test_generate_does_not_persist_then_apply_persists(client):
     h = _auth(client)
-    a = _course(client, h, "A")
+    _course(client, h, "A")
     client.post("/api/roadmap/generate", json={"start_code": "2025-1"}, headers=h)
     # not persisted
     assert client.get("/api/courses", headers=h).json()[0]["planned_semester_id"] is None
