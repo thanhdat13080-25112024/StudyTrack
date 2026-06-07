@@ -80,18 +80,11 @@ seed: db-up ## Load demo data via backend/seed.py
 	cd $(BACKEND_DIR) && $(PY) seed.py
 
 # --- OpenAPI -> TypeScript types --------------------------------------------
-gen-types: ## Boot FastAPI, dump OpenAPI, regenerate frontend api-types.ts
-	@echo ">> Booting backend to dump OpenAPI -> $(API_TYPES_OUT)"
-	cd $(BACKEND_DIR) && $(UVICORN) $(APP_MODULE) --port $(API_PORT) & \
-	SERVER_PID=$$!; \
-	trap 'kill $$SERVER_PID 2>/dev/null' EXIT; \
-	for i in $$(seq 1 30); do \
-		curl -sf $(OPENAPI_URL) >/dev/null 2>&1 && break; \
-		sleep 1; \
-	done; \
-	npx --yes openapi-typescript $(OPENAPI_URL) -o $(API_TYPES_OUT); \
-	cd $(FRONTEND_DIR) && npx --yes prettier --write src/lib/api-types.ts; \
-	echo ">> Wrote $(API_TYPES_OUT)"
+gen-types: ## Dump OpenAPI (no server) and regenerate frontend api-types.ts
+	cd $(BACKEND_DIR) && $(PY) scripts/dump_openapi.py /tmp/studytrack-openapi.json
+	npx --yes openapi-typescript /tmp/studytrack-openapi.json -o $(API_TYPES_OUT)
+	cd $(FRONTEND_DIR) && npx --yes prettier --write src/lib/api-types.ts
+	@echo ">> Wrote $(API_TYPES_OUT)"
 
 # --- Deploy ------------------------------------------------------------------
 deploy: ## Local trigger of the prod deploy script (CI normally does this on merge)
