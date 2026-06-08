@@ -9,6 +9,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   Activity,
   BookOpen,
+  CalendarClock,
   CalendarDays,
   GraduationCap,
   History,
@@ -36,6 +37,7 @@ const NAV = [
   { to: '/grades', key: 'nav.grades', icon: GraduationCap },
   { to: '/roadmap', key: 'nav.roadmap', icon: Route },
   { to: '/analysis', key: 'nav.analysis', icon: Activity },
+  { to: '/deadlines', key: 'nav.deadlines', icon: CalendarClock },
 ] as const;
 
 export function AppHeader() {

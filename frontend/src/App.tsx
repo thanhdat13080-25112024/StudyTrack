@@ -12,6 +12,7 @@ import Courses from '@/pages/Courses';
 import Grades from '@/pages/Grades';
 import Roadmap from '@/pages/Roadmap';
 import Analysis from '@/pages/Analysis';
+import Deadlines from '@/pages/Deadlines';
 import { RequireAuth } from '@/components/auth/RequireAuth';
 import { useAuthStore } from '@/store/authStore';
 import { useMe } from '@/features/auth/hooks';
@@ -73,6 +74,7 @@ export default function App() {
         <Route path="/grades" element={<Grades />} />
         <Route path="/roadmap" element={<Roadmap />} />
         <Route path="/analysis" element={<Analysis />} />
+        <Route path="/deadlines" element={<Deadlines />} />
         <Route path="/profile" element={<Profile />} />
       </Route>
       <Route
