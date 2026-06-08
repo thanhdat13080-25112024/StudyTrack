@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import UTC, date, timedelta
+from datetime import UTC, date, datetime, timedelta
 
 import app.models  # noqa: F401  (register models on Base.metadata)
 from app.core.db import SessionLocal
@@ -32,6 +32,8 @@ def seed() -> None:
             email=DEMO_EMAIL,
             password_hash=hash_password(DEMO_PASSWORD),
             name="Demo Student",
+            email_verified=True,
+            email_verified_at=datetime.now(UTC),
             profile=Profile(
                 class_name="K65-CNTT",
                 faculty="CNTT",
@@ -198,8 +200,6 @@ def seed() -> None:
         db.commit()
 
         # Phase 5: demo deadlines (one soon w/ reminder, one a week out).
-        from datetime import datetime
-
         from app.models.deadline import Deadline
 
         now = datetime.now(UTC)
