@@ -1,8 +1,12 @@
 """prerequisites, study_sessions.course_id FK, profiles.max_credits_per_semester
 
-Revision ID: 0004_prerequisites_session_course_link
+Revision ID: 0004_prereqs_session_course
 Revises: 0003_courses_semesters_grades
 Create Date: 2026-06-07
+
+Note: the revision identifier below is kept <= 32 chars because Alembic creates
+``alembic_version.version_num`` as VARCHAR(32) on Postgres; a longer id raises
+StringDataRightTruncation on stamp. The descriptive filename is unchanged.
 """
 
 from __future__ import annotations
@@ -10,7 +14,7 @@ from __future__ import annotations
 import sqlalchemy as sa
 from alembic import op
 
-revision = "0004_prerequisites_session_course_link"
+revision = "0004_prereqs_session_course"
 down_revision = "0003_courses_semesters_grades"
 branch_labels = None
 depends_on = None
