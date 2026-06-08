@@ -8,9 +8,13 @@ from sqlalchemy.orm import Session
 
 from app.core.deps import get_current_user, get_db
 from app.models.course import Course
+from app.models.notification import Notification
 from app.models.study_session import StudySession
 from app.models.user import User
+from app.realtime.manager import manager
 from app.schemas.study_session import StudySessionCreate, StudySessionOut
+from app.services.badges import newly_unlocked
+from app.services.dashboard import badges as derive_badges
 
 router = APIRouter()
 
@@ -27,10 +31,25 @@ def create_session(
         )
         if owned is None:
             raise HTTPException(status_code=422, detail="course_id not found")
+
+    existing = list(db.scalars(select(StudySession).where(StudySession.user_id == current.id)))
+    before_keys = [b["key"] for b in derive_badges(existing) if b["unlocked"]]
+
     session = StudySession(user_id=current.id, **data.model_dump())
     db.add(session)
     db.commit()
     db.refresh(session)
+
+    after_keys = [b["key"] for b in derive_badges(existing + [session]) if b["unlocked"]]
+    for key in newly_unlocked(before_keys, after_keys):
+        notif = Notification(user_id=current.id, type="badge_unlocked", payload={"badge_key": key})
+        db.add(notif)
+        db.commit()
+        db.refresh(notif)
+        manager.notify_user(
+            current.id,
+            {"type": "notification", "notification_type": notif.type, "payload": notif.payload},
+        )
     return session
 
 

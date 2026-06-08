@@ -33,6 +33,11 @@ class Settings(BaseSettings):
     # Comma-separated list in env, e.g. "http://localhost:5173,https://app.example.com"
     CORS_ORIGINS: list[str] = ["http://localhost:5173", "http://localhost:3000"]
 
+    # --- Realtime ----------------------------------------------------------
+    # Background reminder scanner interval (seconds). Tests never trigger a
+    # scan because the loop sleeps first; prod/dev default is 60s.
+    REMINDER_SCAN_SECONDS: int = 60
+
     @field_validator("CORS_ORIGINS", mode="before")
     @classmethod
     def _split_cors_origins(cls, value: object) -> object:

@@ -14,6 +14,7 @@
     "grades": "Grades",
     "roadmap": "Roadmap",
     "analysis": "Analysis",
+    "deadlines": "Deadlines",
     "login": "Login"
   },
   "common": {
@@ -336,5 +337,31 @@
   "studentId": {
     "class": "Class",
     "major": "Major"
+  },
+  "deadlines": {
+    "title": "Deadlines",
+    "titlePlaceholder": "e.g. Submit lab report",
+    "add": "Add deadline",
+    "empty": "No deadlines yet.",
+    "noCourse": "No course",
+    "markDone": "Mark done",
+    "markUndone": "Mark undone",
+    "types": { "assignment": "Assignment", "exam": "Exam", "project": "Project" },
+    "priorities": { "low": "Low", "medium": "Medium", "high": "High" },
+    "remind": {
+      "none": "No reminder",
+      "h1": "1 hour before",
+      "h3": "3 hours before",
+      "d1": "1 day before",
+      "d3": "3 days before",
+      "w1": "1 week before"
+    }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "empty": "No notifications.",
+    "markAllRead": "Mark all read",
+    "deadlineReminder": "Reminder: \"{{title}}\" is due soon",
+    "badgeUnlocked": "Badge unlocked: {{badge}}"
   }
 }

@@ -49,11 +49,12 @@ services:
       # Uncomment when the AI feature ships:
       # ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
     # gunicorn with uvicorn workers, bound on the internal network only.
+    # single worker: in-memory WS manager + reminder scanner (Phase 5)
     command: >-
       gunicorn app.main:app
       -k uvicorn.workers.UvicornWorker
       --bind 0.0.0.0:8000
-      --workers ${GUNICORN_WORKERS:-3}
+      --workers 1
       --timeout 60
     expose:
       - "8000"

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import date, timedelta
+from datetime import UTC, date, timedelta
 
 import app.models  # noqa: F401  (register models on Base.metadata)
 from app.core.db import SessionLocal
@@ -192,6 +192,37 @@ def seed() -> None:
                     method="Pomodoro",
                     note="",
                     session_date=today,
+                ),
+            ]
+        )
+        db.commit()
+
+        # Phase 5: demo deadlines (one soon w/ reminder, one a week out).
+        from datetime import datetime
+
+        from app.models.deadline import Deadline
+
+        now = datetime.now(UTC)
+        db.add_all(
+            [
+                Deadline(
+                    user_id=user.id,
+                    course_id=None,
+                    title="Nộp báo cáo môn CS101",
+                    type="assignment",
+                    due_at=now + timedelta(hours=20),
+                    priority="high",
+                    remind_before_minutes=120,
+                ),
+                Deadline(
+                    user_id=user.id,
+                    course_id=None,
+                    title="Thi giữa kỳ",
+                    type="exam",
+                    due_at=now + timedelta(days=7),
+                    priority="medium",
+                    remind_before_minutes=1440,
+                    done=False,
                 ),
             ]
         )
