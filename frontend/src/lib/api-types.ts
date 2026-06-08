@@ -69,11 +69,114 @@ export interface paths {
     get: operations['read_me_api_auth_me_get'];
     put?: never;
     post?: never;
-    delete?: never;
+    /** Delete Account */
+    delete: operations['delete_account_api_auth_me_delete'];
     options?: never;
     head?: never;
     /** Update Me */
     patch: operations['update_me_api_auth_me_patch'];
+    trace?: never;
+  };
+  '/api/auth/verify-email': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Verify Email */
+    post: operations['verify_email_api_auth_verify_email_post'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/auth/resend-verification': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Resend Verification */
+    post: operations['resend_verification_api_auth_resend_verification_post'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/auth/forgot-password': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Forgot Password */
+    post: operations['forgot_password_api_auth_forgot_password_post'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/auth/reset-password': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Reset Password */
+    post: operations['reset_password_api_auth_reset_password_post'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/auth/change-password': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Change Password */
+    post: operations['change_password_api_auth_change_password_post'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/auth/me/export': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Export Account */
+    get: operations['export_account_api_auth_me_export_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
     trace?: never;
   };
   '/api/profile': {
@@ -552,6 +655,27 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
   schemas: {
+    /** AccountExport */
+    AccountExport: {
+      user: components['schemas']['UserOut'];
+      profile: components['schemas']['ProfileOut'];
+      /** Sessions */
+      sessions: components['schemas']['StudySessionOut'][];
+      /** Schedule */
+      schedule: components['schemas']['ScheduleItemOut'][];
+      /** Semesters */
+      semesters: components['schemas']['SemesterOut'][];
+      /** Courses */
+      courses: components['schemas']['CourseOut'][];
+      /** Grades */
+      grades: components['schemas']['GradeOut'][];
+      /** Prerequisites */
+      prerequisites: components['schemas']['PrerequisiteOut'][];
+      /** Deadlines */
+      deadlines: components['schemas']['DeadlineOut'][];
+      /** Notifications */
+      notifications: components['schemas']['NotificationOut'][];
+    };
     /** BadgeOut */
     BadgeOut: {
       /** Key */
@@ -591,6 +715,13 @@ export interface components {
       avg_grade_4: number;
       /** Count */
       count: number;
+    };
+    /** ChangePasswordIn */
+    ChangePasswordIn: {
+      /** Current Password */
+      current_password: string;
+      /** New Password */
+      new_password: string;
     };
     /** ChartPointOut */
     ChartPointOut: {
@@ -770,6 +901,11 @@ export interface components {
       /** Done */
       done?: boolean | null;
     };
+    /** DeleteAccountIn */
+    DeleteAccountIn: {
+      /** Password */
+      password: string;
+    };
     /** DirectionOut */
     DirectionOut: {
       /** Category Strengths */
@@ -780,6 +916,14 @@ export interface components {
       overloaded_semesters: components['schemas']['OverloadedSemesterOut'][];
       /** Missing Prerequisites */
       missing_prerequisites: components['schemas']['MissingPrereqOut'][];
+    };
+    /** ForgotPasswordIn */
+    ForgotPasswordIn: {
+      /**
+       * Email
+       * Format: email
+       */
+      email: string;
     };
     /** GoalSeekOut */
     GoalSeekOut: {
@@ -983,6 +1127,13 @@ export interface components {
       projected_cpa: number;
       /** Projected Tier */
       projected_tier: string;
+    };
+    /** ResetPasswordIn */
+    ResetPasswordIn: {
+      /** Token */
+      token: string;
+      /** New Password */
+      new_password: string;
     };
     /** RoadmapCourseOut */
     RoadmapCourseOut: {
@@ -1252,6 +1403,8 @@ export interface components {
       lang: string;
       /** Theme */
       theme: string;
+      /** Email Verified */
+      email_verified: boolean;
       /**
        * Created At
        * Format: date-time
@@ -1291,6 +1444,11 @@ export interface components {
       input?: unknown;
       /** Context */
       ctx?: Record<string, never>;
+    };
+    /** VerifyEmailIn */
+    VerifyEmailIn: {
+      /** Token */
+      token: string;
     };
     /** WeakSubjectOut */
     WeakSubjectOut: {
@@ -1440,6 +1598,37 @@ export interface operations {
       };
     };
   };
+  delete_account_api_auth_me_delete: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['DeleteAccountIn'];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
+    };
+  };
   update_me_api_auth_me_patch: {
     parameters: {
       query?: never;
@@ -1469,6 +1658,168 @@ export interface operations {
         };
         content: {
           'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
+    };
+  };
+  verify_email_api_auth_verify_email_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['VerifyEmailIn'];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
+    };
+  };
+  resend_verification_api_auth_resend_verification_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  forgot_password_api_auth_forgot_password_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ForgotPasswordIn'];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
+    };
+  };
+  reset_password_api_auth_reset_password_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ResetPasswordIn'];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
+    };
+  };
+  change_password_api_auth_change_password_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ChangePasswordIn'];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
+    };
+  };
+  export_account_api_auth_me_export_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AccountExport'];
         };
       };
     };
