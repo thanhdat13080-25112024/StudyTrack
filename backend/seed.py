@@ -196,6 +196,37 @@ def seed() -> None:
             ]
         )
         db.commit()
+
+        # Phase 5: demo deadlines (one soon w/ reminder, one a week out).
+        from datetime import datetime, timezone
+
+        from app.models.deadline import Deadline
+
+        now = datetime.now(timezone.utc)
+        db.add_all(
+            [
+                Deadline(
+                    user_id=user.id,
+                    course_id=None,
+                    title="Nộp báo cáo môn CS101",
+                    type="assignment",
+                    due_at=now + timedelta(hours=20),
+                    priority="high",
+                    remind_before_minutes=120,
+                ),
+                Deadline(
+                    user_id=user.id,
+                    course_id=None,
+                    title="Thi giữa kỳ",
+                    type="exam",
+                    due_at=now + timedelta(days=7),
+                    priority="medium",
+                    remind_before_minutes=1440,
+                    done=False,
+                ),
+            ]
+        )
+        db.commit()
         print(f"StudyTrack seed: created demo user {DEMO_EMAIL} / {DEMO_PASSWORD}")
     finally:
         db.close()
