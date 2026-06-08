@@ -8,6 +8,9 @@ dashboard) and the WebSocket mount are added in later phases.
 
 from __future__ import annotations
 
+import asyncio
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -31,11 +34,31 @@ from app.api import (
     ws,
 )
 from app.core.config import settings
+from app.realtime.manager import manager
+from app.realtime.scanner import reminder_loop
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    manager.set_loop(asyncio.get_running_loop())
+    stop = asyncio.Event()
+    task = asyncio.create_task(reminder_loop(stop))
+    try:
+        yield
+    finally:
+        stop.set()
+        task.cancel()
+        try:
+            await task
+        except (asyncio.CancelledError, Exception):
+            pass
+
 
 app = FastAPI(
     title="StudyTrack API",
     version="0.1.0",
     description="Backend for the StudyTrack full-stack refactor.",
+    lifespan=lifespan,
 )
 
 # --- CORS -------------------------------------------------------------------
