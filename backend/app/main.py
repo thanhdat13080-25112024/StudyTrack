@@ -28,6 +28,7 @@ from app.api import (
     semesters,
     sessions,
     suggestions,
+    ws,
 )
 from app.core.config import settings
 
@@ -64,8 +65,6 @@ app.include_router(analysis.router, prefix="/api/analysis", tags=["analysis"])
 app.include_router(deadlines.router, prefix="/api/deadlines", tags=["deadlines"])
 app.include_router(notifications.router, prefix="/api/notifications", tags=["notifications"])
 
-# --- WebSocket mount point (Phase 5) ----------------------------------------
-# Real-time notifications/deadlines will be served at ``/ws``. Wire it here:
-#     from app.api import ws
-#     app.include_router(ws.router)  # ws.router defines @router.websocket("/ws")
-# Left intentionally unmounted in Phase 0.
+# --- WebSocket --------------------------------------------------------------
+# Real-time notifications served at ``/ws/notifications`` (token-in-query auth).
+app.include_router(ws.router)
