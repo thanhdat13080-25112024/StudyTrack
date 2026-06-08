@@ -15,6 +15,13 @@ CLAUDE.md
 CLAUDE-VIE.md
 GEMINI.md
 GEMINI-VIE.md
+# Cross-tool AI guides (Cursor/Copilot/Codex/Zed/Windsurf/Aider/Gemini) — same
+# local-only policy as CLAUDE.md; they mirror it for non-Claude assistants.
+AGENTS.md
+.github/copilot-instructions.md
+.cursorrules
+.cursor/
+.windsurfrules
 # Superpowers workflow artifacts (per-phase specs & plans)
 docs/superpowers/
 # Harness cross-agent scratch (never pushed)
@@ -38,6 +45,9 @@ env/
 .coverage.*
 htmlcov/
 .tox/
+# Stray OpenAPI dump if dump_openapi.py is run without an out-path arg (the
+# Makefile gen-types target dumps to /tmp; this guards a bare manual run).
+backend/openapi.json
 
 # -----------------------------------------------------------------------------
 # Node / Vite (frontend/)
