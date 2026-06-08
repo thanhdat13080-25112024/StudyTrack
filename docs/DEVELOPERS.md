@@ -162,6 +162,45 @@ Phase 4 thêm lớp **chương trình đào tạo & lộ trình**: môn tiên qu
 
 **Dữ liệu demo** (sau `make seed`): thêm **2 quan hệ tiên quyết** (CS101→CS102→CS201) + **một phiên học gắn môn** giờ thấp để Analysis/Roadmap có dữ liệu ngay; profile đặt `max_credits_per_semester=24`.
 
+## Deadline & thông báo realtime & API (Phase 5)
+
+Phase 5 thêm lớp **quản lý hạn chót (deadline)** và **thông báo theo thời gian thực**: model Deadline + Notification, một WebSocket đẩy thông báo, một **scanner nền** quét deadline tới hạn để bắn nhắc nhở, và thông báo **mở khóa huy hiệu** đẩy ngay khi tạo phiên học.
+
+**Mô hình dữ liệu** (migration `0005_deadlines_notifications`; FK CASCADE, index `user_id`):
+
+- **`Deadline`** (bảng `deadlines`) — `user_id`, `course_id` (FK→courses `SET NULL`, nullable — xóa môn chỉ gỡ liên kết), `title`, `type` (`assignment`/`exam`/`project`), `due_at` (timestamptz, **UTC**), `done` (bool, default false), `priority` (`low`/`medium`/`high`, default `medium`), `remind_before_minutes` (int, nullable — số phút nhắc trước hạn), `reminded_at` (timestamptz, nullable — đặt một lần khi nhắc đã bắn, dùng để chống bắn lại), `created_at`. Sửa `course_id` yêu cầu môn thuộc về user (422 nếu không).
+- **`Notification`** (bảng `notifications`) — thông báo đã lưu, server là nguồn chân lý: `user_id`, `type` (`deadline_reminder`/`badge_unlocked`), `payload` (JSON — trung lập ngôn ngữ, **frontend tự localize**), `read` (bool, default false), `created_at`.
+
+**Realtime** (`backend/app/realtime/`, đơn-tiến-trình — single-process, **không Redis**):
+
+- `manager.py::ConnectionManager` — registry kết nối WebSocket trong bộ nhớ, keyed theo `user_id` (singleton module-level `manager`). `set_loop()` ghi lại event loop để code sync (router chạy trong threadpool) có thể đẩy chéo-thread; `notify_user()` là cầu nối sync best-effort (no-op nếu chưa có loop).
+- `scanner.py` — `scan_once(db, now)` (sync, test trực tiếp được): chọn các deadline tới hạn qua `services/reminders.due_reminders`, tạo bản ghi `Notification` (`type="deadline_reminder"`), đặt `reminded_at` (idempotent), commit rồi đẩy qua `manager.notify_user`. `reminder_loop(stop)` chạy `scan_once` theo chu kỳ `REMINDER_SCAN_SECONDS` (**sleep-first** nên test nhanh không kích hoạt quét), khởi động từ FastAPI **lifespan** trong `app/main.py`.
+- `app/api/ws.py` — endpoint `/ws/notifications`, xác thực qua **`?token=<JWT>`** trên query (trình duyệt không set được header lúc bắt tay WS; JWT `sub`=email), đăng ký socket vào `manager` rồi đọc-bỏ frame inbound tới khi ngắt; token sai → đóng `WS_1008_POLICY_VIOLATION`.
+
+**Các service nghiệp vụ** (`backend/app/services/`, viết test-first, hàm thuần):
+
+- `reminders.py::due_reminders(items, now)` — trả về id các deadline cần bắn nhắc lúc `now`: chưa `done`, chưa từng nhắc (`reminded_at is None`), có `remind_before_minutes`, và `now >= due_at − remind_before_minutes` (deadline đã quá hạn vẫn bắn một lần).
+- `badges.py::newly_unlocked(before_keys, after_keys)` — các badge key có trong `after` mà không có trong `before` (tái dùng ngưỡng badge của `services/dashboard.badges()`).
+
+**Các endpoint mới** (Bearer + chỉ trên dữ liệu của user):
+
+| Method | Endpoint | Mô tả |
+|--------|----------|-------|
+| `GET/POST/PUT/DELETE` | `/api/deadlines` | CRUD hạn chót (list sắp theo `done`, rồi `due_at`) |
+| `GET` | `/api/notifications` | Danh sách thông báo (mới nhất trước; `?unread_only` lọc chưa đọc) |
+| `GET` | `/api/notifications/unread-count` | Số thông báo chưa đọc (`{count}`) |
+| `POST` | `/api/notifications/{id}/read` | Đánh dấu một thông báo đã đọc (204) |
+| `POST` | `/api/notifications/read-all` | Đánh dấu tất cả đã đọc (204) |
+| `WS` | `/ws/notifications?token=<JWT>` | Kênh đẩy thông báo realtime (token-in-query) |
+
+> **Hợp đồng đẩy WS:** mỗi thông báo đẩy xuống socket có dạng `{"type":"notification","notification_type":<deadline_reminder|badge_unlocked>,"payload":{…}}`. `payload` của `deadline_reminder` = `{deadline_id, title, due_at}`; của `badge_unlocked` = `{badge_key}`. Thông báo mở khóa huy hiệu được đẩy ngay trong `POST /api/sessions`: so badge key trước/sau khi thêm phiên học (`badges.newly_unlocked`), tạo `Notification` rồi `manager.notify_user`.
+>
+> **Đơn-tiến-trình (single-worker):** `ConnectionManager` + scanner sống trong bộ nhớ một tiến trình nên prod chạy **một uvicorn worker duy nhất** (`deploy/docker-compose.prod.yml`: `gunicorn … --workers 1`); chưa có Redis pub/sub. nginx (`deploy/nginx/default.conf`) proxy `/ws` lên backend kèm header nâng cấp WebSocket (wss).
+
+**Các trang frontend mới** (route được bảo vệ): **Deadlines** (`/deadlines`, icon `CalendarClock` — CRUD, làm nổi bật môn sắp tới hạn/đã trễ, chọn `type`+`priority`, gắn môn, preset nhắc 1h/3h/1d/3d/1w/không) và **chuông thông báo** `NotificationBell` trên header (badge số chưa đọc + dropdown + toast khi có thông báo mới). `lib/wsClient.ts` là client WebSocket tự kết nối lại (http→ws / https→wss); `store/notificationStore.ts` giữ state; feature `{deadlines,notifications}/{types,hooks}`.
+
+**Dữ liệu demo** (sau `make seed`): thêm **2 deadline mẫu** (một cái sắp tới hạn có nhắc, một cái còn một tuần) để trang Deadlines có dữ liệu ngay.
+
 ## Lệnh thường dùng
 
 Tất cả lệnh chuẩn hóa qua `Makefile` (chạy `make help` để xem danh sách):
@@ -194,6 +233,7 @@ Khai báo trong `.env` (copy từ `.env.example`). `.env` bị git-ignore và b�
 | `POSTGRES_PORT` | Cổng host expose DB dev (mặc định 5432) |
 | `DATABASE_URL` | URL SQLAlchemy async (asyncpg) backend dùng kết nối Postgres |
 | `JWT_SECRET` | Khóa bí mật ký JWT access token (sinh chuỗi ngẫu nhiên dài) |
+| `REMINDER_SCAN_SECONDS` | (Tùy chọn) chu kỳ quét deadline tới hạn của scanner nền, đơn vị giây (mặc định 60) |
 | `VITE_API_URL` | Base URL frontend gọi API (dev: backend local; prod: domain qua nginx) |
 | `ANTHROPIC_API_KEY` | (Tùy chọn, phase sau) khóa Claude API cho tính năng gợi ý học tập AI |
 
@@ -214,5 +254,5 @@ Khai báo trong `.env` (copy từ `.env.example`). `.env` bị git-ignore và b�
 | **2** | Port thói quen học: focus timer + StudySession, history, streak, lịch tuần, dashboard KPI + biểu đồ 7 ngày (Recharts), badges | ✅ Hoàn thành |
 | **3** | Học vụ lõi: Course/Semester/Grade, GPA/CPA engine + xếp loại + tiến độ tín chỉ, what-if GPA & học bổng | ✅ Hoàn thành |
 | **4** | CTĐT & lộ trình: Prerequisite/CTĐT, roadmap engine, direction analysis, liên kết phiên học↔môn, cảnh báo môn yếu | ✅ Hoàn thành |
-| **5** | Deadline + realtime: Deadline/lịch thi, WebSocket notifications/nhắc nhở | ⏳ |
+| **5** | Deadline + realtime: Deadline/lịch thi, WebSocket `/ws/notifications`, scanner nhắc nhở nền, chuông thông báo + đẩy mở khóa huy hiệu | ✅ Hoàn thành |
 | **6** | Lớp AI: service Claude API (proxy qua backend, giấu key) nâng cấp phân tích điểm yếu / lộ trình / tư vấn chọn môn | ⏳ |

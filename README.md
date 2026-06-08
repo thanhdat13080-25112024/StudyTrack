@@ -37,11 +37,16 @@
 - Tự tính **GPA từng kỳ** và **CPA tích lũy**, **xếp loại** (Xuất sắc / Giỏi / Khá / Trung bình / Yếu) và **tiến độ tín chỉ** (đã đạt / đang học / còn lại).
 - **"Nếu tôi muốn đạt GPA mục tiêu thì sao?"** — công cụ *what-if* tính giúp bạn **điểm trung bình cần đạt** ở các tín chỉ còn lại, và cho thử các kịch bản điểm giả định.
 
-### 🗺️ Lộ trình & phân tích (mới)
+### 🗺️ Lộ trình & phân tích
 - **Lộ trình học**: khai báo môn nào cần học trước môn nào (môn tiên quyết), ứng dụng **tự sắp các môn còn lại vào từng kỳ** sao cho hợp lý và không vượt trần tín chỉ mỗi kỳ.
 - **Cảnh báo môn yếu**: tự đánh dấu (đỏ/vàng) những môn điểm thấp, học ít giờ, hoặc còn thiếu môn tiên quyết.
 - **Phân tích thế mạnh**: nhóm điểm theo loại môn để thấy bạn mạnh ở mảng nào, cảnh báo kỳ học quá tải.
 - Có thể **gắn mỗi phiên học tập trung với một môn cụ thể** để biết mình dành bao nhiêu thời gian cho từng môn.
+
+### 🔔 Hạn chót & nhắc nhở (mới)
+- **Quản lý hạn chót**: lưu các deadline (bài tập / lịch thi / đồ án), đặt mức ưu tiên, gắn với môn học, và đánh dấu việc nào sắp tới hạn hay đã trễ.
+- **Nhắc nhở đúng lúc**: chọn nhắc trước bao lâu (1 giờ, 3 giờ, 1 ngày, 3 ngày, 1 tuần), tới giờ ứng dụng **tự bật thông báo ngay trên màn hình** mà không cần bấm tải lại trang.
+- **Chuông thông báo**: một chiếc chuông luôn hiện số thông báo chưa đọc — nhắc deadline và cả lúc bạn vừa mở khóa một huy hiệu mới.
 
 ### 👤 Hồ sơ cá nhân
 - Hồ sơ sinh viên (lớp, khoa, ngành, mục tiêu, ảnh đại diện) và **thẻ sinh viên ảo** đẹp mắt.
@@ -54,7 +59,7 @@
 | Hẹn giờ tập trung, lịch sử, streak, huy hiệu, lịch tuần, dashboard | ✅ Đã có |
 | Nhập điểm, GPA/CPA, xếp loại, tiến độ tín chỉ, what-if GPA | ✅ Đã có |
 | Lộ trình học theo môn tiên quyết, cảnh báo môn yếu, phân tích thế mạnh | ✅ Đã có |
-| Quản lý deadline / lịch thi + nhắc nhở theo thời gian thực | ⏳ Sắp tới |
+| Quản lý deadline / lịch thi + nhắc nhở theo thời gian thực + chuông thông báo | ✅ Đã có |
 | Trợ lý AI tư vấn chọn môn & lộ trình | ⏳ Sắp tới |
 
 ## Dùng thử nhanh
