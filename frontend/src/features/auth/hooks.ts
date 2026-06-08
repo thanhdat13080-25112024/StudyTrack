@@ -5,7 +5,20 @@ import type { Theme } from '@/lib/theme';
 import type { Lang } from '@/lib/i18n';
 import { useAuthStore } from '@/store/authStore';
 import { useUiStore } from '@/store/uiStore';
-import type { MeOut, ProfileOut, ProfileUpdate, Token, UserOut, UserSettingsUpdate } from './types';
+import type {
+  AccountExport,
+  ChangePasswordIn,
+  DeleteAccountIn,
+  ForgotPasswordIn,
+  MeOut,
+  ProfileOut,
+  ProfileUpdate,
+  ResetPasswordIn,
+  Token,
+  UserOut,
+  UserSettingsUpdate,
+  VerifyEmailIn,
+} from './types';
 
 export const ME_KEY = ['auth', 'me'] as const;
 
@@ -71,5 +84,64 @@ export function useUpdateSettings() {
   return useMutation({
     mutationFn: (data: UserSettingsUpdate) => apiClient.patch<UserOut>('/api/auth/me', data),
     onSuccess: () => void qc.invalidateQueries({ queryKey: ME_KEY }),
+  });
+}
+
+/** Request a password-reset link. Always resolves (server returns 204). */
+export function useForgotPassword() {
+  return useMutation({
+    mutationFn: (data: ForgotPasswordIn) =>
+      apiClient.post<void>('/api/auth/forgot-password', data),
+  });
+}
+
+/** Set a new password using a reset token from the email link. */
+export function useResetPassword() {
+  return useMutation({
+    mutationFn: (data: ResetPasswordIn) => apiClient.post<void>('/api/auth/reset-password', data),
+  });
+}
+
+/** Verify an email address using a token from the verification link. */
+export function useVerifyEmail() {
+  return useMutation({
+    mutationFn: (data: VerifyEmailIn) => apiClient.post<void>('/api/auth/verify-email', data),
+  });
+}
+
+/** Resend the verification email to the current (authenticated) user. */
+export function useResendVerification() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: () => apiClient.post<void>('/api/auth/resend-verification'),
+    onSuccess: () => void qc.invalidateQueries({ queryKey: ME_KEY }),
+  });
+}
+
+/** Change the current user's password (requires the current password). */
+export function useChangePassword() {
+  return useMutation({
+    mutationFn: (data: ChangePasswordIn) =>
+      apiClient.post<void>('/api/auth/change-password', data),
+  });
+}
+
+/** Delete the current account (password-confirmed); clears the session on success. */
+export function useDeleteAccount() {
+  const logout = useAuthStore((s) => s.logout);
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (data: DeleteAccountIn) => apiClient.delete<void>('/api/auth/me', { json: data }),
+    onSuccess: () => {
+      logout();
+      qc.clear();
+    },
+  });
+}
+
+/** Download a full export of the current user's data. */
+export function useExportData() {
+  return useMutation({
+    mutationFn: () => apiClient.get<AccountExport>('/api/auth/me/export'),
   });
 }
