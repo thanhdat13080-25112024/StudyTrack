@@ -53,9 +53,7 @@ def issue_token(db: Session, user: User, type: str, ttl: timedelta) -> str:
 def verify_token(db: Session, raw: str, type: str, now: datetime) -> AuthToken | None:
     """Return the matching unused, unexpired token of `type`, else None."""
     token = db.scalar(
-        select(AuthToken).where(
-            AuthToken.token_hash == hash_token(raw), AuthToken.type == type
-        )
+        select(AuthToken).where(AuthToken.token_hash == hash_token(raw), AuthToken.type == type)
     )
     if token is None or token.used_at is not None:
         return None
