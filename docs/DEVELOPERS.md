@@ -201,6 +201,39 @@ Phase 5 thêm lớp **quản lý hạn chót (deadline)** và **thông báo theo
 
 **Dữ liệu demo** (sau `make seed`): thêm **2 deadline mẫu** (một cái sắp tới hạn có nhắc, một cái còn một tuần) để trang Deadlines có dữ liệu ngay.
 
+## Tài khoản & email & API (Phase 6)
+
+Phase 6 biến auth từ "chỉ đăng ký/đăng nhập" thành một **hệ thống tài khoản thật**: xác thực email (**cổng mềm** — vẫn cho đăng nhập khi chưa xác thực), quên/đặt lại mật khẩu, đổi mật khẩu, xoá tài khoản (cascade) + **xuất toàn bộ dữ liệu**, kèm **giới hạn tần suất (slowapi)** trên các endpoint auth công khai. Gửi email **cắm-thay-được** (console khi dev / SMTP khi prod).
+
+**Mô hình dữ liệu** (migration `0006_auth_lifecycle`; rev-id ≤32 ký tự; FK CASCADE, index `user_id`):
+
+- **`AuthToken`** (bảng `auth_tokens`) — token **dùng-một-lần, có hạn** cho hai luồng email: `user_id`, `type` (`email_verify`/`password_reset`), `token_hash` (`String(64)` — **chỉ lưu sha256 hexdigest của token thô**; token thô gửi qua email đúng một lần, không bao giờ lưu DB), `expires_at` (timestamptz), `used_at` (timestamptz, nullable — đặt khi consume → dùng-một-lần), `created_at`. Index `(user_id, type)`.
+- **`User`** thêm `email_verified` (bool, mặc định false) + `email_verified_at` (timestamptz, nullable). Schema `UserOut` thêm trường `email_verified`.
+
+**Các service nghiệp vụ** (`backend/app/services/`, viết test-first):
+
+- `tokens.py` — `generate_raw_token()` (`secrets.token_urlsafe(32)`), `hash_token()` (sha256 hexdigest — xác định nên có thể tra cứu token thô; an toàn vì token là chuỗi ngẫu nhiên entropy cao, khác với mật khẩu), `issue_token(db, user, type, ttl)` → token thô (chỉ lưu hash), `verify_token(db, raw, type, now)` → `AuthToken` **chưa dùng + chưa hết hạn** đúng `type` (datetime tz-naive của SQLite coi là UTC) hoặc `None`, `consume_token(db, token)` (đặt `used_at`).
+- `email.py` — `send_email(to, subject, html, text)` dispatch theo `EMAIL_BACKEND`: **`console`** log nội dung + link (mặc định dev, không gửi thật) / **`smtp`** gửi qua stdlib `smtplib` (sync — hợp với handler threadpool của FastAPI; lỗi gửi chỉ log, **không làm hỏng request**). `build_verify_email(raw, lang)` / `build_reset_email(raw, lang)` chọn template **vi/en** theo `User.lang` và dựng link từ `FRONTEND_URL`.
+
+**Các endpoint mới** (router `backend/app/api/auth.py`, dưới `/api/auth`):
+
+| Method | Endpoint | Mô tả |
+|--------|----------|-------|
+| `POST` | `/api/auth/register` | (Đã có) nay **gửi kèm email xác thực**; user khởi tạo `email_verified=False`; vẫn trả token (auto-login) |
+| `POST` | `/api/auth/verify-email` | Xác thực email (body `{token}`, 204; token dùng-một-lần → 400 nếu dùng lại) |
+| `POST` | `/api/auth/resend-verification` | Gửi lại email xác thực (Bearer; 204; no-op nếu đã xác thực) |
+| `POST` | `/api/auth/forgot-password` | Yêu cầu đặt lại (body `{email}`, **luôn 204 — không lộ email có tồn tại hay không**; chỉ gửi khi user tồn tại) |
+| `POST` | `/api/auth/reset-password` | Đặt mật khẩu mới (body `{token,new_password}`, 204; token sai/hết hạn → 400; consume token) |
+| `POST` | `/api/auth/change-password` | Đổi mật khẩu (Bearer; body `{current_password,new_password}`; **401 nếu mật khẩu hiện tại sai**, else 204) |
+| `DELETE` | `/api/auth/me` | Xoá tài khoản (Bearer; body `{password}`; 401 nếu sai, else 204 — FK CASCADE xoá mọi bản ghi con) |
+| `GET` | `/api/auth/me/export` | Xuất toàn bộ dữ liệu (Bearer → `AccountExport`: user/profile/sessions/schedule/semesters/courses/grades/prerequisites/deadlines/notifications) |
+
+> **Giới hạn tần suất (slowapi):** một `Limiter` dùng chung nằm ở `backend/app/core/ratelimit.py` (import bởi **cả** `main.py` lẫn `api/auth.py` để tránh vòng import `main`↔`auth`); `main.py` đăng ký handler trả **429**. Các endpoint công khai có decorator: `login` (10/phút), `register` (5/giờ), `forgot-password` (5/giờ), `reset-password` (10/giờ), `resend-verification` (5/giờ). **Tắt tự động trong test** (`conftest.py` đặt `limiter.enabled=False`); limiter trong bộ nhớ dựa vào prod chạy **một uvicorn worker** (kế thừa Phase 5) để nhất quán.
+
+**Các trang frontend mới**: trang công khai **ForgotPassword** (`/forgot-password`), **ResetPassword** (`/reset-password?token=`), **VerifyEmail** (`/verify-email?token=`); trang được bảo vệ **Settings** (`/settings` — đổi mật khẩu / xuất dữ liệu / xoá tài khoản). **`EmailVerifyBanner`** gắn trong `RequireAuth` (hiện khi `!email_verified`, kèm nút gửi lại). Login thêm link **"Quên mật khẩu?"**; `AppHeader` thêm mục `/settings` (icon bánh răng). **7 hook auth mới** trong `features/auth/hooks.ts`; `apiClient.delete` mang body JSON cho `DELETE /me`. i18n thêm `auth.*` + `settings.*` + `nav.settings` (vi/en parity, **331 keys**).
+
+**Dữ liệu demo** (sau `make seed`): user demo khởi tạo **`email_verified=True`** (đã xác thực sẵn). Dependency backend mới: **`slowapi`**.
+
 ## Lệnh thường dùng
 
 Tất cả lệnh chuẩn hóa qua `Makefile` (chạy `make help` để xem danh sách):
@@ -234,8 +267,17 @@ Khai báo trong `.env` (copy từ `.env.example`). `.env` bị git-ignore và b�
 | `DATABASE_URL` | URL SQLAlchemy async (asyncpg) backend dùng kết nối Postgres |
 | `JWT_SECRET` | Khóa bí mật ký JWT access token (sinh chuỗi ngẫu nhiên dài) |
 | `REMINDER_SCAN_SECONDS` | (Tùy chọn) chu kỳ quét deadline tới hạn của scanner nền, đơn vị giây (mặc định 60) |
+| `EMAIL_BACKEND` | (Phase 6) backend gửi email tài khoản: `console` (dev — log link ra stdout, không gửi thật) hoặc `smtp` (gửi qua stdlib smtplib) |
+| `EMAIL_FROM` | (Phase 6) địa chỉ "From" của email gửi đi (mặc định `StudyTrack <no-reply@studytrack.app>`) |
+| `EMAIL_SMTP_HOST` / `EMAIL_SMTP_PORT` | (Phase 6, khi `EMAIL_BACKEND=smtp`) host + cổng SMTP (mặc định cổng 587) |
+| `EMAIL_SMTP_USER` / `EMAIL_SMTP_PASSWORD` | (Phase 6, khi `EMAIL_BACKEND=smtp`) thông tin đăng nhập SMTP |
+| `EMAIL_SMTP_USE_TLS` | (Phase 6) bật STARTTLS cho SMTP (mặc định `true`) |
+| `FRONTEND_URL` | (Phase 6) base URL công khai của frontend, dùng để dựng link xác thực/đặt lại trong email (mặc định `http://localhost:5173`) |
+| `EMAIL_VERIFY_TTL_HOURS` | (Phase 6) thời hạn token xác thực email, đơn vị giờ (mặc định 48) |
+| `PASSWORD_RESET_TTL_HOURS` | (Phase 6) thời hạn token đặt lại mật khẩu, đơn vị giờ (mặc định 1) |
+| `RATE_LIMIT_ENABLED` | (Phase 6) bật/tắt giới hạn tần suất slowapi trên endpoint auth công khai (mặc định `true`; tự tắt trong test) |
 | `VITE_API_URL` | Base URL frontend gọi API (dev: backend local; prod: domain qua nginx) |
-| `ANTHROPIC_API_KEY` | (Tùy chọn, phase sau) khóa Claude API cho tính năng gợi ý học tập AI |
+| `ANTHROPIC_API_KEY` | (Tùy chọn, Phase 8) khóa Claude/Gemini API cho tính năng gợi ý học tập AI (hoãn sang Phase 8) |
 
 ## Quy trình Git & deploy
 
@@ -255,4 +297,6 @@ Khai báo trong `.env` (copy từ `.env.example`). `.env` bị git-ignore và b�
 | **3** | Học vụ lõi: Course/Semester/Grade, GPA/CPA engine + xếp loại + tiến độ tín chỉ, what-if GPA & học bổng | ✅ Hoàn thành |
 | **4** | CTĐT & lộ trình: Prerequisite/CTĐT, roadmap engine, direction analysis, liên kết phiên học↔môn, cảnh báo môn yếu | ✅ Hoàn thành |
 | **5** | Deadline + realtime: Deadline/lịch thi, WebSocket `/ws/notifications`, scanner nhắc nhở nền, chuông thông báo + đẩy mở khóa huy hiệu | ✅ Hoàn thành |
-| **6** | Lớp AI: service Claude API (proxy qua backend, giấu key) nâng cấp phân tích điểm yếu / lộ trình / tư vấn chọn môn | ⏳ |
+| **6** | Tài khoản & email: xác thực email (cổng mềm), quên/đặt lại & đổi mật khẩu, xoá tài khoản + xuất dữ liệu, `AuthToken`, email cắm-thay-được (console/SMTP), giới hạn tần suất slowapi | ✅ Hoàn thành |
+| **7** | Phân tích & báo cáo học tập nâng cao | ⏳ |
+| **8** | Lớp AI (hoãn lại): service Gemini/Claude API (proxy qua backend, giấu key) nâng cấp phân tích điểm yếu / lộ trình / tư vấn chọn môn | ⏳ |

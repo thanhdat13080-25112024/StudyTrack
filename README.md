@@ -51,6 +51,12 @@
 ### 👤 Hồ sơ cá nhân
 - Hồ sơ sinh viên (lớp, khoa, ngành, mục tiêu, ảnh đại diện) và **thẻ sinh viên ảo** đẹp mắt.
 
+### 🔐 Tài khoản & bảo mật (mới)
+- **Xác thực email**: khi đăng ký, ứng dụng gửi email kèm liên kết xác thực. Tài khoản chưa xác thực vẫn dùng được (cổng mềm), nhưng có **banner nhắc xác thực** kèm nút **gửi lại email**.
+- **Quên mật khẩu / đặt lại mật khẩu**: nhập email để nhận liên kết đặt lại; mở liên kết là đặt được mật khẩu mới (liên kết dùng một lần, có hạn).
+- **Trang Cài đặt (`/settings`)**: **đổi mật khẩu**, **xuất toàn bộ dữ liệu** của bạn ra một file JSON, và **xoá tài khoản vĩnh viễn** (xoá luôn mọi dữ liệu liên quan).
+- Các endpoint đăng nhập/đăng ký/quên mật khẩu có **giới hạn tần suất** để chống lạm dụng.
+
 ## Tính năng đã có & sắp tới
 
 | Nhóm tính năng | Trạng thái |
@@ -60,6 +66,8 @@
 | Nhập điểm, GPA/CPA, xếp loại, tiến độ tín chỉ, what-if GPA | ✅ Đã có |
 | Lộ trình học theo môn tiên quyết, cảnh báo môn yếu, phân tích thế mạnh | ✅ Đã có |
 | Quản lý deadline / lịch thi + nhắc nhở theo thời gian thực + chuông thông báo | ✅ Đã có |
+| Tài khoản: xác thực email, quên/đặt lại & đổi mật khẩu, xuất dữ liệu, xoá tài khoản | ✅ Đã có |
+| Phân tích & báo cáo học tập nâng cao | ⏳ Sắp tới |
 | Trợ lý AI tư vấn chọn môn & lộ trình | ⏳ Sắp tới |
 
 ## Dùng thử nhanh
