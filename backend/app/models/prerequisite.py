@@ -41,4 +41,4 @@ class Prerequisite(Base):
 
     course: Mapped[Course] = relationship(foreign_keys=[course_id])
     prereq_course: Mapped[Course] = relationship(foreign_keys=[prereq_course_id])
-    user: Mapped[User] = relationship()
+    user: Mapped[User] = relationship(back_populates="prerequisites")

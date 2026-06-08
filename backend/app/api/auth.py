@@ -127,6 +127,8 @@ def verify_email(data: VerifyEmailIn, db: Session = Depends(get_db)) -> None:
     if token is None:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "Invalid or expired token")
     user = db.get(User, token.user_id)
+    if user is None:  # defensive: token without a live user (should not happen)
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "Invalid or expired token")
     user.email_verified = True
     user.email_verified_at = datetime.now(UTC)
     tokens.consume_token(db, token)
@@ -167,6 +169,8 @@ def reset_password(request: Request, data: ResetPasswordIn, db: Session = Depend
     if token is None:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "Invalid or expired token")
     user = db.get(User, token.user_id)
+    if user is None:  # defensive: token without a live user (should not happen)
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "Invalid or expired token")
     user.password_hash = hash_password(data.new_password)
     tokens.consume_token(db, token)
     db.commit()
@@ -180,7 +184,10 @@ def change_password(
     db: Session = Depends(get_db),
 ) -> None:
     if not verify_password(data.current_password, current.password_hash):
-        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Current password is incorrect")
+        # 403, not 401: the JWT is valid (user is authenticated); the password
+        # confirmation is an authorization check. A 401 would trip the frontend's
+        # global "session expired" handler and log the user out on a typo.
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "Current password is incorrect")
     current.password_hash = hash_password(data.new_password)
     db.commit()
 
@@ -192,8 +199,9 @@ def delete_account(
     db: Session = Depends(get_db),
 ) -> None:
     if not verify_password(data.password, current.password_hash):
-        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Password is incorrect")
-    db.delete(current)  # FK CASCADE removes all child rows
+        # 403, not 401 — see change_password (avoid the FE auto-logout on a typo).
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "Password is incorrect")
+    db.delete(current)  # ORM + FK CASCADE removes all child rows
     db.commit()
 
 

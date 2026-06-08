@@ -54,3 +54,21 @@ def test_consume_makes_token_single_use(db_session: Session) -> None:
 
 def test_verify_unknown_token_returns_none(db_session: Session) -> None:
     assert tokens.verify_token(db_session, "nope", "email_verify", datetime.now(UTC)) is None
+
+
+def test_issuing_invalidates_prior_token_of_same_type(db_session: Session) -> None:
+    user = _user(db_session)
+    old = tokens.issue_token(db_session, user, "password_reset", timedelta(hours=1))
+    new = tokens.issue_token(db_session, user, "password_reset", timedelta(hours=1))
+    now = datetime.now(UTC)
+    # the older link no longer works; only the most recent one does
+    assert tokens.verify_token(db_session, old, "password_reset", now) is None
+    assert tokens.verify_token(db_session, new, "password_reset", now) is not None
+
+
+def test_issuing_does_not_invalidate_other_type(db_session: Session) -> None:
+    user = _user(db_session)
+    verify = tokens.issue_token(db_session, user, "email_verify", timedelta(hours=1))
+    tokens.issue_token(db_session, user, "password_reset", timedelta(hours=1))
+    # issuing a password_reset must not touch the still-valid email_verify token
+    assert tokens.verify_token(db_session, verify, "email_verify", datetime.now(UTC)) is not None

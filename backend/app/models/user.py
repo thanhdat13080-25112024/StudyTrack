@@ -13,7 +13,10 @@ from app.core.db import Base
 if TYPE_CHECKING:
     from app.models.auth_token import AuthToken
     from app.models.course import Course
+    from app.models.deadline import Deadline
     from app.models.grade import Grade
+    from app.models.notification import Notification
+    from app.models.prerequisite import Prerequisite
     from app.models.profile import Profile
     from app.models.schedule_item import ScheduleItem
     from app.models.semester import Semester
@@ -54,5 +57,14 @@ class User(Base):
     )
     grades: Mapped[list[Grade]] = relationship(back_populates="user", cascade="all, delete-orphan")
     auth_tokens: Mapped[list[AuthToken]] = relationship(
+        back_populates="user", cascade="all, delete-orphan"
+    )
+    deadlines: Mapped[list[Deadline]] = relationship(
+        back_populates="user", cascade="all, delete-orphan"
+    )
+    notifications: Mapped[list[Notification]] = relationship(
+        back_populates="user", cascade="all, delete-orphan"
+    )
+    prerequisites: Mapped[list[Prerequisite]] = relationship(
         back_populates="user", cascade="all, delete-orphan"
     )

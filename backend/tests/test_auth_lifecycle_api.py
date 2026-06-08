@@ -3,8 +3,13 @@
 from __future__ import annotations
 
 import re
+from datetime import UTC, datetime, timedelta
 
 import pytest
+from app.models.course import Course
+from app.models.deadline import Deadline
+from app.models.notification import Notification
+from app.models.prerequisite import Prerequisite
 from app.models.user import User
 from app.services import email as email_service
 from fastapi.testclient import TestClient
@@ -103,7 +108,9 @@ def test_change_password_requires_correct_current(client: TestClient, outbox):
         json={"current_password": "wrong", "new_password": "another123"},
         headers=headers,
     )
-    assert bad.status_code == 401
+    # 403 (not 401) so the FE's global "session expired" handler doesn't log the
+    # user out on a wrong current-password typo.
+    assert bad.status_code == 403
     ok = client.post(
         "/api/auth/change-password",
         json={"current_password": REG["password"], "new_password": "another123"},
@@ -121,7 +128,8 @@ def test_resend_verification(client: TestClient, outbox):
 
 def test_delete_account_cascades(client: TestClient, outbox, db_session):
     headers = _auth_headers(client)
-    # create a child row (a study session) to prove cascade
+    user = db_session.scalar(select(User).where(User.email == REG["email"]))
+    # A study session via the API (its FK ORM-cascades) ...
     client.post(
         "/api/sessions",
         json={
@@ -134,14 +142,38 @@ def test_delete_account_cascades(client: TestClient, outbox, db_session):
         },
         headers=headers,
     )
+    # ... plus child rows in the tables whose ORM cascade was previously missing
+    # (deadlines / notifications / prerequisites). SQLite has FK enforcement OFF,
+    # so this asserts the ORM-level cascade actually removes them.
+    c1 = Course(user_id=user.id, code="CS101", name="Intro", credits=3)
+    c2 = Course(user_id=user.id, code="CS102", name="DS", credits=3)
+    db_session.add_all([c1, c2])
+    db_session.flush()
+    db_session.add_all(
+        [
+            Deadline(
+                user_id=user.id,
+                title="HW1",
+                type="assignment",
+                due_at=datetime.now(UTC) + timedelta(days=1),
+            ),
+            Notification(user_id=user.id, type="badge_unlocked", payload={"badge_key": "x"}),
+            Prerequisite(user_id=user.id, course_id=c2.id, prereq_course_id=c1.id),
+        ]
+    )
+    db_session.commit()
+
     bad = client.request("DELETE", "/api/auth/me", json={"password": "wrong"}, headers=headers)
-    assert bad.status_code == 401
+    assert bad.status_code == 403
     ok = client.request(
         "DELETE", "/api/auth/me", json={"password": REG["password"]}, headers=headers
     )
     assert ok.status_code == 204
     db_session.expire_all()
     assert db_session.scalar(select(User).where(User.email == REG["email"])) is None
+    # every child row is gone (no orphans left behind)
+    for model in (Course, Deadline, Notification, Prerequisite):
+        assert db_session.scalars(select(model).where(model.user_id == user.id)).first() is None
 
 
 def test_export_returns_all_sections(client: TestClient, outbox):

@@ -32,4 +32,4 @@ class Notification(Base):
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
 
-    user: Mapped[User] = relationship()
+    user: Mapped[User] = relationship(back_populates="notifications")

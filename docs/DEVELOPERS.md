@@ -224,8 +224,8 @@ Phase 6 biến auth từ "chỉ đăng ký/đăng nhập" thành một **hệ th
 | `POST` | `/api/auth/resend-verification` | Gửi lại email xác thực (Bearer; 204; no-op nếu đã xác thực) |
 | `POST` | `/api/auth/forgot-password` | Yêu cầu đặt lại (body `{email}`, **luôn 204 — không lộ email có tồn tại hay không**; chỉ gửi khi user tồn tại) |
 | `POST` | `/api/auth/reset-password` | Đặt mật khẩu mới (body `{token,new_password}`, 204; token sai/hết hạn → 400; consume token) |
-| `POST` | `/api/auth/change-password` | Đổi mật khẩu (Bearer; body `{current_password,new_password}`; **401 nếu mật khẩu hiện tại sai**, else 204) |
-| `DELETE` | `/api/auth/me` | Xoá tài khoản (Bearer; body `{password}`; 401 nếu sai, else 204 — FK CASCADE xoá mọi bản ghi con) |
+| `POST` | `/api/auth/change-password` | Đổi mật khẩu (Bearer; body `{current_password,new_password}`; **403 nếu mật khẩu hiện tại sai** — dùng 403 thay 401 để FE không tự đăng xuất khi gõ nhầm — else 204) |
+| `DELETE` | `/api/auth/me` | Xoá tài khoản (Bearer; body `{password}`; 403 nếu sai, else 204 — ORM + FK CASCADE xoá mọi bản ghi con) |
 | `GET` | `/api/auth/me/export` | Xuất toàn bộ dữ liệu (Bearer → `AccountExport`: user/profile/sessions/schedule/semesters/courses/grades/prerequisites/deadlines/notifications) |
 
 > **Giới hạn tần suất (slowapi):** một `Limiter` dùng chung nằm ở `backend/app/core/ratelimit.py` (import bởi **cả** `main.py` lẫn `api/auth.py` để tránh vòng import `main`↔`auth`); `main.py` đăng ký handler trả **429**. Các endpoint công khai có decorator: `login` (10/phút), `register` (5/giờ), `forgot-password` (5/giờ), `reset-password` (10/giờ), `resend-verification` (5/giờ). **Tắt tự động trong test** (`conftest.py` đặt `limiter.enabled=False`); limiter trong bộ nhớ dựa vào prod chạy **một uvicorn worker** (kế thừa Phase 5) để nhất quán.

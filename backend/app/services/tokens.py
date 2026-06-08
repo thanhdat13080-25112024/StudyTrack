@@ -33,10 +33,34 @@ def _as_utc(dt: datetime) -> datetime:
     return dt if dt.tzinfo is not None else dt.replace(tzinfo=UTC)
 
 
-def issue_token(db: Session, user: User, type: str, ttl: timedelta) -> str:
-    """Create a token row, return the raw token ONCE (only its hash is stored)."""
+def invalidate_outstanding(db: Session, user_id: int, type: str) -> None:
+    """Mark every still-unused token of this (user, type) as used.
+
+    Called when issuing a fresh token so only the latest link works — a new
+    forgot-password / resend-verification request invalidates prior ones.
+    """
     from datetime import UTC
 
+    now = datetime.now(UTC)
+    for token in db.scalars(
+        select(AuthToken).where(
+            AuthToken.user_id == user_id,
+            AuthToken.type == type,
+            AuthToken.used_at.is_(None),
+        )
+    ):
+        token.used_at = now
+
+
+def issue_token(db: Session, user: User, type: str, ttl: timedelta) -> str:
+    """Create a token row, return the raw token ONCE (only its hash is stored).
+
+    Any prior unused token of the same (user, type) is invalidated first so only
+    the most recently issued link is valid.
+    """
+    from datetime import UTC
+
+    invalidate_outstanding(db, user.id, type)
     raw = generate_raw_token()
     db.add(
         AuthToken(
