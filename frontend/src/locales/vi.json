@@ -14,6 +14,7 @@
     "grades": "Điểm số",
     "roadmap": "Lộ trình",
     "analysis": "Phân tích",
+    "deadlines": "Hạn chót",
     "login": "Đăng nhập"
   },
   "common": {
@@ -336,5 +337,31 @@
   "studentId": {
     "class": "Lớp",
     "major": "Ngành"
+  },
+  "deadlines": {
+    "title": "Hạn chót",
+    "titlePlaceholder": "vd. Nộp báo cáo thí nghiệm",
+    "add": "Thêm hạn chót",
+    "empty": "Chưa có hạn chót nào.",
+    "noCourse": "Không gắn môn",
+    "markDone": "Đánh dấu xong",
+    "markUndone": "Bỏ đánh dấu",
+    "types": { "assignment": "Bài tập", "exam": "Thi", "project": "Đồ án" },
+    "priorities": { "low": "Thấp", "medium": "Trung bình", "high": "Cao" },
+    "remind": {
+      "none": "Không nhắc",
+      "h1": "Trước 1 giờ",
+      "h3": "Trước 3 giờ",
+      "d1": "Trước 1 ngày",
+      "d3": "Trước 3 ngày",
+      "w1": "Trước 1 tuần"
+    }
+  },
+  "notifications": {
+    "title": "Thông báo",
+    "empty": "Chưa có thông báo.",
+    "markAllRead": "Đánh dấu đã đọc hết",
+    "deadlineReminder": "Nhắc: \"{{title}}\" sắp đến hạn",
+    "badgeUnlocked": "Mở khoá huy hiệu: {{badge}}"
   }
 }
