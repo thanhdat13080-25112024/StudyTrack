@@ -1,0 +1,404 @@
+/**
+ * Analytics page — rich study-habit analytics with charts, heatmap, and
+ * productivity score. All data is computed on-read from the backend;
+ * this page only renders it.
+ */
+import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  Legend,
+  Line,
+  LineChart,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts';
+import { AppHeader } from '@/components/AppHeader';
+import { ComparisonCard } from '@/components/analytics/ComparisonCard';
+import { ProductivityGauge } from '@/components/analytics/ProductivityGauge';
+import { StudyHeatmap } from '@/components/analytics/StudyHeatmap';
+import { Card } from '@/components/ui/card';
+import { useAnalytics } from '@/features/analytics/hooks';
+import { useUiStore } from '@/store/uiStore';
+
+// Theme-aware CSS variable reader
+function readVar(name: string, fallback: string): string {
+  if (typeof window === 'undefined') return fallback;
+  const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  return v || fallback;
+}
+
+const PIE_COLORS = [
+  'var(--accent-color)',
+  'var(--brand-emerald)',
+  'var(--brand-gold)',
+  'var(--brand-rose)',
+  'var(--brand-violet)',
+];
+
+type DateRange = 'all' | '30' | '90' | 'year';
+
+function rangeToParams(range: DateRange): { fromDate?: string; toDate?: string } {
+  if (range === 'all') return {};
+  const now = new Date();
+  if (range === 'year') {
+    return { fromDate: `${now.getFullYear()}-01-01` };
+  }
+  const days = range === '30' ? 30 : 90;
+  const from = new Date(now);
+  from.setDate(from.getDate() - days);
+  return { fromDate: from.toISOString().slice(0, 10) };
+}
+
+export default function Analytics() {
+  const { t } = useTranslation();
+  const theme = useUiStore((s) => s.theme);
+  const [range, setRange] = useState<DateRange>('all');
+  const params = useMemo(() => rangeToParams(range), [range]);
+  const { data, isLoading } = useAnalytics(params.fromDate, params.toDate);
+
+  const [colors, setColors] = useState({
+    accent: '#2563eb',
+    grid: '#1e293b',
+    text: '#9ca3af',
+    card: '#1e293b',
+  });
+
+  useEffect(() => {
+    setColors({
+      accent: readVar('--accent-color', '#2563eb'),
+      grid: readVar('--border-color', '#1e293b'),
+      text: readVar('--text-helper', '#9ca3af'),
+      card: readVar('--bg-card', '#1e293b'),
+    });
+  }, [theme]);
+
+  const currentYear = new Date().getFullYear();
+
+  return (
+    <main className="min-h-full bg-bg-main text-text-main">
+      <div className="mx-auto flex max-w-5xl flex-col gap-8 px-6 py-8">
+        <AppHeader />
+
+        <section className="flex flex-col gap-1">
+          <h1 className="text-2xl font-bold text-text-main">{t('analytics.title')}</h1>
+
+          {/* Date range selector */}
+          <div className="flex items-center gap-2 pt-2">
+            <span className="text-sm text-text-muted">{t('analytics.dateRange')}:</span>
+            {(['all', '30', '90', 'year'] as DateRange[]).map((r) => (
+              <button
+                key={r}
+                onClick={() => setRange(r)}
+                className={`rounded-token px-3 py-1 text-sm transition-colors ${
+                  range === r
+                    ? 'bg-accent text-white'
+                    : 'bg-bg-card text-text-muted hover:bg-accent/10'
+                }`}
+              >
+                {t(`analytics.${r === 'all' ? 'allTime' : r === 'year' ? 'thisYear' : `last${r}`}`)}
+              </button>
+            ))}
+          </div>
+        </section>
+
+        {isLoading || !data ? (
+          <p className="text-text-muted">{t('common.loading')}</p>
+        ) : data.time_by_method.length === 0 &&
+          data.time_by_course.length === 0 &&
+          data.focus_trend.length === 0 ? (
+          <Card className="p-8 text-center text-text-muted">{t('analytics.noData')}</Card>
+        ) : (
+          <>
+            {/* Row 1: Comparison cards + Productivity gauge */}
+            <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              <ComparisonCard
+                label={t('analytics.weekComparison')}
+                sublabel={t('analytics.vsLastWeek')}
+                current={data.weekly_comparison.this_week_minutes}
+                previous={data.weekly_comparison.last_week_minutes}
+                changePct={data.weekly_comparison.change_pct}
+              />
+              <ComparisonCard
+                label={t('analytics.monthComparison')}
+                sublabel={t('analytics.vsLastMonth')}
+                current={data.monthly_comparison.this_month_minutes}
+                previous={data.monthly_comparison.last_month_minutes}
+                changePct={data.monthly_comparison.change_pct}
+              />
+              <div className="sm:col-span-2 lg:col-span-1">
+                <ProductivityGauge data={data.productivity_score} />
+              </div>
+            </section>
+
+            {/* Row 2: Study Heatmap */}
+            <section className="rounded-card border border-border bg-bg-card p-6 shadow-card">
+              <h2 className="mb-4 text-base font-semibold text-text-helper">
+                {t('analytics.heatmapTitle')}
+              </h2>
+              <div className="overflow-x-auto">
+                <StudyHeatmap data={data.heatmap} year={currentYear} />
+              </div>
+            </section>
+
+            {/* Row 3: Time by Method (Pie) + Time by Course (Bar) */}
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+              {/* Pie: Time by method */}
+              <section className="rounded-card border border-border bg-bg-card p-6 shadow-card">
+                <h2 className="mb-4 text-base font-semibold text-text-helper">
+                  {t('analytics.byMethod')}
+                </h2>
+                <div className="h-64">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={data.time_by_method.map((m) => ({
+                          name: t(`methods.${m.method}`),
+                          value: m.total_minutes,
+                        }))}
+                        dataKey="value"
+                        nameKey="name"
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={50}
+                        outerRadius={80}
+                        paddingAngle={3}
+                        strokeWidth={0}
+                      >
+                        {data.time_by_method.map((_, i) => (
+                          <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
+                        ))}
+                      </Pie>
+                      <Tooltip
+                        contentStyle={{
+                          background: colors.card,
+                          border: `1px solid ${colors.grid}`,
+                          borderRadius: 12,
+                          color: colors.text,
+                        }}
+                        formatter={(value: number) => [`${value} ${t('common.minutesShort')}`, '']}
+                      />
+                      <Legend wrapperStyle={{ color: colors.text, fontSize: 12 }} />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+              </section>
+
+              {/* Horizontal Bar: Time by course */}
+              <section className="rounded-card border border-border bg-bg-card p-6 shadow-card">
+                <h2 className="mb-4 text-base font-semibold text-text-helper">
+                  {t('analytics.byCourse')}
+                </h2>
+                <div className="h-64">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart
+                      layout="vertical"
+                      data={data.time_by_course.slice(0, 8).map((c) => ({
+                        name: c.subject.length > 16 ? c.subject.slice(0, 14) + '…' : c.subject,
+                        minutes: c.total_minutes,
+                      }))}
+                      margin={{ top: 8, right: 8, bottom: 0, left: 0 }}
+                    >
+                      <CartesianGrid
+                        strokeDasharray="3 3"
+                        stroke={colors.grid}
+                        horizontal={false}
+                      />
+                      <XAxis type="number" stroke={colors.text} tickLine={false} fontSize={12} />
+                      <YAxis
+                        dataKey="name"
+                        type="category"
+                        width={100}
+                        stroke={colors.text}
+                        tickLine={false}
+                        axisLine={false}
+                        fontSize={11}
+                      />
+                      <Tooltip
+                        cursor={{ fill: colors.grid, opacity: 0.3 }}
+                        contentStyle={{
+                          background: colors.card,
+                          border: `1px solid ${colors.grid}`,
+                          borderRadius: 12,
+                          color: colors.text,
+                        }}
+                        formatter={(value: number) => [`${value} ${t('common.minutesShort')}`, '']}
+                      />
+                      <Bar
+                        dataKey="minutes"
+                        fill={colors.accent}
+                        radius={[0, 6, 6, 0]}
+                        maxBarSize={24}
+                      />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </section>
+            </div>
+
+            {/* Row 4: Focus Trend (Line) */}
+            <section className="rounded-card border border-border bg-bg-card p-6 shadow-card">
+              <h2 className="mb-4 text-base font-semibold text-text-helper">
+                {t('analytics.focusTrend')}
+              </h2>
+              <div className="h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart
+                    data={data.focus_trend.map((f) => ({
+                      date: f.date.slice(5), // MM-DD
+                      focus: f.avg_focus,
+                    }))}
+                    margin={{ top: 8, right: 8, bottom: 0, left: -16 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" stroke={colors.grid} vertical={false} />
+                    <XAxis dataKey="date" stroke={colors.text} tickLine={false} fontSize={12} />
+                    <YAxis
+                      domain={[0, 10]}
+                      stroke={colors.text}
+                      tickLine={false}
+                      axisLine={false}
+                      fontSize={12}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        background: colors.card,
+                        border: `1px solid ${colors.grid}`,
+                        borderRadius: 12,
+                        color: colors.text,
+                      }}
+                      formatter={(value: number) => [value.toFixed(1), t('analytics.avgFocus')]}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="focus"
+                      stroke={colors.accent}
+                      strokeWidth={2}
+                      dot={{ r: 3, fill: colors.accent }}
+                      activeDot={{ r: 5 }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </section>
+
+            {/* Row 5: Hourly Distribution + Method Effectiveness */}
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+              {/* Hourly distribution bar chart */}
+              <section className="rounded-card border border-border bg-bg-card p-6 shadow-card">
+                <h2 className="mb-4 text-base font-semibold text-text-helper">
+                  {t('analytics.hourlyTitle')}
+                </h2>
+                <div className="h-64">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart
+                      data={
+                        data.hourly_distribution.length > 0
+                          ? data.hourly_distribution.map((h) => ({
+                              hour: `${String(h.hour).padStart(2, '0')}:00`,
+                              minutes: h.total_minutes,
+                            }))
+                          : []
+                      }
+                      margin={{ top: 8, right: 8, bottom: 0, left: -16 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" stroke={colors.grid} vertical={false} />
+                      <XAxis
+                        dataKey="hour"
+                        stroke={colors.text}
+                        tickLine={false}
+                        fontSize={11}
+                        interval={2}
+                      />
+                      <YAxis stroke={colors.text} tickLine={false} axisLine={false} fontSize={12} />
+                      <Tooltip
+                        cursor={{ fill: colors.grid, opacity: 0.3 }}
+                        contentStyle={{
+                          background: colors.card,
+                          border: `1px solid ${colors.grid}`,
+                          borderRadius: 12,
+                          color: colors.text,
+                        }}
+                        formatter={(value: number) => [`${value} ${t('common.minutesShort')}`, '']}
+                      />
+                      <Bar
+                        dataKey="minutes"
+                        fill="var(--brand-emerald)"
+                        radius={[6, 6, 0, 0]}
+                        maxBarSize={24}
+                      />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </section>
+
+              {/* Method effectiveness table */}
+              <section className="rounded-card border border-border bg-bg-card p-6 shadow-card">
+                <h2 className="mb-4 text-base font-semibold text-text-helper">
+                  {t('analytics.effectivenessTitle')}
+                </h2>
+                {data.method_effectiveness.length === 0 ? (
+                  <p className="text-sm text-text-muted">{t('analytics.noData')}</p>
+                ) : (
+                  <div className="flex flex-col gap-4">
+                    {data.method_effectiveness.map((me) => (
+                      <div key={me.method} className="flex flex-col gap-2">
+                        <div className="flex items-center justify-between">
+                          <span className="font-medium text-text-helper">
+                            {t(`methods.${me.method}`)}
+                          </span>
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="flex flex-col gap-1">
+                            <span className="text-xs text-text-muted">
+                              {t('analytics.avgFocus')}
+                            </span>
+                            <div className="flex items-center gap-2">
+                              <div className="h-2 flex-1 rounded-full bg-border">
+                                <div
+                                  className="h-full rounded-full bg-accent transition-all duration-500"
+                                  style={{ width: `${(me.avg_focus / 10) * 100}%` }}
+                                />
+                              </div>
+                              <span className="text-sm font-medium text-text-helper">
+                                {me.avg_focus.toFixed(1)}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="flex flex-col gap-1">
+                            <span className="text-xs text-text-muted">
+                              {t('analytics.completionRate')}
+                            </span>
+                            <div className="flex items-center gap-2">
+                              <div className="h-2 flex-1 rounded-full bg-border">
+                                <div
+                                  className="h-full rounded-full bg-brand-emerald transition-all duration-500"
+                                  style={{
+                                    width: `${Math.min(me.avg_completion_rate * 100, 100)}%`,
+                                  }}
+                                />
+                              </div>
+                              <span className="text-sm font-medium text-text-helper">
+                                {(me.avg_completion_rate * 100).toFixed(0)}%
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </section>
+            </div>
+          </>
+        )}
+      </div>
+    </main>
+  );
+}

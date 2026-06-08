@@ -12,6 +12,7 @@ import Courses from '@/pages/Courses';
 import Grades from '@/pages/Grades';
 import Roadmap from '@/pages/Roadmap';
 import Analysis from '@/pages/Analysis';
+import Analytics from '@/pages/Analytics';
 import Deadlines from '@/pages/Deadlines';
 import ForgotPassword from '@/pages/ForgotPassword';
 import ResetPassword from '@/pages/ResetPassword';
@@ -81,6 +82,7 @@ export default function App() {
         <Route path="/grades" element={<Grades />} />
         <Route path="/roadmap" element={<Roadmap />} />
         <Route path="/analysis" element={<Analysis />} />
+        <Route path="/analytics" element={<Analytics />} />
         <Route path="/deadlines" element={<Deadlines />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/settings" element={<Settings />} />

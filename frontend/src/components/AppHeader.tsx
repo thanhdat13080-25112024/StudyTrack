@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   Activity,
+  BarChart3,
   BookOpen,
   CalendarClock,
   CalendarDays,
@@ -39,6 +40,7 @@ const NAV = [
   { to: '/grades', key: 'nav.grades', icon: GraduationCap },
   { to: '/roadmap', key: 'nav.roadmap', icon: Route },
   { to: '/analysis', key: 'nav.analysis', icon: Activity },
+  { to: '/analytics', key: 'nav.analytics', icon: BarChart3 },
   { to: '/deadlines', key: 'nav.deadlines', icon: CalendarClock },
 ] as const;
 

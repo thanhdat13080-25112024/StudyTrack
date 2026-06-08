@@ -547,6 +547,23 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api/analytics': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Get Analytics */
+    get: operations['get_analytics_api_analytics_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   '/api/deadlines': {
     parameters: {
       query?: never;
@@ -676,6 +693,24 @@ export interface components {
       /** Notifications */
       notifications: components['schemas']['NotificationOut'][];
     };
+    /** AnalyticsOut */
+    AnalyticsOut: {
+      /** Heatmap */
+      heatmap: components['schemas']['HeatmapPointOut'][];
+      /** Time By Method */
+      time_by_method: components['schemas']['MethodTimeOut'][];
+      /** Time By Course */
+      time_by_course: components['schemas']['CourseTimeOut'][];
+      /** Focus Trend */
+      focus_trend: components['schemas']['FocusPointOut'][];
+      weekly_comparison: components['schemas']['WeeklyComparisonOut'];
+      monthly_comparison: components['schemas']['MonthlyComparisonOut'];
+      productivity_score: components['schemas']['ProductivityScoreOut'];
+      /** Hourly Distribution */
+      hourly_distribution: components['schemas']['HourlyPointOut'][];
+      /** Method Effectiveness */
+      method_effectiveness: components['schemas']['MethodEffectivenessOut'][];
+    };
     /** BadgeOut */
     BadgeOut: {
       /** Key */
@@ -780,6 +815,17 @@ export interface components {
       credits: number;
       /** Category */
       category: string | null;
+    };
+    /** CourseTimeOut */
+    CourseTimeOut: {
+      /** Course Id */
+      course_id: number | null;
+      /** Subject */
+      subject: string;
+      /** Total Minutes */
+      total_minutes: number;
+      /** Session Count */
+      session_count: number;
     };
     /** CourseUpdate */
     CourseUpdate: {
@@ -917,6 +963,13 @@ export interface components {
       /** Missing Prerequisites */
       missing_prerequisites: components['schemas']['MissingPrereqOut'][];
     };
+    /** FocusPointOut */
+    FocusPointOut: {
+      /** Date */
+      date: string;
+      /** Avg Focus */
+      avg_focus: number;
+    };
     /** ForgotPasswordIn */
     ForgotPasswordIn: {
       /**
@@ -1002,6 +1055,20 @@ export interface components {
       /** Detail */
       detail?: components['schemas']['ValidationError'][];
     };
+    /** HeatmapPointOut */
+    HeatmapPointOut: {
+      /** Date */
+      date: string;
+      /** Minutes */
+      minutes: number;
+    };
+    /** HourlyPointOut */
+    HourlyPointOut: {
+      /** Hour */
+      hour: number;
+      /** Total Minutes */
+      total_minutes: number;
+    };
     /** Hypothetical */
     Hypothetical: {
       /** Credits */
@@ -1025,6 +1092,24 @@ export interface components {
       user: components['schemas']['UserOut'];
       profile: components['schemas']['ProfileOut'];
     };
+    /** MethodEffectivenessOut */
+    MethodEffectivenessOut: {
+      /** Method */
+      method: string;
+      /** Avg Focus */
+      avg_focus: number;
+      /** Avg Completion Rate */
+      avg_completion_rate: number;
+    };
+    /** MethodTimeOut */
+    MethodTimeOut: {
+      /** Method */
+      method: string;
+      /** Total Minutes */
+      total_minutes: number;
+      /** Session Count */
+      session_count: number;
+    };
     /** MissingPrereqOut */
     MissingPrereqOut: {
       /** Course Id */
@@ -1033,6 +1118,15 @@ export interface components {
       code: string | null;
       /** Missing */
       missing: number[];
+    };
+    /** MonthlyComparisonOut */
+    MonthlyComparisonOut: {
+      /** This Month Minutes */
+      this_month_minutes: number;
+      /** Last Month Minutes */
+      last_month_minutes: number;
+      /** Change Pct */
+      change_pct: number | null;
     };
     /** NotificationOut */
     NotificationOut: {
@@ -1078,6 +1172,21 @@ export interface components {
       course_code: string;
       /** Prereq Code */
       prereq_code: string;
+    };
+    /** ProductivityComponentsOut */
+    ProductivityComponentsOut: {
+      /** Consistency */
+      consistency: number;
+      /** Volume */
+      volume: number;
+      /** Focus Quality */
+      focus_quality: number;
+    };
+    /** ProductivityScoreOut */
+    ProductivityScoreOut: {
+      /** Score */
+      score: number;
+      components: components['schemas']['ProductivityComponentsOut'];
     };
     /** ProfileOut */
     ProfileOut: {
@@ -1466,6 +1575,15 @@ export interface components {
       metrics: {
         [key: string]: number;
       };
+    };
+    /** WeeklyComparisonOut */
+    WeeklyComparisonOut: {
+      /** This Week Minutes */
+      this_week_minutes: number;
+      /** Last Week Minutes */
+      last_week_minutes: number;
+      /** Change Pct */
+      change_pct: number | null;
     };
     /** WhatIfIn */
     WhatIfIn: {
@@ -2750,6 +2868,38 @@ export interface operations {
         };
         content: {
           'application/json': components['schemas']['DirectionOut'];
+        };
+      };
+    };
+  };
+  get_analytics_api_analytics_get: {
+    parameters: {
+      query?: {
+        from_date?: string | null;
+        to_date?: string | null;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AnalyticsOut'];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
         };
       };
     };

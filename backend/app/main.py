@@ -18,6 +18,7 @@ from slowapi.errors import RateLimitExceeded
 
 from app.api import (
     analysis,
+    analytics_data,
     auth,
     courses,
     dashboard,
@@ -94,6 +95,7 @@ app.include_router(gpa.router, prefix="/api/gpa", tags=["gpa"])
 app.include_router(prerequisites.router, prefix="/api/prerequisites", tags=["prerequisites"])
 app.include_router(roadmap.router, prefix="/api/roadmap", tags=["roadmap"])
 app.include_router(analysis.router, prefix="/api/analysis", tags=["analysis"])
+app.include_router(analytics_data.router, prefix="/api/analytics", tags=["analytics"])
 app.include_router(deadlines.router, prefix="/api/deadlines", tags=["deadlines"])
 app.include_router(notifications.router, prefix="/api/notifications", tags=["notifications"])
 
