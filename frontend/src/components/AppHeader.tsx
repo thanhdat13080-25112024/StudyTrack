@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
+import { NotificationBell } from '@/components/NotificationBell';
 import { cn } from '@/lib/utils';
 import { useUiStore } from '@/store/uiStore';
 import { useAuthStore } from '@/store/authStore';
@@ -83,6 +84,7 @@ export function AppHeader() {
         </nav>
       </div>
       <div className="flex gap-2">
+        <NotificationBell />
         <Button variant="outline" size="sm" asChild>
           <Link to="/profile">
             <UserRound className="h-4 w-4" aria-hidden />
