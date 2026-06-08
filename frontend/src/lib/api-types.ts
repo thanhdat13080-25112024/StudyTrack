@@ -444,6 +444,110 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api/deadlines': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** List Deadlines */
+    get: operations['list_deadlines_api_deadlines_get'];
+    put?: never;
+    /** Create Deadline */
+    post: operations['create_deadline_api_deadlines_post'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/deadlines/{deadline_id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    /** Update Deadline */
+    put: operations['update_deadline_api_deadlines__deadline_id__put'];
+    post?: never;
+    /** Delete Deadline */
+    delete: operations['delete_deadline_api_deadlines__deadline_id__delete'];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/notifications': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** List Notifications */
+    get: operations['list_notifications_api_notifications_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/notifications/unread-count': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Unread Count */
+    get: operations['unread_count_api_notifications_unread_count_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/notifications/{notification_id}/read': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Mark Read */
+    post: operations['mark_read_api_notifications__notification_id__read_post'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/notifications/read-all': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Read All */
+    post: operations['read_all_api_notifications_read_all_post'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -585,6 +689,87 @@ export interface components {
       /** Recent Sessions */
       recent_sessions: components['schemas']['StudySessionOut'][];
     };
+    /** DeadlineCourseOut */
+    DeadlineCourseOut: {
+      /** Id */
+      id: number;
+      /** Code */
+      code: string;
+      /** Name */
+      name: string;
+    };
+    /** DeadlineCreate */
+    DeadlineCreate: {
+      /** Title */
+      title: string;
+      /**
+       * Type
+       * @enum {string}
+       */
+      type: 'assignment' | 'exam' | 'project';
+      /**
+       * Due At
+       * Format: date-time
+       */
+      due_at: string;
+      /** Course Id */
+      course_id?: number | null;
+      /**
+       * Priority
+       * @default medium
+       * @enum {string}
+       */
+      priority: 'low' | 'medium' | 'high';
+      /** Remind Before Minutes */
+      remind_before_minutes?: number | null;
+    };
+    /** DeadlineOut */
+    DeadlineOut: {
+      /** Id */
+      id: number;
+      /** Title */
+      title: string;
+      /** Type */
+      type: string;
+      /**
+       * Due At
+       * Format: date-time
+       */
+      due_at: string;
+      /** Done */
+      done: boolean;
+      /** Priority */
+      priority: string;
+      /** Remind Before Minutes */
+      remind_before_minutes: number | null;
+      /** Reminded At */
+      reminded_at: string | null;
+      /** Course Id */
+      course_id: number | null;
+      course?: components['schemas']['DeadlineCourseOut'] | null;
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+    };
+    /** DeadlineUpdate */
+    DeadlineUpdate: {
+      /** Title */
+      title?: string | null;
+      /** Type */
+      type?: ('assignment' | 'exam' | 'project') | null;
+      /** Due At */
+      due_at?: string | null;
+      /** Course Id */
+      course_id?: number | null;
+      /** Priority */
+      priority?: ('low' | 'medium' | 'high') | null;
+      /** Remind Before Minutes */
+      remind_before_minutes?: number | null;
+      /** Done */
+      done?: boolean | null;
+    };
     /** DirectionOut */
     DirectionOut: {
       /** Category Strengths */
@@ -704,6 +889,24 @@ export interface components {
       code: string | null;
       /** Missing */
       missing: number[];
+    };
+    /** NotificationOut */
+    NotificationOut: {
+      /** Id */
+      id: number;
+      /** Type */
+      type: string;
+      /** Payload */
+      payload: {
+        [key: string]: unknown;
+      };
+      /** Read */
+      read: boolean;
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
     };
     /** OverloadedSemesterOut */
     OverloadedSemesterOut: {
@@ -1028,6 +1231,11 @@ export interface components {
        * @default bearer
        */
       token_type: string;
+    };
+    /** UnreadCountOut */
+    UnreadCountOut: {
+      /** Count */
+      count: number;
     };
     /** UserOut */
     UserOut: {
@@ -2192,6 +2400,221 @@ export interface operations {
         content: {
           'application/json': components['schemas']['DirectionOut'];
         };
+      };
+    };
+  };
+  list_deadlines_api_deadlines_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DeadlineOut'][];
+        };
+      };
+    };
+  };
+  create_deadline_api_deadlines_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['DeadlineCreate'];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DeadlineOut'];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
+    };
+  };
+  update_deadline_api_deadlines__deadline_id__put: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        deadline_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['DeadlineUpdate'];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DeadlineOut'];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
+    };
+  };
+  delete_deadline_api_deadlines__deadline_id__delete: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        deadline_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
+    };
+  };
+  list_notifications_api_notifications_get: {
+    parameters: {
+      query?: {
+        unread_only?: boolean;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['NotificationOut'][];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
+    };
+  };
+  unread_count_api_notifications_unread_count_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['UnreadCountOut'];
+        };
+      };
+    };
+  };
+  mark_read_api_notifications__notification_id__read_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        notification_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
+    };
+  };
+  read_all_api_notifications_read_all_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
       };
     };
   };
