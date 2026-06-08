@@ -8,6 +8,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pencil, Trash2 } from 'lucide-react';
 import { AppHeader } from '@/components/AppHeader';
+import { PrerequisiteEditor } from '@/components/courses/PrerequisiteEditor';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -249,6 +250,8 @@ export default function Courses() {
             </div>
           )}
         </section>
+
+        <PrerequisiteEditor courses={courses ?? []} />
       </div>
     </main>
   );

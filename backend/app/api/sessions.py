@@ -7,6 +7,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.core.deps import get_current_user, get_db
+from app.models.course import Course
 from app.models.study_session import StudySession
 from app.models.user import User
 from app.schemas.study_session import StudySessionCreate, StudySessionOut
@@ -20,6 +21,12 @@ def create_session(
     current: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ) -> StudySession:
+    if data.course_id is not None:
+        owned = db.scalar(
+            select(Course.id).where(Course.id == data.course_id, Course.user_id == current.id)
+        )
+        if owned is None:
+            raise HTTPException(status_code=422, detail="course_id not found")
     session = StudySession(user_id=current.id, **data.model_dump())
     db.add(session)
     db.commit()

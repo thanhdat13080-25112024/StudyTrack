@@ -341,6 +341,109 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api/prerequisites': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** List Prerequisites */
+    get: operations['list_prerequisites_api_prerequisites_get'];
+    put?: never;
+    /** Create Prerequisite */
+    post: operations['create_prerequisite_api_prerequisites_post'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/prerequisites/{prereq_id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    /** Delete Prerequisite */
+    delete: operations['delete_prerequisite_api_prerequisites__prereq_id__delete'];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/roadmap/generate': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Generate */
+    post: operations['generate_api_roadmap_generate_post'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/roadmap/apply': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Apply */
+    post: operations['apply_api_roadmap_apply_post'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/analysis/weak-subjects': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Weak Subjects */
+    get: operations['weak_subjects_api_analysis_weak_subjects_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/analysis/direction': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Direction */
+    get: operations['direction_api_analysis_direction_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -375,6 +478,15 @@ export interface components {
        * Format: password
        */
       client_secret?: string | null;
+    };
+    /** CategoryStrengthOut */
+    CategoryStrengthOut: {
+      /** Category */
+      category: string;
+      /** Avg Grade 4 */
+      avg_grade_4: number;
+      /** Count */
+      count: number;
     };
     /** ChartPointOut */
     ChartPointOut: {
@@ -472,6 +584,17 @@ export interface components {
       badges: components['schemas']['BadgeOut'][];
       /** Recent Sessions */
       recent_sessions: components['schemas']['StudySessionOut'][];
+    };
+    /** DirectionOut */
+    DirectionOut: {
+      /** Category Strengths */
+      category_strengths: components['schemas']['CategoryStrengthOut'][];
+      /** Strongest Category */
+      strongest_category: string | null;
+      /** Overloaded Semesters */
+      overloaded_semesters: components['schemas']['OverloadedSemesterOut'][];
+      /** Missing Prerequisites */
+      missing_prerequisites: components['schemas']['MissingPrereqOut'][];
     };
     /** GoalSeekOut */
     GoalSeekOut: {
@@ -573,6 +696,42 @@ export interface components {
       user: components['schemas']['UserOut'];
       profile: components['schemas']['ProfileOut'];
     };
+    /** MissingPrereqOut */
+    MissingPrereqOut: {
+      /** Course Id */
+      course_id: number;
+      /** Code */
+      code: string | null;
+      /** Missing */
+      missing: number[];
+    };
+    /** OverloadedSemesterOut */
+    OverloadedSemesterOut: {
+      /** Code */
+      code: string;
+      /** Total Credits */
+      total_credits: number;
+    };
+    /** PrerequisiteCreate */
+    PrerequisiteCreate: {
+      /** Course Id */
+      course_id: number;
+      /** Prereq Course Id */
+      prereq_course_id: number;
+    };
+    /** PrerequisiteOut */
+    PrerequisiteOut: {
+      /** Id */
+      id: number;
+      /** Course Id */
+      course_id: number;
+      /** Prereq Course Id */
+      prereq_course_id: number;
+      /** Course Code */
+      course_code: string;
+      /** Prereq Code */
+      prereq_code: string;
+    };
     /** ProfileOut */
     ProfileOut: {
       /** Class Name */
@@ -591,6 +750,8 @@ export interface components {
       total_credits_required: number | null;
       /** Expected Graduation */
       expected_graduation: string | null;
+      /** Max Credits Per Semester */
+      max_credits_per_semester: number | null;
     };
     /** ProfileUpdate */
     ProfileUpdate: {
@@ -610,6 +771,8 @@ export interface components {
       total_credits_required?: number | null;
       /** Expected Graduation */
       expected_graduation?: string | null;
+      /** Max Credits Per Semester */
+      max_credits_per_semester?: number | null;
     };
     /** ProjectionOut */
     ProjectionOut: {
@@ -617,6 +780,51 @@ export interface components {
       projected_cpa: number;
       /** Projected Tier */
       projected_tier: string;
+    };
+    /** RoadmapCourseOut */
+    RoadmapCourseOut: {
+      /** Course Id */
+      course_id: number;
+      /** Code */
+      code: string;
+      /** Name */
+      name: string;
+      /** Credits */
+      credits: number;
+      /** Is Required */
+      is_required: boolean;
+    };
+    /** RoadmapIn */
+    RoadmapIn: {
+      /** Start Code */
+      start_code?: string | null;
+      /** Max Credits Per Semester */
+      max_credits_per_semester?: number | null;
+    };
+    /** RoadmapOut */
+    RoadmapOut: {
+      /** Semesters */
+      semesters: components['schemas']['RoadmapSemesterOut'][];
+      /** Warnings */
+      warnings: components['schemas']['RoadmapWarningOut'][];
+    };
+    /** RoadmapSemesterOut */
+    RoadmapSemesterOut: {
+      /** Code */
+      code: string;
+      /** Courses */
+      courses: components['schemas']['RoadmapCourseOut'][];
+      /** Total Credits */
+      total_credits: number;
+    };
+    /** RoadmapWarningOut */
+    RoadmapWarningOut: {
+      /** Type */
+      type: string;
+      /** Course Ids */
+      course_ids?: number[] | null;
+      /** Detail */
+      detail?: string | null;
     };
     /** ScheduleItemCreate */
     ScheduleItemCreate: {
@@ -715,6 +923,15 @@ export interface components {
       /** End Date */
       end_date?: string | null;
     };
+    /** SessionCourseOut */
+    SessionCourseOut: {
+      /** Id */
+      id: number;
+      /** Code */
+      code: string;
+      /** Name */
+      name: string;
+    };
     /** StudySessionCreate */
     StudySessionCreate: {
       /** Subject */
@@ -774,6 +991,7 @@ export interface components {
       ended_at: string | null;
       /** Course Id */
       course_id: number | null;
+      course?: components['schemas']['SessionCourseOut'] | null;
     };
     /** SuggestionIn */
     SuggestionIn: {
@@ -865,6 +1083,23 @@ export interface components {
       input?: unknown;
       /** Context */
       ctx?: Record<string, never>;
+    };
+    /** WeakSubjectOut */
+    WeakSubjectOut: {
+      /** Course Id */
+      course_id: number;
+      /** Code */
+      code: string;
+      /** Name */
+      name: string;
+      /** Signals */
+      signals: string[];
+      /** Priority */
+      priority: string;
+      /** Metrics */
+      metrics: {
+        [key: string]: number;
+      };
     };
     /** WhatIfIn */
     WhatIfIn: {
@@ -1757,6 +1992,205 @@ export interface operations {
         };
         content: {
           'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
+    };
+  };
+  list_prerequisites_api_prerequisites_get: {
+    parameters: {
+      query?: {
+        course_id?: number | null;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['PrerequisiteOut'][];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
+    };
+  };
+  create_prerequisite_api_prerequisites_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['PrerequisiteCreate'];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['PrerequisiteOut'];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
+    };
+  };
+  delete_prerequisite_api_prerequisites__prereq_id__delete: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        prereq_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
+    };
+  };
+  generate_api_roadmap_generate_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['RoadmapIn'];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['RoadmapOut'];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
+    };
+  };
+  apply_api_roadmap_apply_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['RoadmapIn'];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['RoadmapOut'];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
+    };
+  };
+  weak_subjects_api_analysis_weak_subjects_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['WeakSubjectOut'][];
+        };
+      };
+    };
+  };
+  direction_api_analysis_direction_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DirectionOut'];
         };
       };
     };

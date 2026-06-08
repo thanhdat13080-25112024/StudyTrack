@@ -25,6 +25,14 @@ class StudySessionCreate(BaseModel):
     course_id: int | None = None
 
 
+class SessionCourseOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    code: str
+    name: str
+
+
 class StudySessionOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -39,3 +47,4 @@ class StudySessionOut(BaseModel):
     started_at: datetime | None
     ended_at: datetime | None
     course_id: int | None
+    course: SessionCourseOut | None = None

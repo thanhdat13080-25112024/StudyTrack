@@ -8,6 +8,8 @@ import History from '@/pages/History';
 import Schedule from '@/pages/Schedule';
 import Courses from '@/pages/Courses';
 import Grades from '@/pages/Grades';
+import Roadmap from '@/pages/Roadmap';
+import Analysis from '@/pages/Analysis';
 import { RequireAuth } from '@/components/auth/RequireAuth';
 import { useAuthStore } from '@/store/authStore';
 import { useMe } from '@/features/auth/hooks';
@@ -39,6 +41,8 @@ export default function App() {
         <Route path="/schedule" element={<Schedule />} />
         <Route path="/courses" element={<Courses />} />
         <Route path="/grades" element={<Grades />} />
+        <Route path="/roadmap" element={<Roadmap />} />
+        <Route path="/analysis" element={<Analysis />} />
         <Route path="/profile" element={<Profile />} />
       </Route>
       <Route

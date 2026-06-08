@@ -18,6 +18,7 @@ import { Button } from '@/components/ui/button';
 import { Timer } from '@/components/timer/Timer';
 import { MusicPlayer } from '@/components/timer/MusicPlayer';
 import { SessionForm, type SessionFormValues } from '@/components/sessions/SessionForm';
+import { useCourses } from '@/features/courses/hooks';
 import { useCreateSession, useSuggestion } from '@/features/sessions/hooks';
 import { renderSuggestion } from '@/features/sessions/suggestion';
 import { useTimerStore, computeActualMinutes } from '@/store/timerStore';
@@ -29,6 +30,7 @@ const DEFAULT_FORM: SessionFormValues = {
   focus: 8,
   method: 'Pomodoro',
   note: '',
+  courseId: null,
 };
 
 export default function Focus() {
@@ -38,6 +40,7 @@ export default function Focus() {
   const timer = useTimerStore();
   const createSession = useCreateSession();
   const suggestion = useSuggestion();
+  const { data: courses } = useCourses();
 
   const [form, setForm] = useState<SessionFormValues>(DEFAULT_FORM);
   const [error, setError] = useState<string | null>(null);
@@ -94,6 +97,7 @@ export default function Focus() {
             session_date: localDateISO(),
             started_at: state.startedAt ?? new Date().toISOString(),
             ended_at: new Date().toISOString(),
+            course_id: state.courseId,
           },
           { onSuccess: fireConfettiThenLeave },
         );
@@ -187,6 +191,7 @@ export default function Focus() {
               onStart={handleStart}
               error={error}
               suggestion={suggestionText}
+              courses={courses ?? []}
             />
           </section>
         ) : (
