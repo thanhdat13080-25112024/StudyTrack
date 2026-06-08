@@ -1,11 +1,10 @@
-from datetime import datetime, timedelta, timezone
-
-from sqlalchemy import select
+from datetime import UTC, datetime, timedelta
 
 from app.models.deadline import Deadline
 from app.models.notification import Notification
 from app.models.user import User
 from app.realtime.scanner import scan_once
+from sqlalchemy import select
 
 
 def _user(db):
@@ -18,10 +17,13 @@ def _user(db):
 
 def test_scan_creates_notification_and_marks_reminded(db_session):
     u = _user(db_session)
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     d = Deadline(
-        user_id=u.id, title="Soon", type="exam",
-        due_at=now + timedelta(minutes=30), remind_before_minutes=60,
+        user_id=u.id,
+        title="Soon",
+        type="exam",
+        due_at=now + timedelta(minutes=30),
+        remind_before_minutes=60,
     )
     db_session.add(d)
     db_session.commit()
@@ -38,10 +40,15 @@ def test_scan_creates_notification_and_marks_reminded(db_session):
 
 def test_scan_is_idempotent(db_session):
     u = _user(db_session)
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     db_session.add(
-        Deadline(user_id=u.id, title="Soon", type="exam",
-                 due_at=now + timedelta(minutes=10), remind_before_minutes=60)
+        Deadline(
+            user_id=u.id,
+            title="Soon",
+            type="exam",
+            due_at=now + timedelta(minutes=10),
+            remind_before_minutes=60,
+        )
     )
     db_session.commit()
     assert len(scan_once(db_session, now=now)) == 1
@@ -51,12 +58,21 @@ def test_scan_is_idempotent(db_session):
 
 def test_scan_skips_done_and_no_offset(db_session):
     u = _user(db_session)
-    now = datetime.now(timezone.utc)
-    db_session.add_all([
-        Deadline(user_id=u.id, title="done", type="exam",
-                 due_at=now, remind_before_minutes=60, done=True),
-        Deadline(user_id=u.id, title="no-offset", type="exam",
-                 due_at=now, remind_before_minutes=None),
-    ])
+    now = datetime.now(UTC)
+    db_session.add_all(
+        [
+            Deadline(
+                user_id=u.id,
+                title="done",
+                type="exam",
+                due_at=now,
+                remind_before_minutes=60,
+                done=True,
+            ),
+            Deadline(
+                user_id=u.id, title="no-offset", type="exam", due_at=now, remind_before_minutes=None
+            ),
+        ]
+    )
     db_session.commit()
     assert scan_once(db_session, now=now) == []

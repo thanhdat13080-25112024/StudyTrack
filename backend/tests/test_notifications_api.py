@@ -18,7 +18,9 @@ def _seed_notifs(db_session, client):
     email = decode_access_token(token)["sub"]
     uid = db_session.scalar(select(User.id).where(User.email == email))
     for i in range(3):
-        db_session.add(Notification(user_id=uid, type="deadline_reminder", payload={"i": i}, read=False))
+        db_session.add(
+            Notification(user_id=uid, type="deadline_reminder", payload={"i": i}, read=False)
+        )
     db_session.commit()
     return h
 

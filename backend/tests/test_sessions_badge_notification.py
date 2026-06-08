@@ -1,7 +1,6 @@
-from sqlalchemy import select
-
 from app.models.notification import Notification
 from app.models.user import User
+from sqlalchemy import select
 
 
 def _auth(client, email="bdg@e.com"):
@@ -14,10 +13,15 @@ def _auth(client, email="bdg@e.com"):
 def test_first_session_creates_badge_notification(client, db_session):
     h = _auth(client)
     r = client.post(
-        "/api/sessions", headers=h,
+        "/api/sessions",
+        headers=h,
         json={
-            "subject": "Math", "planned_minutes": 25, "actual_minutes": 25,
-            "focus": 8, "method": "Pomodoro", "session_date": "2026-06-08",
+            "subject": "Math",
+            "planned_minutes": 25,
+            "actual_minutes": 25,
+            "focus": 8,
+            "method": "Pomodoro",
+            "session_date": "2026-06-08",
         },
     )
     assert r.status_code == 201, r.text
@@ -36,8 +40,12 @@ def test_first_session_creates_badge_notification(client, db_session):
 def test_second_session_does_not_reduplicate_first_badge(client, db_session):
     h = _auth(client, "bdg2@e.com")
     body = {
-        "subject": "Math", "planned_minutes": 25, "actual_minutes": 25,
-        "focus": 8, "method": "Pomodoro", "session_date": "2026-06-08",
+        "subject": "Math",
+        "planned_minutes": 25,
+        "actual_minutes": 25,
+        "focus": 8,
+        "method": "Pomodoro",
+        "session_date": "2026-06-08",
     }
     client.post("/api/sessions", headers=h, json=body)
     client.post("/api/sessions", headers=h, json=body)

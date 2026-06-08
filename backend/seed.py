@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import date, timedelta
+from datetime import UTC, date, timedelta
 
 import app.models  # noqa: F401  (register models on Base.metadata)
 from app.core.db import SessionLocal
@@ -198,11 +198,11 @@ def seed() -> None:
         db.commit()
 
         # Phase 5: demo deadlines (one soon w/ reminder, one a week out).
-        from datetime import datetime, timezone
+        from datetime import datetime
 
         from app.models.deadline import Deadline
 
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         db.add_all(
             [
                 Deadline(

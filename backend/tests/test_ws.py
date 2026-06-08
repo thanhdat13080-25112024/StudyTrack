@@ -18,11 +18,10 @@ def test_ws_requires_valid_token(client):
 def test_ws_connects_and_receives_push(client, db_session):
     import asyncio
 
-    from sqlalchemy import select
-
     from app.core.security import decode_access_token
     from app.models.user import User
     from app.realtime.manager import manager
+    from sqlalchemy import select
 
     token = _register(client)
     email = decode_access_token(token)["sub"]

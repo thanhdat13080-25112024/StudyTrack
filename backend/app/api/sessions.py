@@ -32,9 +32,7 @@ def create_session(
         if owned is None:
             raise HTTPException(status_code=422, detail="course_id not found")
 
-    existing = list(
-        db.scalars(select(StudySession).where(StudySession.user_id == current.id))
-    )
+    existing = list(db.scalars(select(StudySession).where(StudySession.user_id == current.id)))
     before_keys = [b["key"] for b in derive_badges(existing) if b["unlocked"]]
 
     session = StudySession(user_id=current.id, **data.model_dump())
@@ -44,9 +42,7 @@ def create_session(
 
     after_keys = [b["key"] for b in derive_badges(existing + [session]) if b["unlocked"]]
     for key in newly_unlocked(before_keys, after_keys):
-        notif = Notification(
-            user_id=current.id, type="badge_unlocked", payload={"badge_key": key}
-        )
+        notif = Notification(user_id=current.id, type="badge_unlocked", payload={"badge_key": key})
         db.add(notif)
         db.commit()
         db.refresh(notif)

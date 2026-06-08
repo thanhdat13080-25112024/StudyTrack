@@ -32,7 +32,9 @@ def upgrade() -> None:
         sa.Column("priority", sa.String(length=10), nullable=False, server_default="medium"),
         sa.Column("remind_before_minutes", sa.Integer(), nullable=True),
         sa.Column("reminded_at", sa.DateTime(timezone=True), nullable=True),
-        sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
+        sa.Column(
+            "created_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False
+        ),
         sa.ForeignKeyConstraint(["user_id"], ["users.id"], ondelete="CASCADE"),
         sa.ForeignKeyConstraint(["course_id"], ["courses.id"], ondelete="SET NULL"),
     )
@@ -45,7 +47,9 @@ def upgrade() -> None:
         sa.Column("type", sa.String(length=40), nullable=False),
         sa.Column("payload", sa.JSON(), nullable=False),
         sa.Column("read", sa.Boolean(), nullable=False, server_default=sa.false()),
-        sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
+        sa.Column(
+            "created_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False
+        ),
         sa.ForeignKeyConstraint(["user_id"], ["users.id"], ondelete="CASCADE"),
     )
     op.create_index("ix_notifications_user_id", "notifications", ["user_id"])

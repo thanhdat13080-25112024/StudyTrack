@@ -6,7 +6,7 @@ it on an interval and is started from the app lifespan."""
 from __future__ import annotations
 
 import asyncio
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -24,14 +24,14 @@ def _as_utc(dt: datetime) -> datetime:
     (Postgres keeps it); deadlines are persisted as UTC, so a naive value is
     treated as UTC."""
     if dt.tzinfo is None:
-        return dt.replace(tzinfo=timezone.utc)
-    return dt.astimezone(timezone.utc)
+        return dt.replace(tzinfo=UTC)
+    return dt.astimezone(UTC)
 
 
 def scan_once(db: Session, now: datetime | None = None) -> list[Notification]:
     """Create reminder notifications for any deadlines now due. Idempotent via
     Deadline.reminded_at. Returns the created Notification rows."""
-    now = now or datetime.now(timezone.utc)
+    now = now or datetime.now(UTC)
     candidates = list(
         db.scalars(
             select(Deadline).where(
@@ -83,7 +83,7 @@ async def reminder_loop(stop: asyncio.Event) -> None:
         try:
             await asyncio.wait_for(stop.wait(), timeout=interval)
             return  # stop signalled
-        except asyncio.TimeoutError:
+        except TimeoutError:
             pass
         db = SessionLocal()
         try:
