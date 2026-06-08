@@ -13,6 +13,8 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
 
 from app.api import (
     analysis,
@@ -34,6 +36,7 @@ from app.api import (
     ws,
 )
 from app.core.config import settings
+from app.core.ratelimit import limiter
 from app.realtime.manager import manager
 from app.realtime.scanner import reminder_loop
 
@@ -60,6 +63,12 @@ app = FastAPI(
     description="Backend for the StudyTrack full-stack refactor.",
     lifespan=lifespan,
 )
+
+# --- Rate limiting (slowapi) ------------------------------------------------
+# The shared Limiter lives in app.core.ratelimit so the auth router can import
+# it without a circular import. Disabled in tests via conftest.
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 # --- CORS -------------------------------------------------------------------
 app.add_middleware(

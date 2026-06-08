@@ -41,6 +41,10 @@ def client(db_session: Session) -> Iterator[TestClient]:
     def override_get_db() -> Iterator[Session]:
         yield db_session
 
+    from app.core.ratelimit import limiter
+
+    limiter.enabled = False
+
     app.dependency_overrides[get_db] = override_get_db
     with TestClient(app) as test_client:
         yield test_client
