@@ -94,9 +94,7 @@ export default function Deadlines() {
           <select
             className="rounded-token border border-border bg-input-bg px-3 py-2 text-text-main"
             value={form.priority}
-            onChange={(e) =>
-              setForm({ ...form, priority: e.target.value as typeof form.priority })
-            }
+            onChange={(e) => setForm({ ...form, priority: e.target.value as typeof form.priority })}
           >
             {DEADLINE_PRIORITIES.map((p) => (
               <option key={p} value={p}>
