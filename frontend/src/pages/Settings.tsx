@@ -126,11 +126,7 @@ export default function Settings() {
             <CardTitle>{t('settings.emailStatus')}</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-wrap items-center justify-between gap-3">
-            <span
-              className={
-                verified ? 'text-sm text-green-400' : 'text-sm text-text-muted'
-              }
-            >
+            <span className={verified ? 'text-sm text-green-400' : 'text-sm text-text-muted'}>
               {verified ? t('settings.verified') : t('settings.unverified')}
             </span>
             {!verified && (

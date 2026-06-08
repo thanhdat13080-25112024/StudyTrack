@@ -90,8 +90,7 @@ export function useUpdateSettings() {
 /** Request a password-reset link. Always resolves (server returns 204). */
 export function useForgotPassword() {
   return useMutation({
-    mutationFn: (data: ForgotPasswordIn) =>
-      apiClient.post<void>('/api/auth/forgot-password', data),
+    mutationFn: (data: ForgotPasswordIn) => apiClient.post<void>('/api/auth/forgot-password', data),
   });
 }
 
@@ -121,8 +120,7 @@ export function useResendVerification() {
 /** Change the current user's password (requires the current password). */
 export function useChangePassword() {
   return useMutation({
-    mutationFn: (data: ChangePasswordIn) =>
-      apiClient.post<void>('/api/auth/change-password', data),
+    mutationFn: (data: ChangePasswordIn) => apiClient.post<void>('/api/auth/change-password', data),
   });
 }
 

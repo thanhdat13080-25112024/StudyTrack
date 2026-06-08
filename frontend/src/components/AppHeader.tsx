@@ -18,6 +18,7 @@ import {
   LogOut,
   Moon,
   Route,
+  Settings as SettingsIcon,
   Sun,
   Timer as TimerIcon,
   UserRound,
@@ -89,6 +90,12 @@ export function AppHeader() {
           <Link to="/profile">
             <UserRound className="h-4 w-4" aria-hidden />
             {t('nav.profile')}
+          </Link>
+        </Button>
+        <Button variant="outline" size="sm" asChild>
+          <Link to="/settings">
+            <SettingsIcon className="h-4 w-4" aria-hidden />
+            {t('nav.settings')}
           </Link>
         </Button>
         <Button variant="outline" size="sm" onClick={toggleLang}>
