@@ -15,6 +15,7 @@
     "roadmap": "Lộ trình",
     "analysis": "Phân tích",
     "deadlines": "Hạn chót",
+    "settings": "Cài đặt",
     "login": "Đăng nhập"
   },
   "common": {
@@ -322,7 +323,23 @@
     "haveAccount": "Đã có tài khoản?",
     "invalidEmail": "Email không hợp lệ",
     "passwordTooShort": "Mật khẩu tối thiểu 6 ký tự",
-    "genericError": "Đã có lỗi xảy ra, vui lòng thử lại"
+    "genericError": "Đã có lỗi xảy ra, vui lòng thử lại",
+    "forgotPassword": "Quên mật khẩu?",
+    "forgotTitle": "Quên mật khẩu",
+    "forgotSubmit": "Gửi liên kết đặt lại",
+    "forgotSent": "Nếu email tồn tại, chúng tôi đã gửi liên kết đặt lại.",
+    "resetTitle": "Đặt lại mật khẩu",
+    "newPassword": "Mật khẩu mới",
+    "resetSubmit": "Đặt lại mật khẩu",
+    "resetSuccess": "Đã đặt lại mật khẩu. Mời đăng nhập.",
+    "resetInvalid": "Liên kết không hợp lệ hoặc đã hết hạn.",
+    "verifyTitle": "Xác thực email",
+    "verifying": "Đang xác thực…",
+    "verifySuccess": "Email đã được xác thực!",
+    "verifyInvalid": "Liên kết xác thực không hợp lệ hoặc đã hết hạn.",
+    "verifyBanner": "Email của bạn chưa được xác thực.",
+    "verifyResend": "Gửi lại email xác thực",
+    "verifyResent": "Đã gửi lại email xác thực."
   },
   "profile": {
     "title": "Hồ sơ cá nhân",
@@ -363,5 +380,24 @@
     "markAllRead": "Đánh dấu đã đọc hết",
     "deadlineReminder": "Nhắc: \"{{title}}\" sắp đến hạn",
     "badgeUnlocked": "Mở khoá huy hiệu: {{badge}}"
+  },
+  "settings": {
+    "title": "Cài đặt tài khoản",
+    "emailStatus": "Trạng thái email",
+    "verified": "Đã xác thực",
+    "unverified": "Chưa xác thực",
+    "changePassword": "Đổi mật khẩu",
+    "currentPassword": "Mật khẩu hiện tại",
+    "changePasswordSubmit": "Đổi mật khẩu",
+    "changePasswordSuccess": "Đã đổi mật khẩu.",
+    "changePasswordWrong": "Mật khẩu hiện tại không đúng.",
+    "exportData": "Xuất dữ liệu",
+    "exportButton": "Tải JSON dữ liệu của tôi",
+    "dangerZone": "Vùng nguy hiểm",
+    "deleteAccount": "Xoá tài khoản",
+    "deleteWarning": "Hành động này không thể hoàn tác. Mọi dữ liệu sẽ bị xoá.",
+    "deleteConfirmLabel": "Nhập mật khẩu để xác nhận",
+    "deleteButton": "Xoá tài khoản vĩnh viễn",
+    "deleteWrong": "Mật khẩu không đúng."
   }
 }
