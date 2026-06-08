@@ -1,19 +1,23 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { RequireAuth } from './RequireAuth';
 import { useAuthStore } from '@/store/authStore';
 
 function renderAt(path: string) {
+  const qc = new QueryClient();
   return render(
-    <MemoryRouter initialEntries={[path]}>
-      <Routes>
-        <Route element={<RequireAuth />}>
-          <Route path="/dashboard" element={<div>DASH</div>} />
-        </Route>
-        <Route path="/login" element={<div>LOGIN</div>} />
-      </Routes>
-    </MemoryRouter>,
+    <QueryClientProvider client={qc}>
+      <MemoryRouter initialEntries={[path]}>
+        <Routes>
+          <Route element={<RequireAuth />}>
+            <Route path="/dashboard" element={<div>DASH</div>} />
+          </Route>
+          <Route path="/login" element={<div>LOGIN</div>} />
+        </Routes>
+      </MemoryRouter>
+    </QueryClientProvider>,
   );
 }
 

@@ -5,14 +5,18 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from sqlalchemy import DateTime, String, func
+from sqlalchemy import Boolean, DateTime, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.db import Base
 
 if TYPE_CHECKING:
+    from app.models.auth_token import AuthToken
     from app.models.course import Course
+    from app.models.deadline import Deadline
     from app.models.grade import Grade
+    from app.models.notification import Notification
+    from app.models.prerequisite import Prerequisite
     from app.models.profile import Profile
     from app.models.schedule_item import ScheduleItem
     from app.models.semester import Semester
@@ -31,6 +35,10 @@ class User(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
+    email_verified: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    email_verified_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
 
     profile: Mapped[Profile] = relationship(
         back_populates="user", uselist=False, cascade="all, delete-orphan"
@@ -48,3 +56,15 @@ class User(Base):
         back_populates="user", cascade="all, delete-orphan"
     )
     grades: Mapped[list[Grade]] = relationship(back_populates="user", cascade="all, delete-orphan")
+    auth_tokens: Mapped[list[AuthToken]] = relationship(
+        back_populates="user", cascade="all, delete-orphan"
+    )
+    deadlines: Mapped[list[Deadline]] = relationship(
+        back_populates="user", cascade="all, delete-orphan"
+    )
+    notifications: Mapped[list[Notification]] = relationship(
+        back_populates="user", cascade="all, delete-orphan"
+    )
+    prerequisites: Mapped[list[Prerequisite]] = relationship(
+        back_populates="user", cascade="all, delete-orphan"
+    )

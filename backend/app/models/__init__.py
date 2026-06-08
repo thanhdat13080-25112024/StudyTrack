@@ -12,6 +12,7 @@ registers on ``Base.metadata``.
 from __future__ import annotations
 
 from app.core.db import Base  # noqa: F401  (re-exported for convenience)
+from app.models.auth_token import AuthToken  # noqa: F401
 from app.models.course import Course  # noqa: F401
 from app.models.deadline import Deadline  # noqa: F401
 from app.models.grade import Grade  # noqa: F401
@@ -26,6 +27,7 @@ from app.models.user import User  # noqa: F401
 __all__ = [
     "Base",
     "User",
+    "AuthToken",
     "Profile",
     "StudySession",
     "ScheduleItem",

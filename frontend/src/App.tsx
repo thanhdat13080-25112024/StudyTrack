@@ -13,6 +13,10 @@ import Grades from '@/pages/Grades';
 import Roadmap from '@/pages/Roadmap';
 import Analysis from '@/pages/Analysis';
 import Deadlines from '@/pages/Deadlines';
+import ForgotPassword from '@/pages/ForgotPassword';
+import ResetPassword from '@/pages/ResetPassword';
+import VerifyEmail from '@/pages/VerifyEmail';
+import Settings from '@/pages/Settings';
 import { RequireAuth } from '@/components/auth/RequireAuth';
 import { useAuthStore } from '@/store/authStore';
 import { useMe } from '@/features/auth/hooks';
@@ -65,6 +69,9 @@ export default function App() {
         path="/register"
         element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Register />}
       />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/verify-email" element={<VerifyEmail />} />
       <Route element={<RequireAuth />}>
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/focus" element={<Focus />} />
@@ -76,6 +83,7 @@ export default function App() {
         <Route path="/analysis" element={<Analysis />} />
         <Route path="/deadlines" element={<Deadlines />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/settings" element={<Settings />} />
       </Route>
       <Route
         path="*"

@@ -15,6 +15,7 @@
     "roadmap": "Roadmap",
     "analysis": "Analysis",
     "deadlines": "Deadlines",
+    "settings": "Settings",
     "login": "Login"
   },
   "common": {
@@ -322,7 +323,23 @@
     "haveAccount": "Already have an account?",
     "invalidEmail": "Invalid email",
     "passwordTooShort": "Password must be at least 6 characters",
-    "genericError": "Something went wrong, please try again"
+    "genericError": "Something went wrong, please try again",
+    "forgotPassword": "Forgot password?",
+    "forgotTitle": "Forgot password",
+    "forgotSubmit": "Send reset link",
+    "forgotSent": "If that email exists, we've sent a reset link.",
+    "resetTitle": "Reset password",
+    "newPassword": "New password",
+    "resetSubmit": "Reset password",
+    "resetSuccess": "Password reset. Please sign in.",
+    "resetInvalid": "The link is invalid or has expired.",
+    "verifyTitle": "Verify email",
+    "verifying": "Verifying…",
+    "verifySuccess": "Email verified!",
+    "verifyInvalid": "The verification link is invalid or has expired.",
+    "verifyBanner": "Your email isn't verified yet.",
+    "verifyResend": "Resend verification email",
+    "verifyResent": "Verification email resent."
   },
   "profile": {
     "title": "My Profile",
@@ -363,5 +380,24 @@
     "markAllRead": "Mark all read",
     "deadlineReminder": "Reminder: \"{{title}}\" is due soon",
     "badgeUnlocked": "Badge unlocked: {{badge}}"
+  },
+  "settings": {
+    "title": "Account settings",
+    "emailStatus": "Email status",
+    "verified": "Verified",
+    "unverified": "Not verified",
+    "changePassword": "Change password",
+    "currentPassword": "Current password",
+    "changePasswordSubmit": "Change password",
+    "changePasswordSuccess": "Password changed.",
+    "changePasswordWrong": "Current password is incorrect.",
+    "exportData": "Export data",
+    "exportButton": "Download my data as JSON",
+    "dangerZone": "Danger zone",
+    "deleteAccount": "Delete account",
+    "deleteWarning": "This cannot be undone. All your data will be erased.",
+    "deleteConfirmLabel": "Enter your password to confirm",
+    "deleteButton": "Permanently delete account",
+    "deleteWrong": "Password is incorrect."
   }
 }
