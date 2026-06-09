@@ -15,30 +15,31 @@ function SessionRow({ session }: { session: StudySession }) {
   const { t } = useTranslation();
   const del = useDeleteSession();
   return (
-    <Card className="flex items-start justify-between gap-4 p-5">
-      <div className="flex flex-col gap-1">
+    <Card className="flex items-start justify-between gap-4 p-5 border-hairline shadow-sm hover:shadow-level-1 transition-all">
+      <div className="flex flex-col gap-1.5">
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-base font-semibold text-text-helper">{session.subject}</span>
-          <span className="rounded-pill bg-accent/15 px-2 py-0.5 text-xs font-medium text-accent">
+          <span className="text-base font-bold text-ink">{session.subject}</span>
+          <span className="rounded-full bg-canvas-soft border border-hairline px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-ink-muted">
             {t(`methods.${session.method}`)}
           </span>
         </div>
-        <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-text-muted">
-          <span>{session.session_date}</span>
+        <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-ink-muted">
+          <span className="font-medium">{session.session_date}</span>
           <span>
             {t('history.actualOfPlanned', {
               actual: session.actual_minutes,
               planned: session.planned_minutes,
             })}
           </span>
-          <span>{t('history.focusValue', { focus: session.focus })}</span>
+          <span className="font-medium text-primary">{t('history.focusValue', { focus: session.focus })}/10</span>
         </div>
-        {session.note && <p className="text-sm text-text-muted">{session.note}</p>}
-        {del.isError && <span className="text-sm text-red-400">{t('common.actionFailed')}</span>}
+        {session.note && <p className="text-sm italic text-ink-muted mt-0.5">"{session.note}"</p>}
+        {del.isError && <span className="text-sm font-bold text-red-500">{t('common.actionFailed')}</span>}
       </div>
       <Button
-        variant="outline"
+        variant="ghost"
         size="icon"
+        className="h-8 w-8 text-ink-faint hover:text-red-500 hover:bg-red-50"
         aria-label={t('history.delete')}
         disabled={del.isPending}
         onClick={() => del.mutate(session.id)}
@@ -54,17 +55,19 @@ export default function History() {
   const { data, isLoading } = useSessions();
 
   return (
-    <main className="min-h-full bg-bg-main text-text-main">
+    <main className="min-h-full bg-canvas-soft text-ink">
       <div className="mx-auto flex max-w-3xl flex-col gap-8 px-6 py-8">
         <AppHeader />
-        <section className="flex flex-col gap-4">
-          <h1 className="text-xl font-bold text-text-main">{t('history.title')}</h1>
+        <section className="flex flex-col gap-6">
+          <h1 className="text-2xl font-bold tracking-tight text-ink">{t('history.title')}</h1>
           {isLoading ? (
-            <p className="text-text-muted">{t('common.loading')}</p>
+            <p className="text-ink-muted">{t('common.loading')}</p>
           ) : !data || data.length === 0 ? (
-            <Card className="p-8 text-center text-text-muted">{t('history.empty')}</Card>
+            <Card className="p-12 text-center text-ink-muted border-dashed border-hairline shadow-none bg-canvas-soft/50">
+              {t('history.empty')}
+            </Card>
           ) : (
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-2">
               {data.map((s) => (
                 <SessionRow key={s.id} session={s} />
               ))}

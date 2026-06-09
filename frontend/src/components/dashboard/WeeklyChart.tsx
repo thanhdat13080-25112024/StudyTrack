@@ -29,13 +29,13 @@ export function WeeklyChart({ data }: WeeklyChartProps) {
   const { t } = useTranslation();
   // Re-read tokens whenever the theme flips.
   const theme = useUiStore((s) => s.theme);
-  const [colors, setColors] = useState({ bar: '#2563eb', grid: '#1e293b', text: '#9ca3af' });
+  const [colors, setColors] = useState({ bar: '#0075de', grid: '#e6e6e6', text: '#615d59' });
 
   useEffect(() => {
     setColors({
-      bar: readVar('--accent-color', '#2563eb'),
-      grid: readVar('--border-color', '#1e293b'),
-      text: readVar('--text-helper', '#9ca3af'),
+      bar: '#0075de', // Notion Primary Blue
+      grid: readVar('--hairline', '#e6e6e6'),
+      text: readVar('--ink-muted', '#615d59'),
     });
   }, [theme]);
 
@@ -49,19 +49,22 @@ export function WeeklyChart({ data }: WeeklyChartProps) {
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={rows} margin={{ top: 8, right: 8, bottom: 0, left: -16 }}>
           <CartesianGrid strokeDasharray="3 3" stroke={colors.grid} vertical={false} />
-          <XAxis dataKey="label" stroke={colors.text} tickLine={false} fontSize={12} />
-          <YAxis stroke={colors.text} tickLine={false} axisLine={false} fontSize={12} />
+          <XAxis dataKey="label" stroke={colors.text} tickLine={false} axisLine={false} fontSize={12} fontWeight={500} />
+          <YAxis stroke={colors.text} tickLine={false} axisLine={false} fontSize={12} fontWeight={500} />
           <Tooltip
             cursor={{ fill: colors.grid, opacity: 0.3 }}
             contentStyle={{
-              background: readVar('--bg-card', '#1e293b'),
+              background: readVar('--surface', '#ffffff'),
               border: `1px solid ${colors.grid}`,
-              borderRadius: 12,
-              color: colors.text,
+              borderRadius: 8,
+              boxShadow: '0 4px 18px rgba(0,0,0,0.04)',
+              color: readVar('--ink', '#000000'),
+              fontSize: 12,
+              fontWeight: 600,
             }}
             formatter={(value: number) => [`${value} ${t('common.minutesShort')}`, '']}
           />
-          <Bar dataKey="minutes" fill={colors.bar} radius={[6, 6, 0, 0]} maxBarSize={40} />
+          <Bar dataKey="minutes" fill={colors.bar} radius={[4, 4, 0, 0]} maxBarSize={32} />
         </BarChart>
       </ResponsiveContainer>
     </div>

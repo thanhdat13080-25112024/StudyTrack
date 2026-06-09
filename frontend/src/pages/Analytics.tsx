@@ -36,11 +36,11 @@ function readVar(name: string, fallback: string): string {
 }
 
 const PIE_COLORS = [
-  'var(--accent-color)',
-  'var(--brand-emerald)',
-  'var(--brand-gold)',
-  'var(--brand-rose)',
-  'var(--brand-violet)',
+  '#0075de', // primary
+  '#1aae39', // sticker-green
+  '#dd5b00', // sticker-orange
+  '#ff64c8', // sticker-pink
+  '#d6b6f6', // sticker-purple
 ];
 
 type DateRange = 'all' | '30' | '90' | 'year';
@@ -65,42 +65,42 @@ export default function Analytics() {
   const { data, isLoading } = useAnalytics(params.fromDate, params.toDate);
 
   const [colors, setColors] = useState({
-    accent: '#2563eb',
-    grid: '#1e293b',
-    text: '#9ca3af',
-    card: '#1e293b',
+    accent: '#0075de',
+    grid: '#e6e6e6',
+    text: '#615d59',
+    card: '#ffffff',
   });
 
   useEffect(() => {
     setColors({
-      accent: readVar('--accent-color', '#2563eb'),
-      grid: readVar('--border-color', '#1e293b'),
-      text: readVar('--text-helper', '#9ca3af'),
-      card: readVar('--bg-card', '#1e293b'),
+      accent: '#0075de',
+      grid: readVar('--hairline', '#e6e6e6'),
+      text: readVar('--ink-muted', '#615d59'),
+      card: readVar('--surface', '#ffffff'),
     });
   }, [theme]);
 
   const currentYear = new Date().getFullYear();
 
   return (
-    <main className="min-h-full bg-bg-main text-text-main">
+    <main className="min-h-full bg-canvas-soft text-ink">
       <div className="mx-auto flex max-w-5xl flex-col gap-8 px-6 py-8">
         <AppHeader />
 
-        <section className="flex flex-col gap-1">
-          <h1 className="text-2xl font-bold text-text-main">{t('analytics.title')}</h1>
+        <section className="flex flex-col gap-2">
+          <h1 className="text-3xl font-bold tracking-tight text-ink">{t('analytics.title')}</h1>
 
           {/* Date range selector */}
-          <div className="flex items-center gap-2 pt-2">
-            <span className="text-sm text-text-muted">{t('analytics.dateRange')}:</span>
+          <div className="flex flex-wrap items-center gap-2 pt-2">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-ink-muted mr-1">{t('analytics.dateRange')}:</span>
             {(['all', '30', '90', 'year'] as DateRange[]).map((r) => (
               <button
                 key={r}
                 onClick={() => setRange(r)}
-                className={`rounded-token px-3 py-1 text-sm transition-colors ${
+                className={`rounded-full px-3.5 py-1 text-xs font-bold transition-all border ${
                   range === r
-                    ? 'bg-accent text-white'
-                    : 'bg-bg-card text-text-muted hover:bg-accent/10'
+                    ? 'bg-primary text-white border-primary shadow-sm'
+                    : 'bg-surface text-ink-secondary border-hairline hover:bg-canvas-soft hover:text-ink'
                 }`}
               >
                 {t(`analytics.${r === 'all' ? 'allTime' : r === 'year' ? 'thisYear' : `last${r}`}`)}
@@ -110,15 +110,15 @@ export default function Analytics() {
         </section>
 
         {isLoading || !data ? (
-          <p className="text-text-muted">{t('common.loading')}</p>
+          <p className="text-ink-muted">{t('common.loading')}</p>
         ) : data.time_by_method.length === 0 &&
           data.time_by_course.length === 0 &&
           data.focus_trend.length === 0 ? (
-          <Card className="p-8 text-center text-text-muted">{t('analytics.noData')}</Card>
+          <Card className="p-12 text-center text-ink-muted border-dashed border-hairline shadow-none bg-canvas-soft/50 font-medium">{t('analytics.noData')}</Card>
         ) : (
           <>
             {/* Row 1: Comparison cards + Productivity gauge */}
-            <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <section className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
               <ComparisonCard
                 label={t('analytics.weekComparison')}
                 sublabel={t('analytics.vsLastWeek')}
@@ -139,23 +139,23 @@ export default function Analytics() {
             </section>
 
             {/* Row 2: Study Heatmap */}
-            <section className="rounded-card border border-border bg-bg-card p-6 shadow-card">
-              <h2 className="mb-4 text-base font-semibold text-text-helper">
+            <section className="rounded-lg border border-hairline bg-surface p-8 shadow-level-1">
+              <h2 className="mb-6 text-xl font-bold tracking-tight text-ink">
                 {t('analytics.heatmapTitle')}
               </h2>
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto pb-4">
                 <StudyHeatmap data={data.heatmap} year={currentYear} />
               </div>
             </section>
 
             {/* Row 3: Time by Method (Pie) + Time by Course (Bar) */}
-            <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+            <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
               {/* Pie: Time by method */}
-              <section className="rounded-card border border-border bg-bg-card p-6 shadow-card">
-                <h2 className="mb-4 text-base font-semibold text-text-helper">
+              <section className="rounded-lg border border-hairline bg-surface p-8 shadow-level-1">
+                <h2 className="mb-6 text-xl font-bold tracking-tight text-ink">
                   {t('analytics.byMethod')}
                 </h2>
-                <div className="h-64">
+                <div className="h-72">
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                       <Pie
@@ -167,9 +167,9 @@ export default function Analytics() {
                         nameKey="name"
                         cx="50%"
                         cy="50%"
-                        innerRadius={50}
-                        outerRadius={80}
-                        paddingAngle={3}
+                        innerRadius={60}
+                        outerRadius={90}
+                        paddingAngle={4}
                         strokeWidth={0}
                       >
                         {data.time_by_method.map((_, i) => (
@@ -180,23 +180,26 @@ export default function Analytics() {
                         contentStyle={{
                           background: colors.card,
                           border: `1px solid ${colors.grid}`,
-                          borderRadius: 12,
-                          color: colors.text,
+                          borderRadius: 8,
+                          boxShadow: '0 4px 18px rgba(0,0,0,0.04)',
+                          color: readVar('--ink', '#000000'),
+                          fontSize: 12,
+                          fontWeight: 600,
                         }}
                         formatter={(value: number) => [`${value} ${t('common.minutesShort')}`, '']}
                       />
-                      <Legend wrapperStyle={{ color: colors.text, fontSize: 12 }} />
+                      <Legend wrapperStyle={{ color: readVar('--ink-secondary', '#31302e'), fontSize: 12, fontWeight: 500 }} />
                     </PieChart>
                   </ResponsiveContainer>
                 </div>
               </section>
 
               {/* Horizontal Bar: Time by course */}
-              <section className="rounded-card border border-border bg-bg-card p-6 shadow-card">
-                <h2 className="mb-4 text-base font-semibold text-text-helper">
+              <section className="rounded-lg border border-hairline bg-surface p-8 shadow-level-1">
+                <h2 className="mb-6 text-xl font-bold tracking-tight text-ink">
                   {t('analytics.byCourse')}
                 </h2>
-                <div className="h-64">
+                <div className="h-72">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart
                       layout="vertical"
@@ -204,38 +207,42 @@ export default function Analytics() {
                         name: c.subject.length > 16 ? c.subject.slice(0, 14) + '…' : c.subject,
                         minutes: c.total_minutes,
                       }))}
-                      margin={{ top: 8, right: 8, bottom: 0, left: 0 }}
+                      margin={{ top: 8, right: 16, bottom: 0, left: 0 }}
                     >
                       <CartesianGrid
                         strokeDasharray="3 3"
                         stroke={colors.grid}
                         horizontal={false}
                       />
-                      <XAxis type="number" stroke={colors.text} tickLine={false} fontSize={12} />
+                      <XAxis type="number" stroke={colors.text} tickLine={false} fontSize={12} fontWeight={500} axisLine={false} />
                       <YAxis
                         dataKey="name"
                         type="category"
-                        width={100}
-                        stroke={colors.text}
+                        width={110}
+                        stroke={readVar('--ink', '#000000')}
                         tickLine={false}
                         axisLine={false}
                         fontSize={11}
+                        fontWeight={600}
                       />
                       <Tooltip
                         cursor={{ fill: colors.grid, opacity: 0.3 }}
                         contentStyle={{
                           background: colors.card,
                           border: `1px solid ${colors.grid}`,
-                          borderRadius: 12,
-                          color: colors.text,
+                          borderRadius: 8,
+                          boxShadow: '0 4px 18px rgba(0,0,0,0.04)',
+                          color: readVar('--ink', '#000000'),
+                          fontSize: 12,
+                          fontWeight: 600,
                         }}
                         formatter={(value: number) => [`${value} ${t('common.minutesShort')}`, '']}
                       />
                       <Bar
                         dataKey="minutes"
                         fill={colors.accent}
-                        radius={[0, 6, 6, 0]}
-                        maxBarSize={24}
+                        radius={[0, 4, 4, 0]}
+                        maxBarSize={20}
                       />
                     </BarChart>
                   </ResponsiveContainer>
@@ -244,11 +251,11 @@ export default function Analytics() {
             </div>
 
             {/* Row 4: Focus Trend (Line) */}
-            <section className="rounded-card border border-border bg-bg-card p-6 shadow-card">
-              <h2 className="mb-4 text-base font-semibold text-text-helper">
+            <section className="rounded-lg border border-hairline bg-surface p-8 shadow-level-1">
+              <h2 className="mb-6 text-xl font-bold tracking-tight text-ink">
                 {t('analytics.focusTrend')}
               </h2>
-              <div className="h-64">
+              <div className="h-72">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart
                     data={data.focus_trend.map((f) => ({
@@ -258,20 +265,24 @@ export default function Analytics() {
                     margin={{ top: 8, right: 8, bottom: 0, left: -16 }}
                   >
                     <CartesianGrid strokeDasharray="3 3" stroke={colors.grid} vertical={false} />
-                    <XAxis dataKey="date" stroke={colors.text} tickLine={false} fontSize={12} />
+                    <XAxis dataKey="date" stroke={colors.text} tickLine={false} fontSize={12} fontWeight={500} axisLine={false} />
                     <YAxis
                       domain={[0, 10]}
                       stroke={colors.text}
                       tickLine={false}
                       axisLine={false}
                       fontSize={12}
+                      fontWeight={500}
                     />
                     <Tooltip
                       contentStyle={{
                         background: colors.card,
                         border: `1px solid ${colors.grid}`,
-                        borderRadius: 12,
-                        color: colors.text,
+                        borderRadius: 8,
+                        boxShadow: '0 4px 18px rgba(0,0,0,0.04)',
+                        color: readVar('--ink', '#000000'),
+                        fontSize: 12,
+                        fontWeight: 600,
                       }}
                       formatter={(value: number) => [value.toFixed(1), t('analytics.avgFocus')]}
                     />
@@ -279,9 +290,9 @@ export default function Analytics() {
                       type="monotone"
                       dataKey="focus"
                       stroke={colors.accent}
-                      strokeWidth={2}
-                      dot={{ r: 3, fill: colors.accent }}
-                      activeDot={{ r: 5 }}
+                      strokeWidth={3}
+                      dot={{ r: 4, fill: colors.card, stroke: colors.accent, strokeWidth: 2 }}
+                      activeDot={{ r: 6, fill: colors.accent }}
                     />
                   </LineChart>
                 </ResponsiveContainer>
@@ -289,13 +300,13 @@ export default function Analytics() {
             </section>
 
             {/* Row 5: Hourly Distribution + Method Effectiveness */}
-            <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+            <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
               {/* Hourly distribution bar chart */}
-              <section className="rounded-card border border-border bg-bg-card p-6 shadow-card">
-                <h2 className="mb-4 text-base font-semibold text-text-helper">
+              <section className="rounded-lg border border-hairline bg-surface p-8 shadow-level-1">
+                <h2 className="mb-6 text-xl font-bold tracking-tight text-ink">
                   {t('analytics.hourlyTitle')}
                 </h2>
-                <div className="h-64">
+                <div className="h-72">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart
                       data={
@@ -314,24 +325,29 @@ export default function Analytics() {
                         stroke={colors.text}
                         tickLine={false}
                         fontSize={11}
+                        fontWeight={500}
                         interval={2}
+                        axisLine={false}
                       />
-                      <YAxis stroke={colors.text} tickLine={false} axisLine={false} fontSize={12} />
+                      <YAxis stroke={colors.text} tickLine={false} axisLine={false} fontSize={12} fontWeight={500} />
                       <Tooltip
                         cursor={{ fill: colors.grid, opacity: 0.3 }}
                         contentStyle={{
                           background: colors.card,
                           border: `1px solid ${colors.grid}`,
-                          borderRadius: 12,
-                          color: colors.text,
+                          borderRadius: 8,
+                          boxShadow: '0 4px 18px rgba(0,0,0,0.04)',
+                          color: readVar('--ink', '#000000'),
+                          fontSize: 12,
+                          fontWeight: 600,
                         }}
                         formatter={(value: number) => [`${value} ${t('common.minutesShort')}`, '']}
                       />
                       <Bar
                         dataKey="minutes"
-                        fill="var(--brand-emerald)"
-                        radius={[6, 6, 0, 0]}
-                        maxBarSize={24}
+                        fill="#1aae39" // sticker-green
+                        radius={[4, 4, 0, 0]}
+                        maxBarSize={28}
                       />
                     </BarChart>
                   </ResponsiveContainer>
@@ -339,52 +355,52 @@ export default function Analytics() {
               </section>
 
               {/* Method effectiveness table */}
-              <section className="rounded-card border border-border bg-bg-card p-6 shadow-card">
-                <h2 className="mb-4 text-base font-semibold text-text-helper">
+              <section className="rounded-lg border border-hairline bg-surface p-8 shadow-level-1">
+                <h2 className="mb-6 text-xl font-bold tracking-tight text-ink">
                   {t('analytics.effectivenessTitle')}
                 </h2>
                 {data.method_effectiveness.length === 0 ? (
-                  <p className="text-sm text-text-muted">{t('analytics.noData')}</p>
+                  <p className="text-sm font-medium text-ink-muted">{t('analytics.noData')}</p>
                 ) : (
-                  <div className="flex flex-col gap-4">
+                  <div className="flex flex-col gap-6">
                     {data.method_effectiveness.map((me) => (
-                      <div key={me.method} className="flex flex-col gap-2">
+                      <div key={me.method} className="flex flex-col gap-2.5">
                         <div className="flex items-center justify-between">
-                          <span className="font-medium text-text-helper">
+                          <span className="font-bold text-ink text-base">
                             {t(`methods.${me.method}`)}
                           </span>
                         </div>
-                        <div className="grid grid-cols-2 gap-3">
-                          <div className="flex flex-col gap-1">
-                            <span className="text-xs text-text-muted">
+                        <div className="grid grid-cols-2 gap-5">
+                          <div className="flex flex-col gap-1.5">
+                            <span className="text-[10px] font-bold uppercase tracking-widest text-ink-muted">
                               {t('analytics.avgFocus')}
                             </span>
-                            <div className="flex items-center gap-2">
-                              <div className="h-2 flex-1 rounded-full bg-border">
+                            <div className="flex items-center gap-3">
+                              <div className="h-2 flex-1 rounded-full bg-canvas-soft border border-hairline overflow-hidden">
                                 <div
-                                  className="h-full rounded-full bg-accent transition-all duration-500"
+                                  className="h-full rounded-full bg-primary transition-all duration-500"
                                   style={{ width: `${(me.avg_focus / 10) * 100}%` }}
                                 />
                               </div>
-                              <span className="text-sm font-medium text-text-helper">
+                              <span className="text-sm font-bold text-ink">
                                 {me.avg_focus.toFixed(1)}
                               </span>
                             </div>
                           </div>
-                          <div className="flex flex-col gap-1">
-                            <span className="text-xs text-text-muted">
+                          <div className="flex flex-col gap-1.5">
+                            <span className="text-[10px] font-bold uppercase tracking-widest text-ink-muted">
                               {t('analytics.completionRate')}
                             </span>
-                            <div className="flex items-center gap-2">
-                              <div className="h-2 flex-1 rounded-full bg-border">
+                            <div className="flex items-center gap-3">
+                              <div className="h-2 flex-1 rounded-full bg-canvas-soft border border-hairline overflow-hidden">
                                 <div
-                                  className="h-full rounded-full bg-brand-emerald transition-all duration-500"
+                                  className="h-full rounded-full bg-sticker-green transition-all duration-500"
                                   style={{
                                     width: `${Math.min(me.avg_completion_rate * 100, 100)}%`,
                                   }}
                                 />
                               </div>
-                              <span className="text-sm font-medium text-text-helper">
+                              <span className="text-sm font-bold text-ink">
                                 {(me.avg_completion_rate * 100).toFixed(0)}%
                               </span>
                             </div>

@@ -51,10 +51,10 @@ const EMPTY_FORM: GradeFormValues = {
 };
 
 const STATUS_BADGE: Record<GradeStatus, string> = {
-  passed: 'bg-brand-emerald/15 text-brand-emerald',
-  failed: 'bg-red-500/15 text-red-400',
-  in_progress: 'bg-accent/15 text-accent',
-  exempt: 'bg-menu-item text-text-muted',
+  passed: 'bg-sticker-green/10 text-sticker-green border-sticker-green/20',
+  failed: 'bg-red-50 text-red-500 border-red-100',
+  in_progress: 'bg-primary/10 text-primary border-primary/20',
+  exempt: 'bg-canvas-soft text-ink-muted border-hairline',
 };
 
 function needsGrade(status: GradeStatus): boolean {
@@ -133,31 +133,33 @@ export default function Grades() {
   const noSemesters = (semesters ?? []).length === 0;
 
   return (
-    <main className="min-h-full bg-bg-main text-text-main">
+    <main className="min-h-full bg-canvas-soft text-ink">
       <div className="mx-auto flex max-w-6xl flex-col gap-8 px-6 py-8">
         <AppHeader />
 
-        <section className="flex flex-wrap items-center justify-between gap-3">
-          <h1 className="text-xl font-bold text-text-main">{t('grades.title')}</h1>
-          <div className="flex items-center gap-2">
-            <Label htmlFor="sem-filter" className="text-text-muted">
-              {t('grades.semesterLabel')}
-            </Label>
-            <Select value={selected} onValueChange={setSelected}>
-              <SelectTrigger id="sem-filter" className="w-44">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={ALL}>{t('grades.allSemesters')}</SelectItem>
-                {(semesters ?? []).map((s) => (
-                  <SelectItem key={s.id} value={String(s.id)}>
-                    {s.code}
-                    {s.name ? ` · ${s.name}` : ''}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Button variant="outline" size="sm" onClick={() => setManagerOpen(true)}>
+        <section className="flex flex-wrap items-center justify-between gap-4">
+          <h1 className="text-2xl font-bold tracking-tight text-ink">{t('grades.title')}</h1>
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex items-center gap-2.5">
+              <Label htmlFor="sem-filter" className="text-[10px] font-bold uppercase tracking-widest text-ink-muted">
+                {t('grades.semesterLabel')}
+              </Label>
+              <Select value={selected} onValueChange={setSelected}>
+                <SelectTrigger id="sem-filter" className="w-48 bg-surface border-hairline h-9 rounded-md">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={ALL}>{t('grades.allSemesters')}</SelectItem>
+                  {(semesters ?? []).map((s) => (
+                    <SelectItem key={s.id} value={String(s.id)}>
+                      {s.code}
+                      {s.name ? ` · ${s.name}` : ''}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <Button variant="ghost" size="sm" onClick={() => setManagerOpen(true)} className="h-9 border border-hairline bg-surface hover:bg-canvas-soft font-bold rounded-md">
               <Settings2 className="h-4 w-4" aria-hidden />
               {t('grades.manageSemesters')}
             </Button>
@@ -167,32 +169,32 @@ export default function Grades() {
         {gpa && (gpa.semesters.length > 0 || gpa.credits.required > 0) ? (
           <GpaSummary data={gpa} />
         ) : (
-          <p className="rounded-card border border-border bg-bg-card p-6 text-text-muted shadow-card">
+          <Card className="p-8 text-center text-ink-muted border-dashed border-hairline shadow-none bg-canvas-soft/50">
             {t('gpa.noData')}
-          </p>
+          </Card>
         )}
 
         {gpa && gpa.semesters.length >= 2 && <GpaTrendChart semesters={gpa.semesters} />}
 
         <WhatIfPanel />
 
-        <section className="rounded-card border border-border bg-bg-card p-6 shadow-card">
-          <h2 className="mb-4 text-lg font-bold text-text-helper">{t('grades.addGradeTitle')}</h2>
+        <section className="rounded-lg border border-hairline bg-surface p-8 shadow-level-1">
+          <h2 className="mb-6 text-xl font-bold tracking-tight text-ink">{t('grades.addGradeTitle')}</h2>
           {noSemesters ? (
-            <p className="text-text-muted">{t('grades.noSemesters')}</p>
+            <p className="text-ink-muted">{t('grades.noSemesters')}</p>
           ) : noCourses ? (
-            <p className="text-text-muted">{t('grades.noCourses')}</p>
+            <p className="text-ink-muted">{t('grades.noCourses')}</p>
           ) : (
             <form
-              className="flex flex-col gap-5"
+              className="flex flex-col gap-6"
               onSubmit={(e) => {
                 e.preventDefault();
                 handleSubmit();
               }}
             >
               <div className="grid gap-5 md:grid-cols-2">
-                <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="g-course">{t('grades.courseLabel')}</Label>
+                <div className="flex flex-col gap-2">
+                  <Label htmlFor="g-course" className="text-[10px] font-bold uppercase tracking-widest text-ink-muted">{t('grades.courseLabel')}</Label>
                   <Select value={form.course_id} onValueChange={(v) => change({ course_id: v })}>
                     <SelectTrigger id="g-course">
                       <SelectValue placeholder={t('grades.selectCourse')} />
@@ -206,8 +208,8 @@ export default function Grades() {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="g-sem">{t('grades.semesterLabel')}</Label>
+                <div className="flex flex-col gap-2">
+                  <Label htmlFor="g-sem" className="text-[10px] font-bold uppercase tracking-widest text-ink-muted">{t('grades.semesterLabel')}</Label>
                   <Select
                     value={form.semester_id}
                     onValueChange={(v) => change({ semester_id: v })}
@@ -228,8 +230,8 @@ export default function Grades() {
               </div>
 
               <div className="grid gap-5 md:grid-cols-2">
-                <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="g-status">{t('grades.statusLabel')}</Label>
+                <div className="flex flex-col gap-2">
+                  <Label htmlFor="g-status" className="text-[10px] font-bold uppercase tracking-widest text-ink-muted">{t('grades.statusLabel')}</Label>
                   <Select
                     value={form.status}
                     onValueChange={(v) => handleStatusChange(v as GradeStatus)}
@@ -246,9 +248,9 @@ export default function Grades() {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="g-grade">{t('grades.gradeLabel')}</Label>
-                  <div className="flex items-center gap-3">
+                <div className="flex flex-col gap-2">
+                  <Label htmlFor="g-grade" className="text-[10px] font-bold uppercase tracking-widest text-ink-muted">{t('grades.gradeLabel')}</Label>
+                  <div className="flex items-center gap-4">
                     <Input
                       id="g-grade"
                       type="number"
@@ -258,23 +260,24 @@ export default function Grades() {
                       disabled={!needsGrade(form.status)}
                       value={form.grade_10}
                       onChange={(e) => change({ grade_10: e.target.value })}
+                      className="w-32"
                     />
                     {preview && (
-                      <span className="whitespace-nowrap text-sm text-text-muted">
-                        {t('grades.preview')}: <b className="text-text-helper">{preview.letter}</b>{' '}
-                        ({preview.grade4})
+                      <span className="whitespace-nowrap text-sm font-medium text-ink-muted">
+                        {t('grades.preview')}: <b className="text-primary">{preview.letter}</b>{' '}
+                        <span className="text-ink-faint">({preview.grade4})</span>
                       </span>
                     )}
                   </div>
                 </div>
               </div>
 
-              <div className="flex gap-2">
-                <Button type="submit" disabled={create.isPending || update.isPending}>
+              <div className="flex gap-3 mt-2">
+                <Button type="submit" disabled={create.isPending || update.isPending} className="rounded-full px-8 font-bold">
                   {editingId !== null ? t('grades.save') : t('grades.add')}
                 </Button>
                 {editingId !== null && (
-                  <Button type="button" variant="outline" onClick={reset}>
+                  <Button type="button" variant="outline" onClick={reset} className="rounded-full px-8 font-bold">
                     {t('grades.cancel')}
                   </Button>
                 )}
@@ -282,62 +285,68 @@ export default function Grades() {
             </form>
           )}
           {(create.isError || update.isError || remove.isError) && (
-            <span className="mt-3 block text-sm text-red-400">{t('common.actionFailed')}</span>
+            <span className="mt-4 block text-sm font-bold text-red-500">{t('common.actionFailed')}</span>
           )}
         </section>
 
-        <section className="flex flex-col gap-4">
+        <section className="flex flex-col gap-6">
           {isLoading ? (
-            <p className="text-text-muted">{t('common.loading')}</p>
+            <p className="text-ink-muted">{t('common.loading')}</p>
           ) : (grades ?? []).length === 0 ? (
-            <p className="text-text-muted">{t('grades.empty')}</p>
+            <Card className="p-12 text-center text-ink-muted border-dashed border-hairline shadow-none bg-canvas-soft/50">
+              {t('grades.empty')}
+            </Card>
           ) : (
-            <div className="overflow-x-auto rounded-card border border-border bg-bg-card shadow-card">
+            <div className="overflow-x-auto rounded-lg border border-hairline bg-surface shadow-level-1">
               <table className="w-full text-left text-sm">
                 <thead>
-                  <tr className="border-b border-border text-text-muted">
-                    <th className="px-4 py-3 font-semibold">{t('grades.colCourse')}</th>
-                    <th className="px-4 py-3 font-semibold">{t('grades.colSemester')}</th>
-                    <th className="px-4 py-3 text-center font-semibold">{t('grades.colGrade')}</th>
-                    <th className="px-4 py-3 text-center font-semibold">{t('grades.colLetter')}</th>
-                    <th className="px-4 py-3 text-center font-semibold">{t('grades.colGrade4')}</th>
-                    <th className="px-4 py-3 font-semibold">{t('grades.colStatus')}</th>
-                    <th className="px-4 py-3" />
+                  <tr className="border-b border-hairline bg-canvas-soft/50 text-ink-muted">
+                    <th className="px-5 py-3 font-bold uppercase tracking-widest text-[10px]">{t('grades.colCourse')}</th>
+                    <th className="px-5 py-3 font-bold uppercase tracking-widest text-[10px]">{t('grades.colSemester')}</th>
+                    <th className="px-5 py-3 text-center font-bold uppercase tracking-widest text-[10px]">{t('grades.colGrade')}</th>
+                    <th className="px-5 py-3 text-center font-bold uppercase tracking-widest text-[10px]">{t('grades.colLetter')}</th>
+                    <th className="px-5 py-3 text-center font-bold uppercase tracking-widest text-[10px]">{t('grades.colGrade4')}</th>
+                    <th className="px-5 py-3 font-bold uppercase tracking-widest text-[10px]">{t('grades.colStatus')}</th>
+                    <th className="px-5 py-3" />
                   </tr>
                 </thead>
                 <tbody>
                   {(grades ?? []).map((g) => {
                     const course = courseById.get(g.course_id) ?? g.course;
                     return (
-                      <tr key={g.id} className="border-b border-border/60 last:border-0">
-                        <td className="px-4 py-3">
-                          <span className="font-mono font-semibold text-text-helper">
+                      <tr key={g.id} className="border-b border-hairline last:border-0 hover:bg-canvas-soft/30 transition-colors">
+                        <td className="px-5 py-4">
+                          <span className="font-mono font-bold text-primary">
                             {course.code}
                           </span>
-                          <span className="ml-2 text-text-muted">{course.name}</span>
+                          <span className="ml-3 font-bold text-ink">{course.name}</span>
                         </td>
-                        <td className="px-4 py-3 font-mono text-text-muted">{g.semester.code}</td>
-                        <td className="px-4 py-3 text-center text-text-main">
+                        <td className="px-5 py-4 font-mono font-bold text-ink-muted">{g.semester.code}</td>
+                        <td className="px-5 py-4 text-center font-bold text-ink">
                           {g.grade_10 != null ? g.grade_10 : '—'}
                         </td>
-                        <td className="px-4 py-3 text-center font-semibold text-text-helper">
+                        <td className="px-5 py-4 text-center font-bold text-primary text-base">
                           {g.letter ?? '—'}
                         </td>
-                        <td className="px-4 py-3 text-center text-text-muted">
+                        <td className="px-5 py-4 text-center font-bold text-ink-secondary">
                           {g.grade_4 != null ? g.grade_4.toFixed(1) : '—'}
                         </td>
-                        <td className="px-4 py-3">
+                        <td className="px-5 py-4">
                           <span
-                            className={`rounded-token px-2 py-0.5 text-xs font-medium ${STATUS_BADGE[g.status as GradeStatus]}`}
+                            className={cn(
+                              'rounded-full border px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider',
+                              STATUS_BADGE[g.status as GradeStatus],
+                            )}
                           >
                             {t(`grades.status.${g.status}`)}
                           </span>
                         </td>
-                        <td className="px-4 py-3">
+                        <td className="px-5 py-4">
                           <div className="flex justify-end gap-1">
                             <Button
                               variant="ghost"
-                              size="sm"
+                              size="icon"
+                              className="h-8 w-8 text-ink-faint hover:text-primary"
                               aria-label={t('grades.edit')}
                               onClick={() => handleEdit(g)}
                             >
@@ -345,7 +354,8 @@ export default function Grades() {
                             </Button>
                             <Button
                               variant="ghost"
-                              size="sm"
+                              size="icon"
+                              className="h-8 w-8 text-ink-faint hover:text-red-500"
                               aria-label={t('grades.delete')}
                               disabled={remove.isPending}
                               onClick={() => handleDelete(g)}

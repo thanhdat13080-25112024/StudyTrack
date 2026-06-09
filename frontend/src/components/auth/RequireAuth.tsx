@@ -9,13 +9,13 @@ export function RequireAuth() {
   const isAuthenticated = useAuthStore((s) => s.token !== null);
   if (!isAuthenticated) return <Navigate to="/login" replace />;
   return (
-    <>
-      <div className="bg-bg-main px-4 pt-4 md:px-8">
-        <div className="mx-auto max-w-5xl">
+    <div className="min-h-full bg-canvas-soft">
+      <div className="sticky top-0 z-50 bg-canvas/80 backdrop-blur-md">
+        <div className="mx-auto max-w-7xl">
           <EmailVerifyBanner />
         </div>
       </div>
       <Outlet />
-    </>
+    </div>
   );
 }

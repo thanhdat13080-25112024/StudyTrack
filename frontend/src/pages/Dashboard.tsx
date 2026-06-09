@@ -17,13 +17,13 @@ import { useAuthStore } from '@/store/authStore';
 
 function KpiCard({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
-    <Card className="flex items-center gap-4 p-5">
-      <div className="flex h-11 w-11 items-center justify-center rounded-token bg-accent/15 text-accent">
+    <Card className="flex items-center gap-4 p-5 shadow-level-1 border-hairline">
+      <div className="flex h-11 w-11 items-center justify-center rounded-md bg-canvas-soft text-primary">
         {icon}
       </div>
       <div className="flex flex-col">
-        <span className="text-2xl font-bold text-text-helper">{value}</span>
-        <span className="text-xs uppercase tracking-wide text-text-muted">{label}</span>
+        <span className="text-2xl font-bold tracking-tight text-ink">{value}</span>
+        <span className="text-[10px] uppercase font-bold tracking-widest text-ink-muted">{label}</span>
       </div>
     </Card>
   );
@@ -39,20 +39,20 @@ export default function Dashboard() {
   const hasGrades = !!gpa && (gpa.semesters.length > 0 || gpa.cpa > 0);
 
   return (
-    <main className="min-h-full bg-bg-main text-text-main">
+    <main className="min-h-full bg-canvas-soft text-ink">
       <div className="mx-auto flex max-w-5xl flex-col gap-8 px-6 py-8">
         <AppHeader />
 
         <section className="flex flex-col gap-1">
-          <h1 className="text-2xl font-bold text-text-main">{t('dashboard.greeting', { name })}</h1>
-          <p className="flex items-center gap-1.5 text-text-muted">
-            <Flame className="h-4 w-4 text-brand-gold" aria-hidden />
+          <h1 className="text-4xl font-bold tracking-tight text-ink">{t('dashboard.greeting', { name })}</h1>
+          <p className="flex items-center gap-1.5 text-ink-muted">
+            <Flame className="h-4 w-4 text-sticker-orange" aria-hidden />
             {streak > 0 ? t('dashboard.streak', { count: streak }) : t('dashboard.streak_zero')}
           </p>
         </section>
 
         {isLoading || !data ? (
-          <p className="text-text-muted">{t('dashboard.loading')}</p>
+          <p className="text-ink-muted">{t('dashboard.loading')}</p>
         ) : (
           <>
             <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -79,42 +79,42 @@ export default function Dashboard() {
             </section>
 
             <div className="flex flex-wrap gap-3">
-              <Button asChild>
+              <Button asChild size="lg">
                 <Link to="/focus">
-                  <TimerIcon className="h-4 w-4" aria-hidden />
+                  <TimerIcon className="h-5 w-5" aria-hidden />
                   {t('dashboard.startFocus')}
                 </Link>
               </Button>
-              <Button variant="outline" asChild>
+              <Button variant="outline" asChild size="lg">
                 <Link to="/schedule">{t('dashboard.openSchedule')}</Link>
               </Button>
             </div>
 
             {gpa && (
-              <Card className="flex flex-wrap items-center justify-between gap-4 p-5">
+              <Card className="flex flex-wrap items-center justify-between gap-4 p-5 shadow-level-1 border-hairline">
                 <div className="flex items-center gap-4">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-token bg-brand-emerald/15 text-brand-emerald">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-md bg-sticker-green/10 text-sticker-green">
                     <GraduationCap className="h-5 w-5" aria-hidden />
                   </div>
                   {hasGrades ? (
                     <div className="flex flex-col">
-                      <span className="text-2xl font-bold text-text-helper">
+                      <span className="text-2xl font-bold tracking-tight text-ink">
                         {gpa.cpa.toFixed(2)}
-                        <span className="ml-2 text-sm font-medium text-text-muted">
+                        <span className="ml-2 text-sm font-medium text-ink-muted">
                           {t(`gpa.tier.${gpa.classification}`)}
                         </span>
                       </span>
-                      <span className="text-xs uppercase tracking-wide text-text-muted">
+                      <span className="text-[10px] uppercase font-bold tracking-widest text-ink-muted">
                         {t('gpa.cpa')}
                       </span>
                     </div>
                   ) : (
-                    <span className="text-sm text-text-muted">{t('gpa.cardEmpty')}</span>
+                    <span className="text-sm text-ink-muted">{t('gpa.cardEmpty')}</span>
                   )}
                 </div>
                 <Link
                   to="/grades"
-                  className="inline-flex items-center gap-1 text-sm font-medium text-accent"
+                  className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline"
                 >
                   {t('gpa.cardViewGrades')}
                   <ArrowRight className="h-3.5 w-3.5" aria-hidden />
@@ -122,46 +122,46 @@ export default function Dashboard() {
               </Card>
             )}
 
-            <section className="rounded-card border border-border bg-bg-card p-6 shadow-card">
-              <h2 className="mb-4 text-base font-semibold text-text-helper">
+            <section className="rounded-lg border border-hairline bg-surface p-6 shadow-level-1">
+              <h2 className="mb-4 text-base font-bold tracking-tight text-ink">
                 {t('dashboard.chartTitle')}
               </h2>
               <WeeklyChart data={data.chart} />
             </section>
 
             <section className="flex flex-col gap-3">
-              <h2 className="text-base font-semibold text-text-main">{t('badges.title')}</h2>
+              <h2 className="text-lg font-bold tracking-tight text-ink">{t('badges.title')}</h2>
               <BadgeGrid badges={data.badges} />
             </section>
 
             <section className="flex flex-col gap-3">
               <div className="flex items-center justify-between">
-                <h2 className="text-base font-semibold text-text-main">
+                <h2 className="text-lg font-bold tracking-tight text-ink">
                   {t('dashboard.recentTitle')}
                 </h2>
                 <Link
                   to="/history"
-                  className="inline-flex items-center gap-1 text-sm font-medium text-accent"
+                  className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline"
                 >
                   {t('dashboard.viewAllHistory')}
                   <ArrowRight className="h-3.5 w-3.5" aria-hidden />
                 </Link>
               </div>
               {data.recent_sessions.length === 0 ? (
-                <Card className="p-6 text-center text-text-muted">
+                <Card className="p-10 text-center text-ink-muted border-dashed border-hairline shadow-none bg-canvas-soft/50">
                   {t('dashboard.recentEmpty')}
                 </Card>
               ) : (
                 <div className="flex flex-col gap-2">
                   {data.recent_sessions.map((s) => (
-                    <Card key={s.id} className="flex items-center justify-between gap-4 p-4">
+                    <Card key={s.id} className="flex items-center justify-between gap-4 p-4 shadow-sm hover:shadow-level-1 transition-all border-hairline">
                       <div className="flex flex-col">
-                        <span className="font-semibold text-text-helper">{s.subject}</span>
-                        <span className="text-xs text-text-muted">
+                        <span className="font-bold text-ink">{s.subject}</span>
+                        <span className="text-xs text-ink-muted">
                           {s.session_date} · {t(`methods.${s.method}`)}
                         </span>
                       </div>
-                      <span className="text-sm font-medium text-text-muted">
+                      <span className="text-sm font-bold text-ink-secondary">
                         {s.actual_minutes} {t('common.minutesShort')}
                       </span>
                     </Card>

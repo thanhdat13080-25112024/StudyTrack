@@ -178,13 +178,13 @@ export default function Focus() {
   const isRunning = timer.plannedSeconds > 0 && (timer.running || timer.secondsLeft > 0);
 
   return (
-    <main className="min-h-full bg-bg-main text-text-main">
+    <main className="min-h-full bg-canvas-soft text-ink">
       <div className="mx-auto flex max-w-4xl flex-col gap-8 px-6 py-8">
         <AppHeader />
 
         {!isRunning ? (
-          <section className="rounded-card border border-border bg-bg-card p-8 shadow-card">
-            <h1 className="mb-6 text-xl font-bold text-text-helper">{t('focus.title')}</h1>
+          <section className="rounded-lg border border-hairline bg-surface p-10 shadow-level-1">
+            <h1 className="mb-6 text-2xl font-bold tracking-tight text-ink">{t('focus.title')}</h1>
             <SessionForm
               values={form}
               onChange={handleChange}
@@ -195,33 +195,41 @@ export default function Focus() {
             />
           </section>
         ) : (
-          <section className="flex flex-col items-center gap-6 rounded-timer border border-border bg-bg-card p-10 text-center shadow-timer">
-            <p className="text-sm font-semibold uppercase tracking-wide text-brand-emerald">
-              {t('focus.heading')}
-            </p>
-            <p className="text-lg font-medium text-text-main">{timer.subject}</p>
-            <Timer secondsLeft={timer.secondsLeft} />
-            <div className="flex gap-3">
+          <section className="flex flex-col items-center gap-8 rounded-xl border border-hairline bg-surface p-12 text-center shadow-level-2">
+            <div className="flex flex-col items-center gap-2">
+              <p className="text-xs font-bold uppercase tracking-widest text-primary">
+                {t('focus.heading')}
+              </p>
+              <p className="text-2xl font-bold tracking-tight text-ink">{timer.subject}</p>
+            </div>
+            
+            <div className="py-4">
+              <Timer secondsLeft={timer.secondsLeft} />
+            </div>
+
+            <div className="flex gap-4">
               {timer.running ? (
-                <Button variant="outline" size="lg" onClick={handlePause}>
+                <Button variant="outline" size="lg" onClick={handlePause} className="w-32 rounded-full">
                   <Pause className="h-4 w-4" aria-hidden />
                   {t('focus.pause')}
                 </Button>
               ) : (
-                <Button variant="outline" size="lg" onClick={handleResume}>
+                <Button variant="outline" size="lg" onClick={handleResume} className="w-32 rounded-full">
                   <Play className="h-4 w-4" aria-hidden />
                   {t('focus.resume')}
                 </Button>
               )}
-              <Button size="lg" onClick={() => finalize(false)}>
+              <Button size="lg" onClick={() => finalize(false)} className="w-32 rounded-full">
                 <Square className="h-4 w-4" aria-hidden />
                 {t('focus.stop')}
               </Button>
             </div>
+            
             {createSession.isError && (
-              <span className="text-sm text-red-400">{t('common.actionFailed')}</span>
+              <span className="text-sm font-medium text-red-500">{t('common.actionFailed')}</span>
             )}
-            <div className="w-full max-w-md">
+            
+            <div className="w-full max-w-sm mt-4">
               <MusicPlayer autoPlay />
             </div>
           </section>

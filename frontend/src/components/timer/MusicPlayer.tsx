@@ -53,24 +53,25 @@ export function MusicPlayer({ autoPlay = false }: MusicPlayerProps) {
   };
 
   return (
-    <div className="flex items-center gap-3 rounded-token border border-border bg-bg-card/40 px-4 py-3">
+    <div className="flex items-center gap-4 rounded-md border border-hairline bg-canvas-soft/50 px-5 py-3 shadow-sm">
       <audio ref={audioRef} src="/dom.mp3" loop preload="auto" />
       <Button
         type="button"
-        variant="outline"
+        variant="ghost"
         size="icon"
         onClick={toggle}
+        className="h-10 w-10 rounded-full bg-surface shadow-sm border border-hairline hover:bg-canvas"
         aria-label={playing ? t('focus.musicPause') : t('focus.musicPlay')}
       >
         {playing ? (
-          <Pause className="h-4 w-4" aria-hidden />
+          <Pause className="h-5 w-5 text-primary" aria-hidden />
         ) : (
-          <Play className="h-4 w-4" aria-hidden />
+          <Play className="h-5 w-5 text-primary" aria-hidden />
         )}
       </Button>
-      <span className="text-sm font-medium text-text-main">{t('focus.music')}</span>
-      <div className="ml-auto flex items-center gap-2">
-        <Volume2 className="h-4 w-4 text-text-muted" aria-hidden />
+      <span className="text-sm font-bold text-ink">{t('focus.music')}</span>
+      <div className="ml-auto flex items-center gap-3">
+        <Volume2 className="h-4 w-4 text-ink-muted" aria-hidden />
         <input
           type="range"
           min={0}
@@ -79,7 +80,7 @@ export function MusicPlayer({ autoPlay = false }: MusicPlayerProps) {
           value={volume}
           onChange={(e) => onVolume(Number(e.target.value))}
           aria-label={t('focus.volume')}
-          className="h-1.5 w-28 cursor-pointer accent-accent"
+          className="h-1.5 w-24 cursor-pointer accent-primary bg-hairline rounded-full"
         />
       </div>
     </div>

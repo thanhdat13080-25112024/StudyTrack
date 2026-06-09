@@ -62,9 +62,9 @@ export function AppHeader() {
   };
 
   return (
-    <header className="flex flex-col gap-4 border-b border-border pb-4 md:flex-row md:items-center md:justify-between">
+    <header className="flex flex-col gap-4 border-b border-hairline bg-canvas px-4 py-4 md:flex-row md:items-center md:justify-between md:px-8">
       <div className="flex items-center gap-6">
-        <Link to="/dashboard" className="text-2xl font-bold text-accent">
+        <Link to="/dashboard" className="text-2xl font-bold text-primary">
           {t('app.name')}
         </Link>
         <nav className="flex flex-wrap gap-1">
@@ -75,8 +75,10 @@ export function AppHeader() {
                 key={to}
                 to={to}
                 className={cn(
-                  'inline-flex items-center gap-1.5 rounded-token px-3 py-1.5 text-sm font-medium transition-colors',
-                  active ? 'bg-accent text-white' : 'text-text-main hover:bg-menu-item',
+                  'inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-all',
+                  active
+                    ? 'bg-hairline text-ink'
+                    : 'text-ink-secondary hover:bg-canvas-soft hover:text-ink',
                 )}
               >
                 <Icon className="h-4 w-4" aria-hidden />
@@ -86,28 +88,29 @@ export function AppHeader() {
           })}
         </nav>
       </div>
-      <div className="flex gap-2">
+      <div className="flex flex-wrap gap-2">
         <NotificationBell />
-        <Button variant="outline" size="sm" asChild>
+        <Button variant="ghost" size="sm" asChild className="rounded-md">
           <Link to="/profile">
             <UserRound className="h-4 w-4" aria-hidden />
             {t('nav.profile')}
           </Link>
         </Button>
-        <Button variant="outline" size="sm" asChild>
+        <Button variant="ghost" size="sm" asChild className="rounded-md">
           <Link to="/settings">
             <SettingsIcon className="h-4 w-4" aria-hidden />
             {t('nav.settings')}
           </Link>
         </Button>
-        <Button variant="outline" size="sm" onClick={toggleLang}>
+        <Button variant="ghost" size="sm" onClick={toggleLang} className="rounded-md">
           <Languages className="h-4 w-4" aria-hidden />
           {lang.toUpperCase()}
         </Button>
         <Button
-          variant="outline"
+          variant="ghost"
           size="sm"
           onClick={toggleTheme}
+          className="rounded-md"
           aria-label={t('common.toggleTheme')}
         >
           {theme === 'dark' ? (
@@ -116,7 +119,7 @@ export function AppHeader() {
             <Moon className="h-4 w-4" aria-hidden />
           )}
         </Button>
-        <Button variant="outline" size="sm" onClick={handleLogout}>
+        <Button variant="ghost" size="sm" onClick={handleLogout} className="rounded-md">
           <LogOut className="h-4 w-4" aria-hidden />
           {t('common.logout')}
         </Button>

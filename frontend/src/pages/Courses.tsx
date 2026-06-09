@@ -95,30 +95,34 @@ export default function Courses() {
   };
 
   return (
-    <main className="min-h-full bg-bg-main text-text-main">
+    <main className="min-h-full bg-canvas-soft text-ink">
       <div className="mx-auto flex max-w-6xl flex-col gap-8 px-6 py-8">
         <AppHeader />
 
-        <section className="rounded-card border border-border bg-bg-card p-6 shadow-card">
-          <h2 className="mb-4 text-lg font-bold text-text-helper">{t('courses.addTitle')}</h2>
+        <section className="rounded-lg border border-hairline bg-surface p-8 shadow-level-1">
+          <h2 className="mb-6 text-xl font-bold tracking-tight text-ink">{t('courses.addTitle')}</h2>
           <form
-            className="flex flex-col gap-5"
+            className="flex flex-col gap-6"
             onSubmit={(e) => {
               e.preventDefault();
               handleSubmit();
             }}
           >
             <div className="grid gap-5 md:grid-cols-2">
-              <div className="flex flex-col gap-1.5">
-                <Label htmlFor="code">{t('courses.code')}</Label>
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="code" className="text-[10px] font-bold uppercase tracking-widest text-ink-muted">
+                  {t('courses.code')}
+                </Label>
                 <Input
                   id="code"
                   value={form.code}
                   onChange={(e) => change({ code: e.target.value })}
                 />
               </div>
-              <div className="flex flex-col gap-1.5">
-                <Label htmlFor="name">{t('courses.name')}</Label>
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="name" className="text-[10px] font-bold uppercase tracking-widest text-ink-muted">
+                  {t('courses.name')}
+                </Label>
                 <Input
                   id="name"
                   value={form.name}
@@ -128,8 +132,10 @@ export default function Courses() {
             </div>
 
             <div className="grid gap-5 md:grid-cols-2">
-              <div className="flex flex-col gap-1.5">
-                <Label htmlFor="credits">{t('courses.credits')}</Label>
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="credits" className="text-[10px] font-bold uppercase tracking-widest text-ink-muted">
+                  {t('courses.credits')}
+                </Label>
                 <Input
                   id="credits"
                   type="number"
@@ -139,8 +145,10 @@ export default function Courses() {
                   onChange={(e) => change({ credits: Number(e.target.value) })}
                 />
               </div>
-              <div className="flex flex-col gap-1.5">
-                <Label htmlFor="category">{t('courses.category')}</Label>
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="category" className="text-[10px] font-bold uppercase tracking-widest text-ink-muted">
+                  {t('courses.category')}
+                </Label>
                 <Select
                   value={form.category}
                   onValueChange={(v) => change({ category: v as FormValues['category'] })}
@@ -160,73 +168,76 @@ export default function Courses() {
               </div>
             </div>
 
-            <label className="flex w-fit items-center gap-2 text-sm text-text-helper">
+            <label className="flex w-fit items-center gap-2.5 text-sm font-medium text-ink cursor-pointer group">
               <input
                 type="checkbox"
-                className="h-4 w-4 rounded border-border accent-accent"
+                className="h-4 w-4 rounded border-hairline accent-primary cursor-pointer"
                 checked={form.is_required}
                 onChange={(e) => change({ is_required: e.target.checked })}
               />
-              {t('courses.required')}
+              <span className="group-hover:text-primary transition-colors">{t('courses.required')}</span>
             </label>
 
-            <div className="flex gap-2">
-              <Button type="submit" disabled={create.isPending || update.isPending}>
+            <div className="flex gap-3 mt-2">
+              <Button type="submit" disabled={create.isPending || update.isPending} className="rounded-full px-8 font-bold">
                 {editingId !== null ? t('courses.save') : t('courses.add')}
               </Button>
               {editingId !== null && (
-                <Button type="button" variant="outline" onClick={reset}>
+                <Button type="button" variant="outline" onClick={reset} className="rounded-full px-8 font-bold">
                   {t('courses.cancel')}
                 </Button>
               )}
             </div>
           </form>
           {(create.isError || update.isError || remove.isError) && (
-            <span className="mt-3 block text-sm text-red-400">{t('common.actionFailed')}</span>
+            <span className="mt-4 block text-sm font-bold text-red-500">{t('common.actionFailed')}</span>
           )}
         </section>
 
-        <section className="flex flex-col gap-4">
-          <h1 className="text-xl font-bold text-text-main">{t('courses.title')}</h1>
+        <section className="flex flex-col gap-6">
+          <h1 className="text-2xl font-bold tracking-tight text-ink">{t('courses.title')}</h1>
           {isLoading ? (
-            <p className="text-text-muted">{t('common.loading')}</p>
+            <p className="text-ink-muted">{t('common.loading')}</p>
           ) : (courses ?? []).length === 0 ? (
-            <p className="text-text-muted">{t('courses.empty')}</p>
+            <Card className="p-12 text-center text-ink-muted border-dashed border-hairline shadow-none bg-canvas-soft/50">
+              {t('courses.empty')}
+            </Card>
           ) : (
-            <div className="overflow-x-auto rounded-card border border-border bg-bg-card shadow-card">
+            <div className="overflow-x-auto rounded-lg border border-hairline bg-surface shadow-level-1">
               <table className="w-full text-left text-sm">
                 <thead>
-                  <tr className="border-b border-border text-text-muted">
-                    <th className="px-4 py-3 font-semibold">{t('courses.colCode')}</th>
-                    <th className="px-4 py-3 font-semibold">{t('courses.colName')}</th>
-                    <th className="px-4 py-3 text-center font-semibold">
+                  <tr className="border-b border-hairline bg-canvas-soft/50 text-ink-muted">
+                    <th className="px-5 py-3 font-bold uppercase tracking-widest text-[10px]">{t('courses.colCode')}</th>
+                    <th className="px-5 py-3 font-bold uppercase tracking-widest text-[10px]">{t('courses.colName')}</th>
+                    <th className="px-5 py-3 text-center font-bold uppercase tracking-widest text-[10px]">
                       {t('courses.colCredits')}
                     </th>
-                    <th className="px-4 py-3 font-semibold">{t('courses.colCategory')}</th>
-                    <th className="px-4 py-3" />
+                    <th className="px-5 py-3 font-bold uppercase tracking-widest text-[10px]">{t('courses.colCategory')}</th>
+                    <th className="px-5 py-3" />
                   </tr>
                 </thead>
                 <tbody>
                   {(courses ?? []).map((c) => (
-                    <tr key={c.id} className="border-b border-border/60 last:border-0">
-                      <td className="px-4 py-3 font-mono font-semibold text-text-helper">
+                    <tr key={c.id} className="border-b border-hairline last:border-0 hover:bg-canvas-soft/30 transition-colors">
+                      <td className="px-5 py-4 font-mono font-bold text-primary">
                         {c.code}
                         {!c.is_required && (
-                          <span className="ml-2 rounded-token bg-menu-item px-1.5 py-0.5 text-[10px] text-text-muted">
+                          <span className="ml-2 rounded-full bg-hairline px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-ink-muted">
                             {t('courses.electiveShort')}
                           </span>
                         )}
                       </td>
-                      <td className="px-4 py-3 text-text-main">{c.name}</td>
-                      <td className="px-4 py-3 text-center text-text-muted">{c.credits}</td>
-                      <td className="px-4 py-3 text-text-muted">
+                      <td className="px-5 py-4 font-bold text-ink">{c.name}</td>
+                      <td className="px-5 py-4 text-center font-bold text-ink-secondary">{c.credits}</td>
+                      <td className="px-5 py-4 font-medium text-ink-muted">
                         {c.category ? t(`courses.cat.${c.category}`) : '—'}
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="px-5 py-4">
                         <div className="flex justify-end gap-1">
                           <Button
                             variant="ghost"
-                            size="sm"
+                            size="icon"
+                            className="h-8 w-8 text-ink-faint hover:text-primary"
                             aria-label={t('courses.edit')}
                             onClick={() => handleEdit(c)}
                           >
@@ -234,7 +245,8 @@ export default function Courses() {
                           </Button>
                           <Button
                             variant="ghost"
-                            size="sm"
+                            size="icon"
+                            className="h-8 w-8 text-ink-faint hover:text-red-500"
                             aria-label={t('courses.delete')}
                             disabled={remove.isPending}
                             onClick={() => handleDelete(c)}

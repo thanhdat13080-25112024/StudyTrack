@@ -54,34 +54,34 @@ export default function Deadlines() {
 
   const now = Date.now();
   const rowTone = (d: Deadline) => {
-    if (d.done) return 'opacity-60';
+    if (d.done) return 'opacity-50 grayscale';
     const diff = new Date(d.due_at).getTime() - now;
-    if (diff < 0) return 'border-l-4 border-red-500';
-    if (diff < 24 * 3600 * 1000) return 'border-l-4 border-amber-500';
-    return 'border-l-4 border-border';
+    if (diff < 0) return 'border-l-4 border-red-500 shadow-level-1';
+    if (diff < 24 * 3600 * 1000) return 'border-l-4 border-sticker-orange shadow-level-1';
+    return 'border-l-4 border-hairline shadow-sm';
   };
 
   return (
-    <main className="min-h-full bg-bg-main text-text-main">
-      <div className="mx-auto flex max-w-5xl flex-col gap-6 p-4 md:p-8">
+    <main className="min-h-full bg-canvas-soft text-ink">
+      <div className="mx-auto flex max-w-5xl flex-col gap-8 px-6 py-8">
         <AppHeader />
-        <h1 className="text-xl font-bold text-text-main">{t('deadlines.title')}</h1>
+        <h1 className="text-2xl font-bold tracking-tight text-ink">{t('deadlines.title')}</h1>
 
-        <section className="grid gap-3 rounded-card border border-border bg-bg-card p-4 shadow-card md:grid-cols-2">
+        <section className="grid gap-4 rounded-lg border border-hairline bg-surface p-8 shadow-level-1 md:grid-cols-2">
           <input
-            className="rounded-token border border-border bg-input-bg px-3 py-2 text-text-main"
+            className="rounded-xs border border-hairline bg-surface px-3 py-2 text-sm text-ink placeholder:text-ink-faint focus:ring-2 focus:ring-primary focus:ring-offset-1 outline-none transition-all"
             placeholder={t('deadlines.titlePlaceholder')}
             value={form.title}
             onChange={(e) => setForm({ ...form, title: e.target.value })}
           />
           <input
             type="datetime-local"
-            className="rounded-token border border-border bg-input-bg px-3 py-2 text-text-main"
+            className="rounded-xs border border-hairline bg-surface px-3 py-2 text-sm text-ink focus:ring-2 focus:ring-primary focus:ring-offset-1 outline-none transition-all"
             value={form.dueLocal}
             onChange={(e) => setForm({ ...form, dueLocal: e.target.value })}
           />
           <select
-            className="rounded-token border border-border bg-input-bg px-3 py-2 text-text-main"
+            className="rounded-xs border border-hairline bg-surface px-3 py-2 text-sm text-ink focus:ring-2 focus:ring-primary focus:ring-offset-1 outline-none transition-all"
             value={form.type}
             onChange={(e) => setForm({ ...form, type: e.target.value as typeof form.type })}
           >
@@ -92,7 +92,7 @@ export default function Deadlines() {
             ))}
           </select>
           <select
-            className="rounded-token border border-border bg-input-bg px-3 py-2 text-text-main"
+            className="rounded-xs border border-hairline bg-surface px-3 py-2 text-sm text-ink focus:ring-2 focus:ring-primary focus:ring-offset-1 outline-none transition-all"
             value={form.priority}
             onChange={(e) => setForm({ ...form, priority: e.target.value as typeof form.priority })}
           >
@@ -103,7 +103,7 @@ export default function Deadlines() {
             ))}
           </select>
           <select
-            className="rounded-token border border-border bg-input-bg px-3 py-2 text-text-main"
+            className="rounded-xs border border-hairline bg-surface px-3 py-2 text-sm text-ink focus:ring-2 focus:ring-primary focus:ring-offset-1 outline-none transition-all"
             value={form.remindKey}
             onChange={(e) => setForm({ ...form, remindKey: e.target.value })}
           >
@@ -114,7 +114,7 @@ export default function Deadlines() {
             ))}
           </select>
           <select
-            className="rounded-token border border-border bg-input-bg px-3 py-2 text-text-main"
+            className="rounded-xs border border-hairline bg-surface px-3 py-2 text-sm text-ink focus:ring-2 focus:ring-primary focus:ring-offset-1 outline-none transition-all"
             value={form.courseId}
             onChange={(e) => setForm({ ...form, courseId: e.target.value })}
           >
@@ -126,38 +126,50 @@ export default function Deadlines() {
             ))}
           </select>
           <div className="md:col-span-2">
-            <Button onClick={submit} disabled={createMut.isPending}>
+            <Button onClick={submit} disabled={createMut.isPending} className="rounded-full px-8 font-bold">
               {t('deadlines.add')}
             </Button>
           </div>
         </section>
 
-        <section className="flex flex-col gap-2">
+        <section className="flex flex-col gap-3">
           {(deadlines ?? []).length === 0 && (
-            <p className="text-text-muted">{t('deadlines.empty')}</p>
+            <Card className="p-12 text-center text-ink-muted border-dashed border-hairline shadow-none bg-canvas-soft/50">
+              {t('deadlines.empty')}
+            </Card>
           )}
           {(deadlines ?? []).map((d) => (
             <div
               key={d.id}
-              className={`flex items-center justify-between gap-3 rounded-token border border-border bg-bg-card p-3 shadow-card ${rowTone(d)}`}
+              className={cn(
+                'flex items-center justify-between gap-4 rounded-md border bg-surface p-4 transition-all',
+                rowTone(d),
+              )}
             >
-              <div className="flex flex-col">
-                <span className="font-medium text-text-main">{d.title}</span>
-                <span className="text-sm text-text-muted">
-                  {t(`deadlines.types.${d.type}`)} · {new Date(d.due_at).toLocaleString()}
-                  {d.course ? ` · ${d.course.code}` : ''}
+              <div className="flex flex-col gap-0.5">
+                <span className="font-bold text-ink leading-tight">{d.title}</span>
+                <span className="text-xs font-medium text-ink-muted">
+                  <span className="rounded-full bg-canvas-soft px-2 py-0.5 text-[10px] uppercase font-bold tracking-wider mr-2 border border-hairline">
+                    {t(`deadlines.types.${d.type}`)}
+                  </span>
+                  {new Date(d.due_at).toLocaleString()}
+                  {d.course ? <span className="text-primary font-bold"> · {d.course.code}</span> : ''}
                 </span>
               </div>
               <div className="flex items-center gap-2">
                 <Button
-                  variant="outline"
+                  variant="ghost"
                   size="sm"
+                  className={cn(
+                    'rounded-full px-4 font-bold h-8 border border-hairline',
+                    d.done ? 'bg-canvas-soft text-ink-muted' : 'bg-surface text-primary hover:bg-primary/5',
+                  )}
                   onClick={() => updateMut.mutate({ id: d.id, data: { done: !d.done } })}
                 >
                   {d.done ? t('deadlines.markUndone') : t('deadlines.markDone')}
                 </Button>
-                <Button variant="outline" size="sm" onClick={() => deleteMut.mutate(d.id)}>
-                  {t('common.delete')}
+                <Button variant="ghost" size="icon" className="h-8 w-8 text-ink-faint hover:text-red-500" onClick={() => deleteMut.mutate(d.id)}>
+                  <Trash2 className="h-4 w-4" aria-hidden />
                 </Button>
               </div>
             </div>

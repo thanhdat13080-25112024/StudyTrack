@@ -27,20 +27,20 @@ export function BadgeGrid({ badges }: BadgeGridProps) {
         <div
           key={badge.key}
           className={cn(
-            'flex items-center gap-3 rounded-token border p-3 transition-all',
+            'flex items-center gap-3 rounded-md border p-3 transition-all',
             badge.unlocked
-              ? 'border-brand-gold bg-bg-card opacity-100'
-              : 'border-border bg-bg-main opacity-50 grayscale',
+              ? 'border-sticker-orange bg-surface shadow-level-1'
+              : 'border-hairline bg-canvas-soft/50 opacity-40 grayscale',
           )}
         >
           <span className="text-2xl" aria-hidden>
             {ICONS[badge.key] ?? '🏅'}
           </span>
           <div className="flex flex-col">
-            <span className="text-sm font-semibold text-text-helper">
+            <span className="text-sm font-bold text-ink">
               {t(`badges.${badge.key}.title`)}
             </span>
-            <span className="text-xs text-text-muted">{t(`badges.${badge.key}.desc`)}</span>
+            <span className="text-xs text-ink-muted">{t(`badges.${badge.key}.desc`)}</span>
           </div>
         </div>
       ))}

@@ -64,8 +64,10 @@ export function SessionForm({
       }}
     >
       <div className="grid gap-5 md:grid-cols-2">
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="subject">{t('focus.subjectLabel')}</Label>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="subject" className="text-[10px] font-bold uppercase tracking-widest text-ink-muted">
+            {t('focus.subjectLabel')}
+          </Label>
           <Input
             id="subject"
             value={values.subject}
@@ -73,8 +75,10 @@ export function SessionForm({
             onChange={(e) => onChange({ subject: e.target.value })}
           />
         </div>
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="minutes">{t('focus.durationLabel')}</Label>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="minutes" className="text-[10px] font-bold uppercase tracking-widest text-ink-muted">
+            {t('focus.durationLabel')}
+          </Label>
           <Input
             id="minutes"
             type="number"
@@ -85,9 +89,9 @@ export function SessionForm({
         </div>
       </div>
 
-      <div className="flex flex-col gap-2">
-        <Label htmlFor="focus">
-          {t('focus.focusLabel')} — <span className="font-bold text-accent">{values.focus}/10</span>
+      <div className="flex flex-col gap-3">
+        <Label htmlFor="focus" className="text-[10px] font-bold uppercase tracking-widest text-ink-muted">
+          {t('focus.focusLabel')} — <span className="font-bold text-primary">{values.focus}/10</span>
         </Label>
         <Slider
           id="focus"
@@ -100,8 +104,10 @@ export function SessionForm({
       </div>
 
       <div className="grid gap-5 md:grid-cols-2">
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="method">{t('focus.methodLabel')}</Label>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="method" className="text-[10px] font-bold uppercase tracking-widest text-ink-muted">
+            {t('focus.methodLabel')}
+          </Label>
           <Select
             value={values.method}
             onValueChange={(v) => onChange({ method: v as StudyMethod })}
@@ -118,8 +124,10 @@ export function SessionForm({
             </SelectContent>
           </Select>
         </div>
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="note">{t('focus.noteLabel')}</Label>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="note" className="text-[10px] font-bold uppercase tracking-widest text-ink-muted">
+            {t('focus.noteLabel')}
+          </Label>
           <Textarea
             id="note"
             rows={1}
@@ -130,8 +138,10 @@ export function SessionForm({
       </div>
 
       {courses.length > 0 && (
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="course">{t('focus.courseLabel')}</Label>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="course" className="text-[10px] font-bold uppercase tracking-widest text-ink-muted">
+            {t('focus.courseLabel')}
+          </Label>
           <Select
             value={values.courseId === null ? NO_COURSE : String(values.courseId)}
             onValueChange={(v) => {
@@ -163,15 +173,15 @@ export function SessionForm({
       )}
 
       {suggestion && (
-        <div className="flex gap-2 rounded-token border border-dashed border-brand-emerald bg-brand-emerald/10 p-4 text-sm text-text-helper">
-          <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-brand-emerald" aria-hidden />
+        <div className="flex gap-2 rounded-md border border-sticker-teal bg-sticker-teal/5 p-4 text-sm text-ink-secondary">
+          <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-sticker-teal" aria-hidden />
           <p>{suggestion}</p>
         </div>
       )}
 
-      {error && <p className="text-sm font-medium text-red-500">{error}</p>}
+      {error && <p className="text-sm font-bold text-red-500">{error}</p>}
 
-      <Button type="submit" size="lg" className="self-start">
+      <Button type="submit" size="lg" className="self-start rounded-full px-8 font-bold">
         {t('focus.start')}
       </Button>
     </form>

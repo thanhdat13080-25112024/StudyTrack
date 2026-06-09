@@ -3,60 +3,60 @@
 @tailwind utilities;
 
 /*
- * StudyTrack theme tokens — ported verbatim from legacy/index.html.
+ * StudyTrack Notion Theme.
  *
- * Legacy used data-theme on <body>: `:root` = DARK (default) and
- * `[data-theme="light"]` = LIGHT. Here we use Tailwind `darkMode: 'class'`,
- * so the convention is inverted to match Tailwind semantics:
- *   :root  -> LIGHT palette (legacy [data-theme="light"])
- *   .dark  -> DARK  palette (legacy :root)
- * The app still boots in DARK by default (legacy default) — theme.ts adds the
- * `dark` class to <html> on load.
+ * Light mode is the default "daylight" palette.
+ * Dark mode is the "night" palette.
  */
 
 @layer base {
-  /* LIGHT palette (legacy [data-theme="light"]) */
   :root {
-    --bg-main: #15928a;
-    --bg-sidebar: #0d6e68;
-    --bg-card: #ffffff;
-    --text-main: #ffffff;
-    --text-muted: rgba(255, 255, 255, 0.85);
-    --text-helper: #1e293b;
-    --border-color: rgba(255, 255, 255, 0.2);
-    --input-bg: #f8fafc;
-    --id-card-bg: linear-gradient(135deg, #0f766e 0%, #115e59 100%);
+    /* Notion Light Palette */
+    --canvas: #ffffff;
+    --canvas-soft: #f6f5f4;
+    --surface: #ffffff;
+    --ink: #000000;
+    --ink-secondary: #31302e;
+    --ink-muted: #615d59;
+    --ink-faint: #a39e98;
+    --hairline: #e6e6e6;
+    
+    /* Identity Card (Gradient) */
+    --id-card-bg: linear-gradient(135deg, #0075de 0%, #005bab 100%);
     --id-card-text: #ffffff;
-    --menu-item-bg: rgba(255, 255, 255, 0.1);
-    --menu-item-text: #ffffff;
-    --accent-color: #ffffff;
-    --accent-hover: rgba(255, 255, 255, 0.9);
+
+    /* Base background & text */
+    --bg-main: var(--canvas-soft);
+    --text-main: var(--ink);
+    --accent-color: #0075de;
   }
 
-  /* DARK palette (legacy :root) */
   .dark {
-    --bg-main: #0f172a;
-    --bg-sidebar: #111827;
-    --bg-card: #1e293b;
-    --text-main: #ffffff;
-    --text-muted: #cbd5e1;
-    --text-helper: #9ca3af;
-    --border-color: #1e293b;
-    --input-bg: #0f172a;
-    --id-card-bg: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+    /* Notion Dark Palette (Night Shift) */
+    --canvas: #191919;
+    --canvas-soft: #202020;
+    --surface: #252525;
+    --ink: #ffffff;
+    --ink-secondary: #ebeced;
+    --ink-muted: #9b9b9b;
+    --ink-faint: #6b6b6b;
+    --hairline: #373737;
+
+    /* Identity Card (Gradient) */
+    --id-card-bg: linear-gradient(135deg, #213183 0%, #391c57 100%);
     --id-card-text: #ffffff;
-    --menu-item-bg: #1e293b;
-    --menu-item-text: #ffffff;
-    --accent-color: #2563eb;
-    --accent-hover: #1d4ed8;
+
+    --bg-main: var(--canvas-soft);
+    --text-main: var(--ink);
+    --accent-color: #0075de;
   }
 
   * {
     @apply box-border;
     transition:
-      background 0.3s,
-      color 0.3s,
-      border-color 0.3s;
+      background 0.2s ease-in-out,
+      color 0.2s ease-in-out,
+      border-color 0.2s ease-in-out;
   }
 
   html,
@@ -66,6 +66,11 @@
   }
 
   body {
-    @apply bg-bg-main text-text-main font-sans antialiased;
+    @apply bg-canvas-soft text-ink font-sans antialiased;
+  }
+
+  /* Notion-style headlines: tight letter spacing */
+  h1, .text-4xl, .text-5xl, .text-6xl {
+    @apply tracking-[-0.02em] font-bold;
   }
 }
