@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { AuthShell } from '@/pages/Login';
+import { AuthShell } from '@/components/auth/AuthShell';
 import { useVerifyEmail } from '@/features/auth/hooks';
 
 export default function VerifyEmail() {

@@ -2,19 +2,9 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { AuthForm, type AuthFormValues } from '@/components/auth/AuthForm';
+import { AuthShell } from '@/components/auth/AuthShell';
 import { useLogin } from '@/features/auth/hooks';
 import { ApiError } from '@/lib/apiClient';
-
-export function AuthShell({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <main className="flex min-h-full items-center justify-center bg-bg-main p-6">
-      <div className="w-full max-w-md rounded-card border border-border bg-bg-card p-8 shadow-card">
-        <h1 className="mb-6 text-2xl font-bold text-text-helper">{title}</h1>
-        {children}
-      </div>
-    </main>
-  );
-}
 
 export default function Login() {
   const { t } = useTranslation();

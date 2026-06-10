@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { AuthForm, type AuthFormValues } from '@/components/auth/AuthForm';
-import { AuthShell } from '@/pages/Login';
+import { AuthShell } from '@/components/auth/AuthShell';
 import { useRegister } from '@/features/auth/hooks';
 import { ApiError } from '@/lib/apiClient';
 
