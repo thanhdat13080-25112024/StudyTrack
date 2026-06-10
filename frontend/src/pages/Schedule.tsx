@@ -6,6 +6,7 @@
  */
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { motion, useReducedMotion } from 'framer-motion';
 import { Pencil, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -17,6 +18,7 @@ import {
   useUpdateScheduleItem,
 } from '@/features/schedule/hooks';
 import { DAY_KEYS, type ScheduleItem } from '@/features/schedule/types';
+import { getMotion } from '@/lib/motion';
 
 const EMPTY_FORM: ScheduleFormValues = { day_of_week: 0, time: '08:00', subject: '' };
 
@@ -29,6 +31,7 @@ export default function Schedule() {
 
   const [form, setForm] = useState<ScheduleFormValues>(EMPTY_FORM);
   const [editingId, setEditingId] = useState<number | null>(null);
+  const m = getMotion(!!useReducedMotion());
 
   const byDay = useMemo(() => {
     const map: Record<number, ScheduleItem[]> = {};
@@ -64,7 +67,7 @@ export default function Schedule() {
 
   return (
     <div className="flex flex-col gap-8">
-      <section className="rounded-card border border-border bg-bg-card p-6 shadow-card">
+      <section className="rounded-card border border-border bg-bg-card p-6">
         <h2 className="mb-4 text-lg font-bold text-text-helper">{t('schedule.addTitle')}</h2>
         <ScheduleForm
           values={form}
@@ -83,10 +86,16 @@ export default function Schedule() {
         {isLoading ? (
           <p className="text-text-muted">{t('common.loading')}</p>
         ) : (
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-7">
+          <motion.div
+            className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-7"
+            variants={m.list}
+            initial="initial"
+            animate="animate"
+          >
             {DAY_KEYS.map((key, index) => (
-              <div
+              <motion.div
                 key={key}
+                variants={m.item}
                 className="flex flex-col gap-2 rounded-card border border-border bg-bg-card p-3"
               >
                 <div className="border-b border-border pb-2 text-center text-sm font-semibold text-accent">
@@ -125,9 +134,9 @@ export default function Schedule() {
                     </Card>
                   ))
                 )}
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         )}
       </section>
     </div>
