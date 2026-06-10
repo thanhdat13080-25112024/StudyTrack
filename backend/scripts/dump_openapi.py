@@ -1,16 +1,24 @@
 """Dump the FastAPI OpenAPI schema to a file without running a server.
-Usage: python scripts/dump_openapi.py [out_path]   (default: openapi.json)"""
+Usage: python scripts/dump_openapi.py [out_path]
+With no out_path it writes to a temp file (never the repo / cwd); the Makefile
+`gen-types` target passes an explicit path."""
 
 from __future__ import annotations
 
 import json
+import os
 import sys
+import tempfile
 
 from app.main import app
 
 
 def main() -> None:
-    out = sys.argv[1] if len(sys.argv) > 1 else "openapi.json"
+    out = (
+        sys.argv[1]
+        if len(sys.argv) > 1
+        else os.path.join(tempfile.gettempdir(), "studytrack-openapi.json")
+    )
     with open(out, "w", encoding="utf-8") as fh:
         json.dump(app.openapi(), fh, ensure_ascii=False, indent=2)
     print(f">> wrote {out}")

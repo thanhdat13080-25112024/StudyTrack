@@ -234,6 +234,24 @@ Phase 6 biến auth từ "chỉ đăng ký/đăng nhập" thành một **hệ th
 
 **Dữ liệu demo** (sau `make seed`): user demo khởi tạo **`email_verified=True`** (đã xác thực sẵn). Dependency backend mới: **`slowapi`**.
 
+## Phân tích học tập & API (Phase 7)
+
+Phase 7 thêm một **bảng phân tích thói quen học (analytics)** — chín chỉ số được tính **khi đọc** từ dữ liệu `StudySession` sẵn có. **Không có model mới và không có migration** (không lưu gì — nhất quán với quy tắc "không lưu thứ tính được", giống badges/GPA).
+
+**Service** (`backend/app/services/analytics.py`, hàm thuần, viết test-first): mỗi hàm nhận một danh sách bản ghi phiên học và trả về dict có cấu trúc — `study_heatmap` (bản đồ nhiệt 365 ngày kiểu GitHub, phút/ngày theo năm), `time_by_method` / `time_by_course` (tổng phút + số buổi theo phương pháp / theo môn), `focus_trend` (độ tập trung trung bình theo ngày), `weekly_comparison` / `monthly_comparison` (tuần/tháng này so với kỳ trước; **`change_pct = None` khi kỳ trước = 0** để tránh chia cho 0), `productivity_score` (điểm tổng hợp **0–100** trong 7 ngày gần nhất = đều đặn + khối lượng + chất lượng tập trung), `hourly_distribution` (phút theo giờ 0–23), `method_effectiveness` (độ tập trung TB + tỉ lệ hoàn thành theo phương pháp).
+
+**Endpoint** (Bearer + chỉ thao tác trên dữ liệu của chính user):
+
+| Method | Endpoint | Mô tả |
+|--------|----------|-------|
+| `GET` | `/api/analytics` | Toàn bộ chín chỉ số (lọc tùy chọn `?from_date` / `?to_date` theo `session_date`) |
+
+> Router đặt tên file **`analytics_data.py`** (không phải `analytics.py`) để tránh trùng với `analysis.py` của Phase 4 (cảnh báo môn yếu / hướng học); mount `prefix="/api/analytics"`.
+
+**Các trang frontend mới**: route được bảo vệ `/analytics` (`pages/Analytics.tsx`, link nav trong `AppHeader`). `components/analytics/*` — bản đồ nhiệt, `ComparisonCard` (kỳ hiện tại vs kỳ trước + chênh lệch), `ProductivityGauge`, cùng các biểu đồ Recharts. `features/analytics/{types,hooks}` (TanStack Query). i18n thêm `analytics.*` (vi/en parity, **362 keys**).
+
+**Dữ liệu demo**: không cần thêm — analytics suy ra từ các phiên học demo đã có. Tests: **212 pytest / 75 vitest**.
+
 ## Lệnh thường dùng
 
 Tất cả lệnh chuẩn hóa qua `Makefile` (chạy `make help` để xem danh sách):
@@ -298,5 +316,5 @@ Khai báo trong `.env` (copy từ `.env.example`). `.env` bị git-ignore và b�
 | **4** | CTĐT & lộ trình: Prerequisite/CTĐT, roadmap engine, direction analysis, liên kết phiên học↔môn, cảnh báo môn yếu | ✅ Hoàn thành |
 | **5** | Deadline + realtime: Deadline/lịch thi, WebSocket `/ws/notifications`, scanner nhắc nhở nền, chuông thông báo + đẩy mở khóa huy hiệu | ✅ Hoàn thành |
 | **6** | Tài khoản & email: xác thực email (cổng mềm), quên/đặt lại & đổi mật khẩu, xoá tài khoản + xuất dữ liệu, `AuthToken`, email cắm-thay-được (console/SMTP), giới hạn tần suất slowapi | ✅ Hoàn thành |
-| **7** | Phân tích & báo cáo học tập nâng cao | ⏳ |
+| **7** | Phân tích học tập: bản đồ nhiệt, thời gian theo phương pháp/môn, xu hướng tập trung, so sánh tuần/tháng, điểm năng suất, phân bố theo giờ, hiệu quả phương pháp (tất cả suy diễn, không migration) | ✅ Hoàn thành |
 | **8** | Lớp AI (hoãn lại): service Gemini/Claude API (proxy qua backend, giấu key) nâng cấp phân tích điểm yếu / lộ trình / tư vấn chọn môn | ⏳ |

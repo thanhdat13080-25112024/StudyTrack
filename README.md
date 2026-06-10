@@ -57,6 +57,12 @@
 - **Trang Cài đặt (`/settings`)**: **đổi mật khẩu**, **xuất toàn bộ dữ liệu** của bạn ra một file JSON, và **xoá tài khoản vĩnh viễn** (xoá luôn mọi dữ liệu liên quan).
 - Các endpoint đăng nhập/đăng ký/quên mật khẩu có **giới hạn tần suất** để chống lạm dụng.
 
+### 📊 Phân tích học tập (mới)
+- **Trang phân tích**: nhìn lại thói quen học qua **bản đồ nhiệt cả năm** (ngày nào học nhiều/ít), **thời gian theo từng phương pháp và từng môn**, và **xu hướng độ tập trung** theo thời gian.
+- **So sánh tuần / tháng**: tuần (hoặc tháng) này bạn học nhiều hơn hay ít hơn kỳ trước bao nhiêu phần trăm.
+- **Điểm năng suất (0–100)**: một con số tổng hợp gói gọn mức độ đều đặn, khối lượng và chất lượng tập trung trong 7 ngày gần nhất.
+- **Khung giờ vàng**: biểu đồ phân bố theo giờ giúp bạn biết mình học hiệu quả nhất vào lúc nào trong ngày.
+
 ## Tính năng đã có & sắp tới
 
 | Nhóm tính năng | Trạng thái |
@@ -67,7 +73,7 @@
 | Lộ trình học theo môn tiên quyết, cảnh báo môn yếu, phân tích thế mạnh | ✅ Đã có |
 | Quản lý deadline / lịch thi + nhắc nhở theo thời gian thực + chuông thông báo | ✅ Đã có |
 | Tài khoản: xác thực email, quên/đặt lại & đổi mật khẩu, xuất dữ liệu, xoá tài khoản | ✅ Đã có |
-| Phân tích & báo cáo học tập nâng cao | ⏳ Sắp tới |
+| Phân tích học tập: bản đồ nhiệt, thời gian theo phương pháp/môn, điểm năng suất, so sánh tuần/tháng | ✅ Đã có |
 | Trợ lý AI tư vấn chọn môn & lộ trình | ⏳ Sắp tới |
 
 ## Dùng thử nhanh
