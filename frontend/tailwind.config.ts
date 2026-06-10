@@ -64,7 +64,15 @@ const config: Config = {
         'id-card': 'var(--id-card-bg)',
       },
       fontFamily: {
-        sans: ['Poppins', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        sans: [
+          'Inter',
+          '-apple-system',
+          'system-ui',
+          '"Segoe UI"',
+          'Helvetica',
+          'Arial',
+          'sans-serif',
+        ],
         mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'monospace'],
       },
       borderRadius: {
