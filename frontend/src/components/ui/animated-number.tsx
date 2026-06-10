@@ -2,11 +2,6 @@ import { useEffect, useState } from 'react';
 import { animate, useReducedMotion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
-/** Pure formatter — kept separate so it is unit-testable without animation. */
-export function formatNumber(value: number, decimals: number): string {
-  return value.toFixed(decimals);
-}
-
 interface AnimatedNumberProps {
   value: number;
   decimals?: number;
@@ -34,7 +29,7 @@ export function AnimatedNumber({ value, decimals = 0, suffix = '', className }: 
 
   return (
     <span className={cn('tabular-nums', className)}>
-      {formatNumber(display, decimals)}
+      {display.toFixed(decimals)}
       {suffix}
     </span>
   );

@@ -1,10 +1,5 @@
 import { motion, useReducedMotion } from 'framer-motion';
-
-/** Fraction of the planned time still remaining, clamped to [0,1]. */
-export function ringProgress(secondsLeft: number, planned: number): number {
-  if (planned <= 0) return 0;
-  return Math.min(1, Math.max(0, secondsLeft / planned));
-}
+import { ringProgress } from '@/lib/time';
 
 interface TimerRingProps {
   secondsLeft: number;

@@ -1,7 +1,13 @@
-/** Time formatting helpers shared by the timer UI. */
+/** Time + timer-progress helpers shared by the timer UI. */
 
 function pad(n: number): string {
   return String(n).padStart(2, '0');
+}
+
+/** Fraction of the planned time still remaining, clamped to [0,1]. */
+export function ringProgress(secondsLeft: number, planned: number): number {
+  if (planned <= 0) return 0;
+  return Math.min(1, Math.max(0, secondsLeft / planned));
 }
 
 /** Format whole seconds → "HH:MM:SS" (port of legacy `renderTimerDisplay`). */
