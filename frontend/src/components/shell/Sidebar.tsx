@@ -8,7 +8,6 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { SidebarNav } from '@/components/shell/SidebarNav';
 import { ShellControls } from '@/components/shell/ShellControls';
-import { ShellBoundary } from '@/components/shell/ShellBoundary';
 
 export function Sidebar() {
   const { t } = useTranslation();
@@ -23,9 +22,7 @@ export function Sidebar() {
         <SidebarNav />
       </div>
       <div className="px-2 pb-4">
-        <ShellBoundary>
-          <ShellControls />
-        </ShellBoundary>
+        <ShellControls />
       </div>
     </aside>
   );

@@ -14,7 +14,6 @@ import { Button } from '@/components/ui/button';
 import { NotificationBell } from '@/components/NotificationBell';
 import { SidebarNav } from '@/components/shell/SidebarNav';
 import { ShellControls } from '@/components/shell/ShellControls';
-import { ShellBoundary } from '@/components/shell/ShellBoundary';
 import { getMotion } from '@/lib/motion';
 
 export function MobileNav() {
@@ -48,9 +47,7 @@ export function MobileNav() {
           {t('app.name')}
         </Link>
         <div className="ml-auto">
-          <ShellBoundary>
-            <NotificationBell />
-          </ShellBoundary>
+          <NotificationBell />
         </div>
       </header>
 
@@ -91,9 +88,7 @@ export function MobileNav() {
                 <SidebarNav onNavigate={close} />
               </div>
               <div className="px-2 pb-4">
-                <ShellBoundary>
-                  <ShellControls onNavigate={close} />
-                </ShellBoundary>
+                <ShellControls onNavigate={close} />
               </div>
             </motion.div>
           </>

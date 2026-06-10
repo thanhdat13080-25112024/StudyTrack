@@ -9,7 +9,6 @@
 import type { ReactNode } from 'react';
 import { Sidebar } from '@/components/shell/Sidebar';
 import { MobileNav } from '@/components/shell/MobileNav';
-import { ShellBoundary } from '@/components/shell/ShellBoundary';
 import { EmailVerifyBanner } from '@/components/EmailVerifyBanner';
 
 export function AppShell({ children }: { children: ReactNode }) {
@@ -20,9 +19,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         <MobileNav />
         <main className="min-h-screen flex-1 overflow-y-auto bg-bg-main">
           <div className="mx-auto flex max-w-5xl flex-col gap-6 px-6 py-8 md:px-8">
-            <ShellBoundary>
-              <EmailVerifyBanner />
-            </ShellBoundary>
+            <EmailVerifyBanner />
             {children}
           </div>
         </main>
