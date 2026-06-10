@@ -7,11 +7,16 @@
  * `EmailVerifyBanner` once at the top of the content area.
  */
 import type { ReactNode } from 'react';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import { useLocation } from 'react-router-dom';
 import { Sidebar } from '@/components/shell/Sidebar';
 import { MobileNav } from '@/components/shell/MobileNav';
 import { EmailVerifyBanner } from '@/components/EmailVerifyBanner';
+import { getMotion } from '@/lib/motion';
 
 export function AppShell({ children }: { children: ReactNode }) {
+  const location = useLocation();
+  const m = getMotion(useReducedMotion() ?? false);
   return (
     <div className="flex min-h-screen bg-bg-main text-text-main">
       <Sidebar />
@@ -20,7 +25,18 @@ export function AppShell({ children }: { children: ReactNode }) {
         <main className="min-h-screen flex-1 overflow-y-auto bg-bg-main">
           <div className="mx-auto flex max-w-5xl flex-col gap-6 px-6 py-8 md:px-8">
             <EmailVerifyBanner />
-            {children}
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={location.pathname}
+                variants={m.page}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                transition={{ duration: m.duration }}
+              >
+                {children}
+              </motion.div>
+            </AnimatePresence>
           </div>
         </main>
       </div>
