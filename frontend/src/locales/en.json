@@ -17,7 +17,12 @@
     "analytics": "Analytics",
     "deadlines": "Deadlines",
     "settings": "Settings",
-    "login": "Login"
+    "login": "Login",
+    "group": {
+      "habit": "Habits",
+      "academic": "Academic",
+      "insight": "Insights"
+    }
   },
   "common": {
     "welcome": "Welcome",

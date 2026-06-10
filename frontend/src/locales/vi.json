@@ -17,7 +17,12 @@
     "analytics": "Thống kê",
     "deadlines": "Hạn chót",
     "settings": "Cài đặt",
-    "login": "Đăng nhập"
+    "login": "Đăng nhập",
+    "group": {
+      "habit": "Thói quen",
+      "academic": "Học vụ",
+      "insight": "Thống kê"
+    }
   },
   "common": {
     "welcome": "Xin chào",
