@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { Pencil, Trash2 } from 'lucide-react';
 import { PrerequisiteEditor } from '@/components/courses/PrerequisiteEditor';
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
@@ -95,7 +96,7 @@ export default function Courses() {
 
   return (
     <div className="flex flex-col gap-8">
-      <section className="rounded-card border border-border bg-bg-card p-6 shadow-card">
+      <Card className="p-6">
         <h2 className="mb-4 text-lg font-bold text-text-helper">{t('courses.addTitle')}</h2>
         <form
           className="flex flex-col gap-5"
@@ -180,7 +181,7 @@ export default function Courses() {
         {(create.isError || update.isError || remove.isError) && (
           <span className="mt-3 block text-sm text-red-400">{t('common.actionFailed')}</span>
         )}
-      </section>
+      </Card>
 
       <section className="flex flex-col gap-4">
         <h1 className="text-xl font-bold text-text-main">{t('courses.title')}</h1>
@@ -189,7 +190,7 @@ export default function Courses() {
         ) : (courses ?? []).length === 0 ? (
           <p className="text-text-muted">{t('courses.empty')}</p>
         ) : (
-          <div className="overflow-x-auto rounded-card border border-border bg-bg-card shadow-card">
+          <Card className="overflow-x-auto">
             <table className="w-full text-left text-sm">
               <thead>
                 <tr className="border-b border-border text-text-muted">
@@ -206,7 +207,7 @@ export default function Courses() {
                     <td className="px-4 py-3 font-mono font-semibold text-text-helper">
                       {c.code}
                       {!c.is_required && (
-                        <span className="ml-2 rounded-token bg-menu-item px-1.5 py-0.5 text-[10px] text-text-muted">
+                        <span className="ml-2 rounded-md bg-menu-item px-1.5 py-0.5 text-[10px] text-text-muted">
                           {t('courses.electiveShort')}
                         </span>
                       )}
@@ -241,7 +242,7 @@ export default function Courses() {
                 ))}
               </tbody>
             </table>
-          </div>
+          </Card>
         )}
       </section>
 

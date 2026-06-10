@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import {
   Select,
   SelectContent,
@@ -34,7 +35,7 @@ export function PrerequisiteEditor({ courses }: { courses: Course[] }) {
   return (
     <section className="flex flex-col gap-4">
       <h2 className="text-lg font-bold text-text-helper">{t('courses.prereq.title')}</h2>
-      <div className="divide-y divide-border/60 rounded-card border border-border bg-bg-card shadow-card">
+      <Card className="divide-y divide-border/60">
         {courses.map((c) => {
           const mine = all.filter((p) => p.course_id === c.id);
           const options = courses.filter(
@@ -56,7 +57,7 @@ export function PrerequisiteEditor({ courses }: { courses: Course[] }) {
                 {mine.map((p) => (
                   <span
                     key={p.id}
-                    className="inline-flex items-center gap-1 rounded-token bg-menu-item px-2 py-1 text-xs text-text-helper"
+                    className="inline-flex items-center gap-1 rounded-md bg-menu-item px-2 py-1 text-xs text-text-helper"
                   >
                     {p.prereq_code}
                     <button
@@ -104,7 +105,7 @@ export function PrerequisiteEditor({ courses }: { courses: Course[] }) {
             </div>
           );
         })}
-      </div>
+      </Card>
     </section>
   );
 }
