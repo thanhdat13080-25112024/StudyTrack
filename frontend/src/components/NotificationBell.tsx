@@ -51,7 +51,7 @@ export function NotificationBell() {
         )}
       </Button>
       {open && (
-        <div className="absolute right-0 z-20 mt-2 w-80 rounded-token border border-border bg-bg-card p-2 shadow-card">
+        <div className="absolute right-0 z-20 mt-2 w-80 rounded-md border border-border bg-bg-card p-2 shadow-elevated">
           <div className="flex items-center justify-between px-2 py-1">
             <span className="font-semibold text-text-main">{t('notifications.title')}</span>
             <button className="text-xs text-accent" onClick={() => markAll.mutate()}>
@@ -65,7 +65,7 @@ export function NotificationBell() {
             <button
               key={n.id}
               onClick={() => markRead.mutate(n.id)}
-              className={`block w-full rounded-token px-2 py-2 text-left text-sm hover:bg-menu-item ${
+              className={`block w-full rounded-md px-2 py-2 text-left text-sm hover:bg-menu-item ${
                 n.read ? 'text-text-muted' : 'text-text-main'
               }`}
             >

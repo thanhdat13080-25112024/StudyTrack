@@ -163,8 +163,8 @@ export function SessionForm({
       )}
 
       {suggestion && (
-        <div className="flex gap-2 rounded-token border border-dashed border-brand-emerald bg-brand-emerald/10 p-4 text-sm text-text-helper">
-          <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-brand-emerald" aria-hidden />
+        <div className="flex gap-2 rounded-md border border-dashed border-sticker-green bg-sticker-green/10 p-4 text-sm text-text-helper">
+          <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-sticker-green" aria-hidden />
           <p>{suggestion}</p>
         </div>
       )}
