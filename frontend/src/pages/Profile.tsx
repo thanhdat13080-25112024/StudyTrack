@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { StudentIdCard } from '@/components/StudentIdCard';
@@ -68,35 +69,37 @@ export default function Profile() {
 
   return (
     <div className="grid gap-8 md:grid-cols-2">
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+      <Card className="flex flex-col gap-4 p-6">
         <h1 className="text-2xl font-bold text-text-main">{t('profile.title')}</h1>
-        <Field label={t('profile.name')} id="name">
-          <Input id="name" {...register('name')} />
-        </Field>
-        <Field label={t('profile.class')} id="class_name">
-          <Input id="class_name" {...register('class_name')} />
-        </Field>
-        <Field label={t('profile.faculty')} id="faculty">
-          <Input id="faculty" {...register('faculty')} />
-        </Field>
-        <Field label={t('profile.major')} id="major">
-          <Input id="major" {...register('major')} />
-        </Field>
-        <Field label={t('profile.goal')} id="goal">
-          <Input id="goal" {...register('goal')} />
-        </Field>
-        <Field label={t('profile.avatar')} id="avatar">
-          <Input
-            id="avatar"
-            type="file"
-            accept="image/*"
-            onChange={(e) => onAvatar(e.target.files?.[0])}
-          />
-        </Field>
-        <Button type="submit" disabled={updateProfile.isPending || updateSettings.isPending}>
-          {t('profile.save')}
-        </Button>
-      </form>
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+          <Field label={t('profile.name')} id="name">
+            <Input id="name" {...register('name')} />
+          </Field>
+          <Field label={t('profile.class')} id="class_name">
+            <Input id="class_name" {...register('class_name')} />
+          </Field>
+          <Field label={t('profile.faculty')} id="faculty">
+            <Input id="faculty" {...register('faculty')} />
+          </Field>
+          <Field label={t('profile.major')} id="major">
+            <Input id="major" {...register('major')} />
+          </Field>
+          <Field label={t('profile.goal')} id="goal">
+            <Input id="goal" {...register('goal')} />
+          </Field>
+          <Field label={t('profile.avatar')} id="avatar">
+            <Input
+              id="avatar"
+              type="file"
+              accept="image/*"
+              onChange={(e) => onAvatar(e.target.files?.[0])}
+            />
+          </Field>
+          <Button type="submit" disabled={updateProfile.isPending || updateSettings.isPending}>
+            {t('profile.save')}
+          </Button>
+        </form>
+      </Card>
 
       <div className="md:pt-12">
         <StudentIdCard

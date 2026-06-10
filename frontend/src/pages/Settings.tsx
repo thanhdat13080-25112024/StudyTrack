@@ -77,7 +77,7 @@ export default function Settings() {
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-2xl font-bold text-text-helper">{t('settings.title')}</h1>
+      <h1 className="text-2xl font-bold text-text-main">{t('settings.title')}</h1>
 
       {/* Change password */}
       <Card>
