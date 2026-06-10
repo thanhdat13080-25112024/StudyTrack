@@ -6,10 +6,13 @@
  */
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { motion, useReducedMotion } from 'framer-motion';
 import { Check, Play, Route } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { getMotion } from '@/lib/motion';
 import { useMe } from '@/features/auth/hooks';
 import { useApplyRoadmap, useGenerateRoadmap } from '@/features/roadmap/hooks';
 import type { RoadmapPlan, RoadmapWarning } from '@/features/roadmap/types';
@@ -47,9 +50,11 @@ export default function Roadmap() {
       },
     });
 
+  const m = getMotion(!!useReducedMotion());
+
   return (
     <div className="flex flex-col gap-8">
-      <section className="flex flex-col gap-4 rounded-card border border-border bg-bg-card p-6 shadow-card">
+      <Card className="flex flex-col gap-4 p-6">
         <div className="flex items-center gap-2">
           <Route className="h-5 w-5 text-accent" aria-hidden />
           <h1 className="text-xl font-bold text-text-main">{t('roadmap.title')}</h1>
@@ -83,7 +88,7 @@ export default function Roadmap() {
         {(generate.isError || apply.isError) && (
           <span className="text-sm text-red-400">{t('common.actionFailed')}</span>
         )}
-      </section>
+      </Card>
 
       {plan && plan.warnings.length > 0 && (
         <section className="rounded-card border border-amber-500/40 bg-amber-500/10 p-4">
@@ -99,37 +104,41 @@ export default function Roadmap() {
       {plan && plan.semesters.length === 0 ? (
         <p className="text-text-muted">{t('roadmap.empty')}</p>
       ) : plan ? (
-        <div className="flex gap-4 overflow-x-auto pb-2">
+        <motion.div
+          className="flex gap-4 overflow-x-auto pb-2"
+          variants={m.list}
+          initial="initial"
+          animate="animate"
+        >
           {plan.semesters.map((sem) => (
-            <div
-              key={sem.code}
-              className="flex min-w-[220px] flex-col gap-3 rounded-card border border-border bg-bg-card p-4 shadow-card"
-            >
-              <div className="flex items-center justify-between border-b border-border pb-2">
-                <span className="font-mono font-bold text-text-helper">{sem.code}</span>
-                <span className="text-xs text-text-muted">
-                  {sem.total_credits} {t('roadmap.creditsShort')}
-                </span>
-              </div>
-              {sem.courses.map((c) => (
-                <div
-                  key={c.course_id}
-                  className="flex items-center justify-between rounded-token bg-menu-item px-3 py-2"
-                >
-                  <span className="font-mono text-sm font-semibold text-text-main">
-                    {c.code}
-                    {!c.is_required && (
-                      <span className="ml-1.5 text-[10px] text-text-muted">
-                        {t('courses.electiveShort')}
-                      </span>
-                    )}
+            <motion.div key={sem.code} variants={m.item}>
+              <Card className="flex min-w-[220px] flex-col gap-3 p-4">
+                <div className="flex items-center justify-between border-b border-border pb-2">
+                  <span className="font-mono font-bold text-text-helper">{sem.code}</span>
+                  <span className="text-xs text-text-muted">
+                    {sem.total_credits} {t('roadmap.creditsShort')}
                   </span>
-                  <span className="text-xs text-text-muted">{c.credits}</span>
                 </div>
-              ))}
-            </div>
+                {sem.courses.map((c) => (
+                  <div
+                    key={c.course_id}
+                    className="flex items-center justify-between rounded-md bg-menu-item px-3 py-2"
+                  >
+                    <span className="font-mono text-sm font-semibold text-text-main">
+                      {c.code}
+                      {!c.is_required && (
+                        <span className="ml-1.5 text-[10px] text-text-muted">
+                          {t('courses.electiveShort')}
+                        </span>
+                      )}
+                    </span>
+                    <span className="text-xs text-text-muted">{c.credits}</span>
+                  </div>
+                ))}
+              </Card>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       ) : (
         <p className="text-text-muted">{t('roadmap.hint')}</p>
       )}
