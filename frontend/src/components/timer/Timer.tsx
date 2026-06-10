@@ -13,8 +13,8 @@ export function Timer({ secondsLeft, className }: TimerProps) {
   return (
     <div
       className={
-        'font-mono text-6xl font-bold tabular-nums tracking-widest text-text-main md:text-7xl ' +
-        (className ?? '')
+        'font-mono text-6xl font-bold tabular-nums tracking-widest md:text-7xl ' +
+        (className ?? 'text-text-main')
       }
       role="timer"
       aria-live="off"
