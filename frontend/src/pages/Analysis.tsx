@@ -8,9 +8,12 @@
  */
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { motion, useReducedMotion } from 'framer-motion';
 import { Activity, AlertTriangle, TrendingUp } from 'lucide-react';
+import { Card } from '@/components/ui/card';
 import { useDirection, useWeakSubjects } from '@/features/analysis/hooks';
 import { useCourses } from '@/features/courses/hooks';
+import { getMotion } from '@/lib/motion';
 
 export default function Analysis() {
   const { t } = useTranslation();
@@ -19,10 +22,12 @@ export default function Analysis() {
   const { data: courses } = useCourses();
 
   const codeById = useMemo(() => {
-    const m = new Map<number, string>();
-    for (const c of courses ?? []) m.set(c.id, c.code);
-    return m;
+    const map = new Map<number, string>();
+    for (const c of courses ?? []) map.set(c.id, c.code);
+    return map;
   }, [courses]);
+
+  const m = getMotion(!!useReducedMotion());
 
   return (
     <div className="flex flex-col gap-8">
@@ -36,54 +41,59 @@ export default function Analysis() {
         ) : (weak ?? []).length === 0 ? (
           <p className="text-text-muted">{t('analysis.noWeak')}</p>
         ) : (
-          <div className="grid gap-3 md:grid-cols-2">
+          <motion.div
+            className="grid gap-3 md:grid-cols-2"
+            variants={m.list}
+            initial="initial"
+            animate="animate"
+          >
             {(weak ?? []).map((w) => (
-              <div
-                key={w.course_id}
-                className="flex flex-col gap-2 rounded-card border border-border bg-bg-card p-4 shadow-card"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="font-mono font-semibold text-text-helper">
-                    {w.code} <span className="font-sans text-text-muted">{w.name}</span>
-                  </span>
-                  <span
-                    className={
-                      w.priority === 'red'
-                        ? 'rounded-token bg-red-500/15 px-2 py-0.5 text-xs font-semibold text-red-400'
-                        : 'rounded-token bg-amber-500/15 px-2 py-0.5 text-xs font-semibold text-amber-500'
-                    }
-                  >
-                    {t(`weakSubject.priority.${w.priority}`)}
-                  </span>
-                </div>
-                <div className="flex flex-wrap gap-1.5">
-                  {w.signals.map((s) => (
-                    <span
-                      key={s}
-                      className="rounded-token bg-menu-item px-2 py-0.5 text-xs text-text-helper"
-                    >
-                      {t(`weakSubject.signal.${s}`)}
+              <motion.div key={w.course_id} variants={m.item}>
+                <Card className="flex flex-col gap-2 p-4">
+                  <div className="flex items-center justify-between">
+                    <span className="font-mono font-semibold text-text-helper">
+                      {w.code} <span className="font-sans text-text-muted">{w.name}</span>
                     </span>
-                  ))}
-                </div>
-                {(w.metrics.grade_4 !== undefined ||
-                  w.metrics.minutes_per_credit !== undefined) && (
-                  <div className="flex flex-wrap gap-4 text-xs text-text-muted">
-                    {w.metrics.grade_4 !== undefined && (
-                      <span>
-                        {t('weakSubject.metric.grade4')}: {w.metrics.grade_4}
-                      </span>
-                    )}
-                    {w.metrics.minutes_per_credit !== undefined && (
-                      <span>
-                        {t('weakSubject.metric.minutesPerCredit')}: {w.metrics.minutes_per_credit}
-                      </span>
-                    )}
+                    <span
+                      className={
+                        w.priority === 'red'
+                          ? 'rounded-md bg-red-500/15 px-2 py-0.5 text-xs font-semibold text-red-400'
+                          : 'rounded-md bg-amber-500/15 px-2 py-0.5 text-xs font-semibold text-amber-500'
+                      }
+                    >
+                      {t(`weakSubject.priority.${w.priority}`)}
+                    </span>
                   </div>
-                )}
-              </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {w.signals.map((s) => (
+                      <span
+                        key={s}
+                        className="rounded-md bg-menu-item px-2 py-0.5 text-xs text-text-helper"
+                      >
+                        {t(`weakSubject.signal.${s}`)}
+                      </span>
+                    ))}
+                  </div>
+                  {(w.metrics.grade_4 !== undefined ||
+                    w.metrics.minutes_per_credit !== undefined) && (
+                    <div className="flex flex-wrap gap-4 text-xs text-text-muted">
+                      {w.metrics.grade_4 !== undefined && (
+                        <span>
+                          {t('weakSubject.metric.grade4')}: {w.metrics.grade_4}
+                        </span>
+                      )}
+                      {w.metrics.minutes_per_credit !== undefined && (
+                        <span>
+                          {t('weakSubject.metric.minutesPerCredit')}:{' '}
+                          {w.metrics.minutes_per_credit}
+                        </span>
+                      )}
+                    </div>
+                  )}
+                </Card>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         )}
       </section>
 
@@ -97,7 +107,7 @@ export default function Analysis() {
         ) : !direction || direction.category_strengths.length === 0 ? (
           <p className="text-text-muted">{t('analysis.noData')}</p>
         ) : (
-          <div className="flex flex-col gap-6 rounded-card border border-border bg-bg-card p-6 shadow-card">
+          <Card className="flex flex-col gap-6 p-6">
             {direction.strongest_category && (
               <p className="text-sm text-text-helper">
                 {t('analysis.strongest')}:{' '}
@@ -156,7 +166,7 @@ export default function Analysis() {
                 </ul>
               </div>
             )}
-          </div>
+          </Card>
         )}
       </section>
     </div>
