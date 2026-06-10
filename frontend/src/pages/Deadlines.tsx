@@ -2,7 +2,9 @@
  * create form. Reminder offset uses presets. */
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { motion, useReducedMotion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import { useCourses } from '@/features/courses/hooks';
 import {
   useCreateDeadline,
@@ -16,6 +18,7 @@ import {
   REMIND_PRESETS,
   type Deadline,
 } from '@/features/deadlines/types';
+import { getMotion } from '@/lib/motion';
 
 const EMPTY = {
   title: '',
@@ -60,25 +63,27 @@ export default function Deadlines() {
     return 'border-l-4 border-border';
   };
 
+  const m = getMotion(!!useReducedMotion());
+
   return (
     <div className="flex flex-col gap-6">
       <h1 className="text-xl font-bold text-text-main">{t('deadlines.title')}</h1>
 
-      <section className="grid gap-3 rounded-card border border-border bg-bg-card p-4 shadow-card md:grid-cols-2">
+      <Card className="grid gap-3 p-4 md:grid-cols-2">
         <input
-          className="rounded-token border border-border bg-input-bg px-3 py-2 text-text-main"
+          className="rounded-md border border-border bg-input-bg px-3 py-2 text-text-main"
           placeholder={t('deadlines.titlePlaceholder')}
           value={form.title}
           onChange={(e) => setForm({ ...form, title: e.target.value })}
         />
         <input
           type="datetime-local"
-          className="rounded-token border border-border bg-input-bg px-3 py-2 text-text-main"
+          className="rounded-md border border-border bg-input-bg px-3 py-2 text-text-main"
           value={form.dueLocal}
           onChange={(e) => setForm({ ...form, dueLocal: e.target.value })}
         />
         <select
-          className="rounded-token border border-border bg-input-bg px-3 py-2 text-text-main"
+          className="rounded-md border border-border bg-input-bg px-3 py-2 text-text-main"
           value={form.type}
           onChange={(e) => setForm({ ...form, type: e.target.value as typeof form.type })}
         >
@@ -89,7 +94,7 @@ export default function Deadlines() {
           ))}
         </select>
         <select
-          className="rounded-token border border-border bg-input-bg px-3 py-2 text-text-main"
+          className="rounded-md border border-border bg-input-bg px-3 py-2 text-text-main"
           value={form.priority}
           onChange={(e) => setForm({ ...form, priority: e.target.value as typeof form.priority })}
         >
@@ -100,7 +105,7 @@ export default function Deadlines() {
           ))}
         </select>
         <select
-          className="rounded-token border border-border bg-input-bg px-3 py-2 text-text-main"
+          className="rounded-md border border-border bg-input-bg px-3 py-2 text-text-main"
           value={form.remindKey}
           onChange={(e) => setForm({ ...form, remindKey: e.target.value })}
         >
@@ -111,7 +116,7 @@ export default function Deadlines() {
           ))}
         </select>
         <select
-          className="rounded-token border border-border bg-input-bg px-3 py-2 text-text-main"
+          className="rounded-md border border-border bg-input-bg px-3 py-2 text-text-main"
           value={form.courseId}
           onChange={(e) => setForm({ ...form, courseId: e.target.value })}
         >
@@ -127,16 +132,22 @@ export default function Deadlines() {
             {t('deadlines.add')}
           </Button>
         </div>
-      </section>
+      </Card>
 
-      <section className="flex flex-col gap-2">
+      <motion.section
+        className="flex flex-col gap-2"
+        variants={m.list}
+        initial="initial"
+        animate="animate"
+      >
         {(deadlines ?? []).length === 0 && (
           <p className="text-text-muted">{t('deadlines.empty')}</p>
         )}
         {(deadlines ?? []).map((d) => (
-          <div
+          <motion.div
             key={d.id}
-            className={`flex items-center justify-between gap-3 rounded-token border border-border bg-bg-card p-3 shadow-card ${rowTone(d)}`}
+            variants={m.item}
+            className={`flex items-center justify-between gap-3 rounded-md border border-border bg-bg-card p-3 ${rowTone(d)}`}
           >
             <div className="flex flex-col">
               <span className="font-medium text-text-main">{d.title}</span>
@@ -157,9 +168,9 @@ export default function Deadlines() {
                 {t('common.delete')}
               </Button>
             </div>
-          </div>
+          </motion.div>
         ))}
-      </section>
+      </motion.section>
     </div>
   );
 }
