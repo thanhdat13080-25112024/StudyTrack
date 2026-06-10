@@ -3,7 +3,7 @@
  * productivity score. All data is computed on-read from the backend;
  * this page only renders it.
  */
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Bar,
@@ -23,24 +23,9 @@ import {
 import { ComparisonCard } from '@/components/analytics/ComparisonCard';
 import { ProductivityGauge } from '@/components/analytics/ProductivityGauge';
 import { StudyHeatmap } from '@/components/analytics/StudyHeatmap';
+import { useChartTheme } from '@/components/charts/chartTheme';
 import { Card } from '@/components/ui/card';
 import { useAnalytics } from '@/features/analytics/hooks';
-import { useUiStore } from '@/store/uiStore';
-
-// Theme-aware CSS variable reader
-function readVar(name: string, fallback: string): string {
-  if (typeof window === 'undefined') return fallback;
-  const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-  return v || fallback;
-}
-
-const PIE_COLORS = [
-  'var(--accent-color)',
-  'var(--brand-emerald)',
-  'var(--brand-gold)',
-  'var(--brand-rose)',
-  'var(--brand-violet)',
-];
 
 type DateRange = 'all' | '30' | '90' | 'year';
 
@@ -58,26 +43,11 @@ function rangeToParams(range: DateRange): { fromDate?: string; toDate?: string }
 
 export default function Analytics() {
   const { t } = useTranslation();
-  const theme = useUiStore((s) => s.theme);
   const [range, setRange] = useState<DateRange>('all');
   const params = useMemo(() => rangeToParams(range), [range]);
   const { data, isLoading } = useAnalytics(params.fromDate, params.toDate);
 
-  const [colors, setColors] = useState({
-    accent: '#2563eb',
-    grid: '#1e293b',
-    text: '#9ca3af',
-    card: '#1e293b',
-  });
-
-  useEffect(() => {
-    setColors({
-      accent: readVar('--accent-color', '#2563eb'),
-      grid: readVar('--border-color', '#1e293b'),
-      text: readVar('--text-helper', '#9ca3af'),
-      card: readVar('--bg-card', '#1e293b'),
-    });
-  }, [theme]);
+  const theme = useChartTheme();
 
   const currentYear = new Date().getFullYear();
 
@@ -93,7 +63,7 @@ export default function Analytics() {
             <button
               key={r}
               onClick={() => setRange(r)}
-              className={`rounded-token px-3 py-1 text-sm transition-colors ${
+              className={`rounded-md px-3 py-1 text-sm transition-colors ${
                 range === r
                   ? 'bg-accent text-white'
                   : 'bg-bg-card text-text-muted hover:bg-accent/10'
@@ -135,19 +105,19 @@ export default function Analytics() {
           </section>
 
           {/* Row 2: Study Heatmap */}
-          <section className="rounded-card border border-border bg-bg-card p-6 shadow-card">
+          <Card className="p-6">
             <h2 className="mb-4 text-base font-semibold text-text-helper">
               {t('analytics.heatmapTitle')}
             </h2>
             <div className="overflow-x-auto">
               <StudyHeatmap data={data.heatmap} year={currentYear} />
             </div>
-          </section>
+          </Card>
 
           {/* Row 3: Time by Method (Pie) + Time by Course (Bar) */}
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
             {/* Pie: Time by method */}
-            <section className="rounded-card border border-border bg-bg-card p-6 shadow-card">
+            <Card className="p-6">
               <h2 className="mb-4 text-base font-semibold text-text-helper">
                 {t('analytics.byMethod')}
               </h2>
@@ -169,26 +139,21 @@ export default function Analytics() {
                       strokeWidth={0}
                     >
                       {data.time_by_method.map((_, i) => (
-                        <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
+                        <Cell key={i} fill={theme.series[i % theme.series.length]} />
                       ))}
                     </Pie>
                     <Tooltip
-                      contentStyle={{
-                        background: colors.card,
-                        border: `1px solid ${colors.grid}`,
-                        borderRadius: 12,
-                        color: colors.text,
-                      }}
+                      contentStyle={theme.tooltipStyle}
                       formatter={(value: number) => [`${value} ${t('common.minutesShort')}`, '']}
                     />
-                    <Legend wrapperStyle={{ color: colors.text, fontSize: 12 }} />
+                    <Legend wrapperStyle={{ color: theme.text, fontSize: 12 }} />
                   </PieChart>
                 </ResponsiveContainer>
               </div>
-            </section>
+            </Card>
 
             {/* Horizontal Bar: Time by course */}
-            <section className="rounded-card border border-border bg-bg-card p-6 shadow-card">
+            <Card className="p-6">
               <h2 className="mb-4 text-base font-semibold text-text-helper">
                 {t('analytics.byCourse')}
               </h2>
@@ -202,41 +167,36 @@ export default function Analytics() {
                     }))}
                     margin={{ top: 8, right: 8, bottom: 0, left: 0 }}
                   >
-                    <CartesianGrid strokeDasharray="3 3" stroke={colors.grid} horizontal={false} />
-                    <XAxis type="number" stroke={colors.text} tickLine={false} fontSize={12} />
+                    <CartesianGrid strokeDasharray="3 3" stroke={theme.grid} horizontal={false} />
+                    <XAxis type="number" stroke={theme.text} tickLine={false} fontSize={12} />
                     <YAxis
                       dataKey="name"
                       type="category"
                       width={100}
-                      stroke={colors.text}
+                      stroke={theme.text}
                       tickLine={false}
                       axisLine={false}
                       fontSize={11}
                     />
                     <Tooltip
-                      cursor={{ fill: colors.grid, opacity: 0.3 }}
-                      contentStyle={{
-                        background: colors.card,
-                        border: `1px solid ${colors.grid}`,
-                        borderRadius: 12,
-                        color: colors.text,
-                      }}
+                      cursor={{ fill: theme.grid, opacity: 0.3 }}
+                      contentStyle={theme.tooltipStyle}
                       formatter={(value: number) => [`${value} ${t('common.minutesShort')}`, '']}
                     />
                     <Bar
                       dataKey="minutes"
-                      fill={colors.accent}
+                      fill={theme.accent}
                       radius={[0, 6, 6, 0]}
                       maxBarSize={24}
                     />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
-            </section>
+            </Card>
           </div>
 
           {/* Row 4: Focus Trend (Line) */}
-          <section className="rounded-card border border-border bg-bg-card p-6 shadow-card">
+          <Card className="p-6">
             <h2 className="mb-4 text-base font-semibold text-text-helper">
               {t('analytics.focusTrend')}
             </h2>
@@ -249,41 +209,36 @@ export default function Analytics() {
                   }))}
                   margin={{ top: 8, right: 8, bottom: 0, left: -16 }}
                 >
-                  <CartesianGrid strokeDasharray="3 3" stroke={colors.grid} vertical={false} />
-                  <XAxis dataKey="date" stroke={colors.text} tickLine={false} fontSize={12} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={theme.grid} vertical={false} />
+                  <XAxis dataKey="date" stroke={theme.text} tickLine={false} fontSize={12} />
                   <YAxis
                     domain={[0, 10]}
-                    stroke={colors.text}
+                    stroke={theme.text}
                     tickLine={false}
                     axisLine={false}
                     fontSize={12}
                   />
                   <Tooltip
-                    contentStyle={{
-                      background: colors.card,
-                      border: `1px solid ${colors.grid}`,
-                      borderRadius: 12,
-                      color: colors.text,
-                    }}
+                    contentStyle={theme.tooltipStyle}
                     formatter={(value: number) => [value.toFixed(1), t('analytics.avgFocus')]}
                   />
                   <Line
                     type="monotone"
                     dataKey="focus"
-                    stroke={colors.accent}
+                    stroke={theme.accent}
                     strokeWidth={2}
-                    dot={{ r: 3, fill: colors.accent }}
+                    dot={{ r: 3, fill: theme.accent }}
                     activeDot={{ r: 5 }}
                   />
                 </LineChart>
               </ResponsiveContainer>
             </div>
-          </section>
+          </Card>
 
           {/* Row 5: Hourly Distribution + Method Effectiveness */}
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
             {/* Hourly distribution bar chart */}
-            <section className="rounded-card border border-border bg-bg-card p-6 shadow-card">
+            <Card className="p-6">
               <h2 className="mb-4 text-base font-semibold text-text-helper">
                 {t('analytics.hourlyTitle')}
               </h2>
@@ -300,38 +255,33 @@ export default function Analytics() {
                     }
                     margin={{ top: 8, right: 8, bottom: 0, left: -16 }}
                   >
-                    <CartesianGrid strokeDasharray="3 3" stroke={colors.grid} vertical={false} />
+                    <CartesianGrid strokeDasharray="3 3" stroke={theme.grid} vertical={false} />
                     <XAxis
                       dataKey="hour"
-                      stroke={colors.text}
+                      stroke={theme.text}
                       tickLine={false}
                       fontSize={11}
                       interval={2}
                     />
-                    <YAxis stroke={colors.text} tickLine={false} axisLine={false} fontSize={12} />
+                    <YAxis stroke={theme.text} tickLine={false} axisLine={false} fontSize={12} />
                     <Tooltip
-                      cursor={{ fill: colors.grid, opacity: 0.3 }}
-                      contentStyle={{
-                        background: colors.card,
-                        border: `1px solid ${colors.grid}`,
-                        borderRadius: 12,
-                        color: colors.text,
-                      }}
+                      cursor={{ fill: theme.grid, opacity: 0.3 }}
+                      contentStyle={theme.tooltipStyle}
                       formatter={(value: number) => [`${value} ${t('common.minutesShort')}`, '']}
                     />
                     <Bar
                       dataKey="minutes"
-                      fill="var(--brand-emerald)"
+                      fill={theme.series[1]}
                       radius={[6, 6, 0, 0]}
                       maxBarSize={24}
                     />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
-            </section>
+            </Card>
 
             {/* Method effectiveness table */}
-            <section className="rounded-card border border-border bg-bg-card p-6 shadow-card">
+            <Card className="p-6">
               <h2 className="mb-4 text-base font-semibold text-text-helper">
                 {t('analytics.effectivenessTitle')}
               </h2>
@@ -368,7 +318,7 @@ export default function Analytics() {
                           <div className="flex items-center gap-2">
                             <div className="h-2 flex-1 rounded-full bg-border">
                               <div
-                                className="h-full rounded-full bg-brand-emerald transition-all duration-500"
+                                className="h-full rounded-full bg-sticker-green transition-all duration-500"
                                 style={{
                                   width: `${Math.min(me.avg_completion_rate * 100, 100)}%`,
                                 }}
@@ -384,7 +334,7 @@ export default function Analytics() {
                   ))}
                 </div>
               )}
-            </section>
+            </Card>
           </div>
         </>
       )}

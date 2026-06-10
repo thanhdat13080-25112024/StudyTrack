@@ -3,6 +3,7 @@
  * with animated fill and component breakdown.
  */
 import { useTranslation } from 'react-i18next';
+import { chartSeries } from '@/components/charts/chartTheme';
 import { Card } from '@/components/ui/card';
 import type { ProductivityScore } from '@/features/analytics/types';
 
@@ -11,17 +12,17 @@ interface ProductivityGaugeProps {
 }
 
 function scoreColor(score: number): string {
-  if (score >= 80) return 'text-brand-emerald';
+  if (score >= 80) return 'text-sticker-green';
   if (score >= 50) return 'text-accent';
-  if (score >= 25) return 'text-brand-gold';
-  return 'text-brand-rose';
+  if (score >= 25) return 'text-amber-500';
+  return 'text-red-500';
 }
 
 function strokeColor(score: number): string {
-  if (score >= 80) return 'var(--brand-emerald)';
+  if (score >= 80) return chartSeries()[1]; // sticker.green
   if (score >= 50) return 'var(--accent-color)';
-  if (score >= 25) return 'var(--brand-gold)';
-  return 'var(--brand-rose)';
+  if (score >= 25) return '#f59e0b'; // amber-500
+  return '#ef4444'; // red-500
 }
 
 export function ProductivityGauge({ data }: ProductivityGaugeProps) {
