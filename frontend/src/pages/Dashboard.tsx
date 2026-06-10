@@ -5,24 +5,43 @@
  */
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
+import { motion, useReducedMotion } from 'framer-motion';
 import { ArrowRight, Clock, Flame, GraduationCap, Layers, Timer as TimerIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { BadgePill } from '@/components/ui/badge-pill';
+import { StickerIcon } from '@/components/ui/sticker-icon';
+import { AnimatedNumber } from '@/components/ui/animated-number';
 import { WeeklyChart } from '@/components/dashboard/WeeklyChart';
 import { BadgeGrid } from '@/components/dashboard/BadgeGrid';
 import { useDashboard } from '@/features/sessions/hooks';
 import { useGpa } from '@/features/grades/hooks';
 import { useAuthStore } from '@/store/authStore';
+import { getMotion } from '@/lib/motion';
 
-function KpiCard({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
+function KpiCard({
+  icon,
+  color,
+  label,
+  value,
+  decimals = 0,
+  suffix = '',
+}: {
+  icon: React.ComponentType<{ className?: string }>;
+  color: string;
+  label: string;
+  value: number;
+  decimals?: number;
+  suffix?: string;
+}) {
   return (
     <Card className="flex items-center gap-4 p-5">
-      <div className="flex h-11 w-11 items-center justify-center rounded-token bg-accent/15 text-accent">
-        {icon}
-      </div>
+      <StickerIcon icon={icon} color={color} />
       <div className="flex flex-col">
-        <span className="text-2xl font-bold text-text-helper">{value}</span>
-        <span className="text-xs uppercase tracking-wide text-text-muted">{label}</span>
+        <span className="text-2xl font-bold tracking-heading text-text-main">
+          <AnimatedNumber value={value} decimals={decimals} suffix={suffix} />
+        </span>
+        <span className="text-xs uppercase tracking-eyebrow text-text-muted">{label}</span>
       </div>
     </Card>
   );
@@ -33,6 +52,7 @@ export default function Dashboard() {
   const { data, isLoading } = useDashboard();
   const { data: gpa } = useGpa();
   const name = useAuthStore((s) => s.user?.user.name ?? '');
+  const m = getMotion(!!useReducedMotion());
 
   const streak = data?.kpis.streak ?? 0;
   const hasGrades = !!gpa && (gpa.semesters.length > 0 || gpa.cpa > 0);
@@ -53,24 +73,31 @@ export default function Dashboard() {
         <>
           <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <KpiCard
-              icon={<Clock className="h-5 w-5" aria-hidden />}
+              icon={Clock}
+              color="#62aef0"
               label={t('dashboard.kpiToday')}
-              value={`${data.kpis.today_minutes} ${t('common.minutesShort')}`}
+              value={data.kpis.today_minutes}
+              suffix={` ${t('common.minutesShort')}`}
             />
             <KpiCard
-              icon={<TimerIcon className="h-5 w-5" aria-hidden />}
+              icon={TimerIcon}
+              color="#2a9d99"
               label={t('dashboard.kpiTotalHours')}
-              value={`${(data.kpis.total_minutes / 60).toFixed(1)} ${t('common.hours')}`}
+              value={data.kpis.total_minutes / 60}
+              decimals={1}
+              suffix={` ${t('common.hours')}`}
             />
             <KpiCard
-              icon={<Layers className="h-5 w-5" aria-hidden />}
+              icon={Layers}
+              color="#d6b6f6"
               label={t('dashboard.kpiTotalSessions')}
-              value={String(data.kpis.total_sessions)}
+              value={data.kpis.total_sessions}
             />
             <KpiCard
-              icon={<Flame className="h-5 w-5" aria-hidden />}
+              icon={Flame}
+              color="#dd5b00"
               label={t('dashboard.kpiStreak')}
-              value={String(data.kpis.streak)}
+              value={data.kpis.streak}
             />
           </section>
 
@@ -89,18 +116,16 @@ export default function Dashboard() {
           {gpa && (
             <Card className="flex flex-wrap items-center justify-between gap-4 p-5">
               <div className="flex items-center gap-4">
-                <div className="flex h-11 w-11 items-center justify-center rounded-token bg-brand-emerald/15 text-brand-emerald">
-                  <GraduationCap className="h-5 w-5" aria-hidden />
-                </div>
+                <StickerIcon icon={GraduationCap} color="#1aae39" />
                 {hasGrades ? (
                   <div className="flex flex-col">
-                    <span className="text-2xl font-bold text-text-helper">
-                      {gpa.cpa.toFixed(2)}
+                    <span className="text-2xl font-bold tracking-heading text-text-main">
+                      <AnimatedNumber value={gpa.cpa} decimals={2} />
                       <span className="ml-2 text-sm font-medium text-text-muted">
                         {t(`gpa.tier.${gpa.classification}`)}
                       </span>
                     </span>
-                    <span className="text-xs uppercase tracking-wide text-text-muted">
+                    <span className="text-xs uppercase tracking-eyebrow text-text-muted">
                       {t('gpa.cpa')}
                     </span>
                   </div>
@@ -118,12 +143,10 @@ export default function Dashboard() {
             </Card>
           )}
 
-          <section className="rounded-card border border-border bg-bg-card p-6 shadow-card">
-            <h2 className="mb-4 text-base font-semibold text-text-helper">
-              {t('dashboard.chartTitle')}
-            </h2>
+          <Card className="p-6">
+            <BadgePill className="mb-3">{t('dashboard.chartTitle')}</BadgePill>
             <WeeklyChart data={data.chart} />
-          </section>
+          </Card>
 
           <section className="flex flex-col gap-3">
             <h2 className="text-base font-semibold text-text-main">{t('badges.title')}</h2>
@@ -146,21 +169,28 @@ export default function Dashboard() {
             {data.recent_sessions.length === 0 ? (
               <Card className="p-6 text-center text-text-muted">{t('dashboard.recentEmpty')}</Card>
             ) : (
-              <div className="flex flex-col gap-2">
+              <motion.div
+                className="flex flex-col gap-2"
+                variants={m.list}
+                initial="initial"
+                animate="animate"
+              >
                 {data.recent_sessions.map((s) => (
-                  <Card key={s.id} className="flex items-center justify-between gap-4 p-4">
-                    <div className="flex flex-col">
-                      <span className="font-semibold text-text-helper">{s.subject}</span>
-                      <span className="text-xs text-text-muted">
-                        {s.session_date} · {t(`methods.${s.method}`)}
+                  <motion.div key={s.id} variants={m.item}>
+                    <Card className="flex items-center justify-between gap-4 p-4">
+                      <div className="flex flex-col">
+                        <span className="font-semibold text-text-helper">{s.subject}</span>
+                        <span className="text-xs text-text-muted">
+                          {s.session_date} · {t(`methods.${s.method}`)}
+                        </span>
+                      </div>
+                      <span className="text-sm font-medium text-text-muted">
+                        {s.actual_minutes} {t('common.minutesShort')}
                       </span>
-                    </div>
-                    <span className="text-sm font-medium text-text-muted">
-                      {s.actual_minutes} {t('common.minutesShort')}
-                    </span>
-                  </Card>
+                    </Card>
+                  </motion.div>
                 ))}
-              </div>
+              </motion.div>
             )}
           </section>
         </>
