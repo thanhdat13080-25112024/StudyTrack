@@ -8,6 +8,7 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pencil, Settings2, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
@@ -50,7 +51,7 @@ const EMPTY_FORM: GradeFormValues = {
 };
 
 const STATUS_BADGE: Record<GradeStatus, string> = {
-  passed: 'bg-brand-emerald/15 text-brand-emerald',
+  passed: 'bg-sticker-green/15 text-sticker-green',
   failed: 'bg-red-500/15 text-red-400',
   in_progress: 'bg-accent/15 text-accent',
   exempt: 'bg-menu-item text-text-muted',
@@ -163,16 +164,14 @@ export default function Grades() {
       {gpa && (gpa.semesters.length > 0 || gpa.credits.required > 0) ? (
         <GpaSummary data={gpa} />
       ) : (
-        <p className="rounded-card border border-border bg-bg-card p-6 text-text-muted shadow-card">
-          {t('gpa.noData')}
-        </p>
+        <Card className="p-6 text-text-muted">{t('gpa.noData')}</Card>
       )}
 
       {gpa && gpa.semesters.length >= 2 && <GpaTrendChart semesters={gpa.semesters} />}
 
       <WhatIfPanel />
 
-      <section className="rounded-card border border-border bg-bg-card p-6 shadow-card">
+      <Card className="p-6">
         <h2 className="mb-4 text-lg font-bold text-text-helper">{t('grades.addGradeTitle')}</h2>
         {noSemesters ? (
           <p className="text-text-muted">{t('grades.noSemesters')}</p>
@@ -277,7 +276,7 @@ export default function Grades() {
         {(create.isError || update.isError || remove.isError) && (
           <span className="mt-3 block text-sm text-red-400">{t('common.actionFailed')}</span>
         )}
-      </section>
+      </Card>
 
       <section className="flex flex-col gap-4">
         {isLoading ? (
@@ -285,7 +284,7 @@ export default function Grades() {
         ) : (grades ?? []).length === 0 ? (
           <p className="text-text-muted">{t('grades.empty')}</p>
         ) : (
-          <div className="overflow-x-auto rounded-card border border-border bg-bg-card shadow-card">
+          <Card className="overflow-x-auto">
             <table className="w-full text-left text-sm">
               <thead>
                 <tr className="border-b border-border text-text-muted">
@@ -321,7 +320,7 @@ export default function Grades() {
                       </td>
                       <td className="px-4 py-3">
                         <span
-                          className={`rounded-token px-2 py-0.5 text-xs font-medium ${STATUS_BADGE[g.status as GradeStatus]}`}
+                          className={`rounded-md px-2 py-0.5 text-xs font-medium ${STATUS_BADGE[g.status as GradeStatus]}`}
                         >
                           {t(`grades.status.${g.status}`)}
                         </span>
@@ -352,7 +351,7 @@ export default function Grades() {
                 })}
               </tbody>
             </table>
-          </div>
+          </Card>
         )}
       </section>
 

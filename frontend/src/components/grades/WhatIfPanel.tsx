@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { Plus, Save, Trash2 } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useMe, useUpdateProfile } from '@/features/auth/hooks';
@@ -80,12 +81,12 @@ export function WhatIfPanel() {
     ? gs.already_met
       ? { cls: 'bg-amber-500/15 text-amber-500', label: t('gpa.whatif.alreadyMet') }
       : gs.feasible
-        ? { cls: 'bg-brand-emerald/15 text-brand-emerald', label: t('gpa.whatif.feasible') }
+        ? { cls: 'bg-sticker-green/15 text-sticker-green', label: t('gpa.whatif.feasible') }
         : { cls: 'bg-red-500/15 text-red-400', label: t('gpa.whatif.infeasible') }
     : null;
 
   return (
-    <section className="flex flex-col gap-6 rounded-card border border-border bg-bg-card p-6 shadow-card">
+    <Card className="flex flex-col gap-6 p-6">
       <h2 className="text-lg font-bold text-text-helper">{t('gpa.whatif.title')}</h2>
 
       {/* Goal-seek */}
@@ -130,10 +131,10 @@ export function WhatIfPanel() {
         </div>
 
         {gs ? (
-          <div className="grid gap-3 rounded-token bg-menu-item p-4 sm:grid-cols-2">
+          <div className="grid gap-3 rounded-md bg-menu-item p-4 sm:grid-cols-2">
             <div className="flex items-center gap-2">
               {badge && (
-                <span className={`rounded-token px-2 py-0.5 text-xs font-semibold ${badge.cls}`}>
+                <span className={`rounded-md px-2 py-0.5 text-xs font-semibold ${badge.cls}`}>
                   {badge.label}
                 </span>
               )}
@@ -244,6 +245,6 @@ export function WhatIfPanel() {
       {(goalSeek.isError || projection.isError || saveTarget.isError) && (
         <span className="text-sm text-red-400">{t('common.actionFailed')}</span>
       )}
-    </section>
+    </Card>
   );
 }

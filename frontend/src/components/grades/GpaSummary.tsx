@@ -5,6 +5,8 @@
  * truth); the backend already applies retake latest-wins + credit rules.
  */
 import { useTranslation } from 'react-i18next';
+import { AnimatedNumber } from '@/components/ui/animated-number';
+import { Card } from '@/components/ui/card';
 import type { GpaSummary as GpaSummaryData } from '@/features/grades/types';
 
 interface GpaSummaryProps {
@@ -12,7 +14,7 @@ interface GpaSummaryProps {
 }
 
 const TIER_COLOR: Record<string, string> = {
-  xuat_sac: 'text-brand-emerald',
+  xuat_sac: 'text-sticker-green',
   gioi: 'text-accent',
   kha: 'text-accent',
   trung_binh: 'text-amber-500',
@@ -28,11 +30,13 @@ export function GpaSummary({ data }: GpaSummaryProps) {
   const pct = (n: number) => `${Math.min(100, Math.round((n / denom) * 100))}%`;
 
   return (
-    <div className="flex flex-col gap-6 rounded-card border border-border bg-bg-card p-6 shadow-card">
+    <Card className="flex flex-col gap-6 p-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-sm text-text-muted">{t('gpa.cpa')}</p>
-          <p className="text-5xl font-extrabold leading-none text-text-main">{cpa.toFixed(2)}</p>
+          <p className="text-5xl font-extrabold leading-none text-text-main">
+            <AnimatedNumber value={cpa} decimals={2} />
+          </p>
         </div>
         <div className="text-right">
           <p className="text-sm text-text-muted">{t('gpa.classification')}</p>
@@ -51,13 +55,13 @@ export function GpaSummary({ data }: GpaSummaryProps) {
             </span>
           )}
         </div>
-        <div className="flex h-3 w-full overflow-hidden rounded-token bg-menu-item">
-          <div className="h-full bg-brand-emerald" style={{ width: pct(earned) }} aria-hidden />
+        <div className="flex h-3 w-full overflow-hidden rounded-md bg-menu-item">
+          <div className="h-full bg-sticker-green" style={{ width: pct(earned) }} aria-hidden />
           <div className="h-full bg-accent/60" style={{ width: pct(in_progress) }} aria-hidden />
         </div>
         <div className="flex flex-wrap gap-x-6 gap-y-1 text-xs text-text-muted">
           <span>
-            <span className="inline-block h-2 w-2 rounded-full bg-brand-emerald" />{' '}
+            <span className="inline-block h-2 w-2 rounded-full bg-sticker-green" />{' '}
             {t('gpa.earned')}: <b className="text-text-helper">{earned}</b>
           </span>
           <span>
@@ -79,18 +83,21 @@ export function GpaSummary({ data }: GpaSummaryProps) {
             {semesters.map((s) => (
               <div
                 key={s.semester_id}
-                className="flex items-center justify-between rounded-token bg-menu-item px-3 py-1.5 text-sm"
+                className="flex items-center justify-between rounded-md bg-menu-item px-3 py-1.5 text-sm"
               >
                 <span className="font-mono text-text-helper">{s.code}</span>
                 <span className="text-text-muted">
-                  {t('gpa.cpa')}: <b className="text-text-main">{s.gpa.toFixed(2)}</b> · {s.credits}{' '}
-                  {t('courses.credits')}
+                  {t('gpa.cpa')}:{' '}
+                  <b className="text-text-main">
+                    <AnimatedNumber value={s.gpa} decimals={2} />
+                  </b>{' '}
+                  · {s.credits} {t('courses.credits')}
                 </span>
               </div>
             ))}
           </div>
         </div>
       )}
-    </div>
+    </Card>
   );
 }
