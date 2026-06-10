@@ -67,7 +67,7 @@ export default function Profile() {
   };
 
   return (
-    <main className="mx-auto grid max-w-5xl gap-8 px-6 py-10 md:grid-cols-2">
+    <div className="grid gap-8 md:grid-cols-2">
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
         <h1 className="text-2xl font-bold text-text-main">{t('profile.title')}</h1>
         <Field label={t('profile.name')} id="name">
@@ -106,7 +106,7 @@ export default function Profile() {
           avatarUrl={values.avatar_url}
         />
       </div>
-    </main>
+    </div>
   );
 }
 

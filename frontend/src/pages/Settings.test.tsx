@@ -15,8 +15,6 @@ vi.mock('@/store/authStore', () => ({
   useAuthStore: (sel: (s: unknown) => unknown) =>
     sel({ user: { user: { email_verified: true } }, logout: vi.fn() }),
 }));
-// Avoid pulling the full AppHeader tree (NotificationBell etc.) into this test.
-vi.mock('@/components/AppHeader', () => ({ AppHeader: () => null }));
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({ t: (k: string) => k }),
 }));

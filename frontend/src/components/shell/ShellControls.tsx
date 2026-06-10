@@ -5,7 +5,7 @@
  * Sidebar and the mobile drawer so the control logic lives in one place.
  *
  * The theme/lang handlers come from `useUiStore`; logout reproduces the legacy
- * AppHeader behaviour (clear the query cache + redirect to /login).
+ * header behaviour (clear the query cache + redirect to /login).
  */
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';

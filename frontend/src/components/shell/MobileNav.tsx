@@ -83,12 +83,7 @@ export function MobileNav() {
                 >
                   {t('app.name')}
                 </Link>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={close}
-                  aria-label={t('nav.closeMenu')}
-                >
+                <Button variant="ghost" size="icon" onClick={close} aria-label={t('nav.closeMenu')}>
                   <X className="h-5 w-5" aria-hidden />
                 </Button>
               </div>
