@@ -53,7 +53,7 @@ export function MusicPlayer({ autoPlay = false }: MusicPlayerProps) {
   };
 
   return (
-    <div className="flex items-center gap-3 rounded-token border border-border bg-bg-card/40 px-4 py-3">
+    <div className="flex items-center gap-3 rounded-md border border-border bg-bg-card/40 px-4 py-3">
       <audio ref={audioRef} src="/dom.mp3" loop preload="auto" />
       <Button
         type="button"
