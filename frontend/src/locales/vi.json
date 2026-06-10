@@ -18,6 +18,8 @@
     "deadlines": "Hạn chót",
     "settings": "Cài đặt",
     "login": "Đăng nhập",
+    "openMenu": "Mở menu",
+    "closeMenu": "Đóng menu",
     "group": {
       "habit": "Thói quen",
       "academic": "Học vụ",
