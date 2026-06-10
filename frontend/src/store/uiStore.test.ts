@@ -11,6 +11,7 @@ vi.mock('@/lib/apiClient', () => ({
 }));
 
 import { useUiStore } from './uiStore';
+import { getStoredTheme } from '@/lib/theme';
 
 describe('uiStore prefs persistence', () => {
   beforeEach(() => {
@@ -40,5 +41,10 @@ describe('uiStore prefs persistence', () => {
     expect(useUiStore.getState().lang).toBe('en');
     expect(useUiStore.getState().theme).toBe('light');
     expect(patchMock).not.toHaveBeenCalled();
+  });
+
+  it('defaults to light when nothing is stored (Notion is light-first)', () => {
+    window.localStorage.removeItem('track_theme');
+    expect(getStoredTheme()).toBe('light');
   });
 });

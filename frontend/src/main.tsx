@@ -9,7 +9,7 @@ import i18n from '@/lib/i18n';
 import { initTheme } from '@/lib/theme';
 import './globals.css';
 
-// Apply persisted (or default: dark) theme before first paint.
+// Apply persisted (or default: light) theme before first paint.
 initTheme();
 
 const queryClient = new QueryClient({
