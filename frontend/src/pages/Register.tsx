@@ -24,7 +24,7 @@ export default function Register() {
   };
 
   return (
-    <AuthShell title={t('auth.registerTitle')}>
+    <AuthShell title={t('auth.registerTitle')} variant="register">
       <AuthForm mode="register" pending={registerMut.isPending} error={error} onSubmit={onSubmit} />
       <p className="mt-4 text-sm text-text-muted">
         {t('auth.haveAccount')}{' '}

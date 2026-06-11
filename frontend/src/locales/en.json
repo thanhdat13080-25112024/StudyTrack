@@ -347,7 +347,9 @@
     "verifyInvalid": "The verification link is invalid or has expired.",
     "verifyBanner": "Your email isn't verified yet.",
     "verifyResend": "Resend verification email",
-    "verifyResent": "Verification email resent."
+    "verifyResent": "Verification email resent.",
+    "heroLogin": "Deep focus, steady progress.",
+    "heroRegister": "Start your learning journey."
   },
   "profile": {
     "title": "My Profile",

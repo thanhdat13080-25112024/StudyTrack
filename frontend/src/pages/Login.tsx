@@ -24,7 +24,7 @@ export default function Login() {
   };
 
   return (
-    <AuthShell title={t('auth.loginTitle')}>
+    <AuthShell title={t('auth.loginTitle')} variant="login">
       <AuthForm mode="login" pending={login.isPending} error={error} onSubmit={onSubmit} />
       <p className="mt-2 text-sm">
         <Link to="/forgot-password" className="text-accent">

@@ -347,7 +347,9 @@
     "verifyInvalid": "Liên kết xác thực không hợp lệ hoặc đã hết hạn.",
     "verifyBanner": "Email của bạn chưa được xác thực.",
     "verifyResend": "Gửi lại email xác thực",
-    "verifyResent": "Đã gửi lại email xác thực."
+    "verifyResent": "Đã gửi lại email xác thực.",
+    "heroLogin": "Tập trung sâu, tiến bộ mỗi ngày.",
+    "heroRegister": "Bắt đầu hành trình học tập của bạn."
   },
   "profile": {
     "title": "Hồ sơ cá nhân",
