@@ -7,7 +7,7 @@
 1. **Tạo thói quen học tốt** — hẹn giờ tập trung kiểu Pomodoro, nghe nhạc lofi, theo dõi số ngày học liên tục và nhận huy hiệu khích lệ.
 2. **Quản lý chuyện học vụ** — nhập điểm, tự tính GPA/CPA và xếp loại, theo dõi tiến độ tín chỉ, và lên lộ trình các môn cần học.
 
-Ứng dụng **song ngữ Việt / Anh** và có **giao diện sáng / tối**.
+Ứng dụng **song ngữ Việt / Anh** và có **giao diện sáng / tối** lấy cảm hứng từ phong cách "giấy tĩnh" của Notion — gọn gàng, ấm mắt, mặc định là **giao diện sáng**.
 
 > 🔗 Bản demo trực tuyến: <https://studytrack-mzds.vercel.app/>
 
@@ -51,6 +51,13 @@
 ### 👤 Hồ sơ cá nhân
 - Hồ sơ sinh viên (lớp, khoa, ngành, mục tiêu, ảnh đại diện) và **thẻ sinh viên ảo** đẹp mắt.
 
+### 🎨 Giao diện kiểu Notion (mới)
+- **Thanh điều hướng bên (sidebar)**: trên máy tính là một thanh cố định bên trái, trên điện thoại là ngăn kéo trượt ra (có thể đóng bằng Esc); thay cho thanh tiêu đề trên cùng kiểu cũ.
+- **Hai giao diện "giấy tĩnh"**: nền giấy ấm cho chế độ **sáng** và tông indigo "đêm" cho chế độ **tối**, dùng font **Inter**; mặc định mở lên là giao diện sáng.
+- **Bảng lệnh ⌘K**: nhấn **⌘K** (hoặc Ctrl+K) để mở ô tìm nhanh, gõ vài chữ là nhảy thẳng tới trang hay thực hiện hành động.
+- **Phím tắt toàn cục**: đi nhanh giữa các trang bằng tổ hợp **g** (ví dụ g rồi d về dashboard), **n** tạo mới, **t** đổi giao diện, **l** đổi ngôn ngữ, **?** mở bảng tra cứu phím tắt.
+- **Chuyển động mượt** (framer-motion) và **tự tắt khi bạn bật "giảm chuyển động"** trong hệ điều hành.
+
 ### 🔐 Tài khoản & bảo mật (mới)
 - **Xác thực email**: khi đăng ký, ứng dụng gửi email kèm liên kết xác thực. Tài khoản chưa xác thực vẫn dùng được (cổng mềm), nhưng có **banner nhắc xác thực** kèm nút **gửi lại email**.
 - **Quên mật khẩu / đặt lại mật khẩu**: nhập email để nhận liên kết đặt lại; mở liên kết là đặt được mật khẩu mới (liên kết dùng một lần, có hạn).
@@ -74,6 +81,7 @@
 | Quản lý deadline / lịch thi + nhắc nhở theo thời gian thực + chuông thông báo | ✅ Đã có |
 | Tài khoản: xác thực email, quên/đặt lại & đổi mật khẩu, xuất dữ liệu, xoá tài khoản | ✅ Đã có |
 | Phân tích học tập: bản đồ nhiệt, thời gian theo phương pháp/môn, điểm năng suất, so sánh tuần/tháng | ✅ Đã có |
+| Giao diện kiểu Notion: sidebar, hai theme sáng/tối, bảng lệnh ⌘K, phím tắt toàn cục | ✅ Đã có |
 | Trợ lý AI tư vấn chọn môn & lộ trình | ⏳ Sắp tới |
 
 ## Dùng thử nhanh
