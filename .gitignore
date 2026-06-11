@@ -26,6 +26,8 @@ AGENTS.md
 docs/superpowers/
 # Harness cross-agent scratch (never pushed)
 _workspace/
+# Codegraph MCP index (local SQLite knowledge graph — rebuildable, never pushed)
+.codegraph/
 
 # -----------------------------------------------------------------------------
 # Python (backend/)
