@@ -1,9 +1,9 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
-// Force the reduced-motion branch deterministically (no matchMedia dependency).
-vi.mock('framer-motion', async (orig) => ({
-  ...(await orig<typeof import('framer-motion')>()),
-  useReducedMotion: () => true,
+// Force the reduced-motion branch deterministically.
+vi.mock('@/lib/motion', async (orig) => ({
+  ...(await orig<typeof import('@/lib/motion')>()),
+  usePrefersReducedMotion: () => true,
 }));
 import { AnimatedNumber } from '@/components/ui/animated-number';
 
