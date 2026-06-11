@@ -7,8 +7,6 @@
  * `EmailVerifyBanner` once at the top of the content area.
  */
 import { useRef, useState, type ReactNode } from 'react';
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { useLocation } from 'react-router-dom';
 import { Sidebar } from '@/components/shell/Sidebar';
 import { MobileNav } from '@/components/shell/MobileNav';
 import { EmailVerifyBanner } from '@/components/EmailVerifyBanner';
@@ -16,11 +14,9 @@ import { CommandPalette } from '@/components/command/CommandPalette';
 import { ShortcutHelp } from '@/components/command/ShortcutHelp';
 import { useGlobalShortcuts } from '@/hooks/useGlobalShortcuts';
 import { useScrollToTop } from '@/hooks/useScrollToTop';
-import { getMotion } from '@/lib/motion';
+import { PageTransition } from '@/components/motion/PageTransition';
 
 export function AppShell({ children }: { children: ReactNode }) {
-  const location = useLocation();
-  const m = getMotion(useReducedMotion() ?? false);
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
   // The <main> column is the only scroll container (sidebar persists), so reset
@@ -45,18 +41,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         <main ref={mainRef} className="min-h-screen flex-1 overflow-y-auto bg-bg-main">
           <div className="mx-auto flex max-w-5xl flex-col gap-6 px-6 py-8 md:px-8">
             <EmailVerifyBanner />
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={location.pathname}
-                variants={m.page}
-                initial="initial"
-                animate="animate"
-                exit="exit"
-                transition={{ duration: m.duration }}
-              >
-                {children}
-              </motion.div>
-            </AnimatePresence>
+            <PageTransition>{children}</PageTransition>
           </div>
         </main>
       </div>
