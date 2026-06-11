@@ -16,4 +16,34 @@ describe('i18n parity', () => {
       expect.arrayContaining(['nav.group.habit', 'nav.group.academic', 'nav.group.insight']),
     );
   });
+  it('has the command palette + shortcut keys', () => {
+    expect(keys(vi)).toEqual(
+      expect.arrayContaining([
+        'command.title',
+        'command.placeholder',
+        'command.empty',
+        'command.group.navigate',
+        'command.group.actions',
+        'command.group.system',
+        'command.action.startFocus',
+        'command.action.newSession',
+        'command.action.newDeadline',
+        'command.action.newCourse',
+        'command.action.toggleTheme',
+        'command.action.toggleLang',
+        'command.action.logout',
+        'shortcuts.title',
+        'shortcuts.group.navigation',
+        'shortcuts.group.actions',
+        'shortcuts.then',
+        'shortcuts.close',
+        'shortcuts.palette',
+        'shortcuts.goto',
+        'shortcuts.new',
+        'shortcuts.theme',
+        'shortcuts.lang',
+        'shortcuts.help',
+      ]),
+    );
+  });
 });

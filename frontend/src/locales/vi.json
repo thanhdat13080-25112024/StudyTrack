@@ -371,8 +371,16 @@
     "noCourse": "Không gắn môn",
     "markDone": "Đánh dấu xong",
     "markUndone": "Bỏ đánh dấu",
-    "types": { "assignment": "Bài tập", "exam": "Thi", "project": "Đồ án" },
-    "priorities": { "low": "Thấp", "medium": "Trung bình", "high": "Cao" },
+    "types": {
+      "assignment": "Bài tập",
+      "exam": "Thi",
+      "project": "Đồ án"
+    },
+    "priorities": {
+      "low": "Thấp",
+      "medium": "Trung bình",
+      "high": "Cao"
+    },
     "remind": {
       "none": "Không nhắc",
       "h1": "Trước 1 giờ",
@@ -439,5 +447,39 @@
     "noSessions": "Chưa có buổi học",
     "lessActive": "Ít hoạt động",
     "moreActive": "Hoạt động nhiều"
+  },
+  "command": {
+    "title": "Bảng lệnh",
+    "placeholder": "Nhập lệnh hoặc tìm kiếm…",
+    "empty": "Không tìm thấy kết quả.",
+    "group": {
+      "navigate": "Điều hướng",
+      "actions": "Thao tác",
+      "system": "Hệ thống"
+    },
+    "action": {
+      "startFocus": "Bắt đầu phiên tập trung",
+      "newSession": "Phiên mới",
+      "newDeadline": "Hạn chót mới",
+      "newCourse": "Môn học mới",
+      "toggleTheme": "Đổi giao diện",
+      "toggleLang": "Đổi ngôn ngữ",
+      "logout": "Đăng xuất"
+    }
+  },
+  "shortcuts": {
+    "title": "Phím tắt",
+    "group": {
+      "navigation": "Điều hướng",
+      "actions": "Thao tác"
+    },
+    "then": "rồi",
+    "close": "Đóng",
+    "palette": "Mở bảng lệnh",
+    "goto": "Đi tới trang",
+    "new": "Tạo mới (theo ngữ cảnh)",
+    "theme": "Đổi giao diện",
+    "lang": "Đổi ngôn ngữ",
+    "help": "Hiện phím tắt"
   }
 }
