@@ -11,6 +11,7 @@ import { I18nextProvider } from 'react-i18next';
 import App from '@/App';
 import i18n from '@/lib/i18n';
 import { initTheme } from '@/lib/theme';
+import '@/lib/gsap'; // register GSAP plugins once (side effect)
 import './globals.css';
 
 // Apply persisted (or default: light) theme before first paint.
