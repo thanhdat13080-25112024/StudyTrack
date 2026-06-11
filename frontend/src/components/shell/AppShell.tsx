@@ -6,7 +6,7 @@
  * pages no longer carry their own header/layout chrome), and renders the
  * `EmailVerifyBanner` once at the top of the content area.
  */
-import { useState, type ReactNode } from 'react';
+import { useRef, useState, type ReactNode } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useLocation } from 'react-router-dom';
 import { Sidebar } from '@/components/shell/Sidebar';
@@ -15,6 +15,7 @@ import { EmailVerifyBanner } from '@/components/EmailVerifyBanner';
 import { CommandPalette } from '@/components/command/CommandPalette';
 import { ShortcutHelp } from '@/components/command/ShortcutHelp';
 import { useGlobalShortcuts } from '@/hooks/useGlobalShortcuts';
+import { useScrollToTop } from '@/hooks/useScrollToTop';
 import { getMotion } from '@/lib/motion';
 
 export function AppShell({ children }: { children: ReactNode }) {
@@ -22,6 +23,10 @@ export function AppShell({ children }: { children: ReactNode }) {
   const m = getMotion(useReducedMotion() ?? false);
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
+  // The <main> column is the only scroll container (sidebar persists), so reset
+  // it to the top on each route change — see useScrollToTop.
+  const mainRef = useRef<HTMLElement>(null);
+  useScrollToTop(mainRef);
 
   useGlobalShortcuts({
     openPalette: () => setPaletteOpen((o) => !o),
@@ -37,7 +42,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <Sidebar />
       <div className="flex min-w-0 flex-1 flex-col">
         <MobileNav />
-        <main className="min-h-screen flex-1 overflow-y-auto bg-bg-main">
+        <main ref={mainRef} className="min-h-screen flex-1 overflow-y-auto bg-bg-main">
           <div className="mx-auto flex max-w-5xl flex-col gap-6 px-6 py-8 md:px-8">
             <EmailVerifyBanner />
             <AnimatePresence mode="wait">
