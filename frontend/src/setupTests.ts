@@ -52,3 +52,17 @@ function ensureStorage(name: 'localStorage' | 'sessionStorage'): void {
 
 ensureStorage('localStorage');
 ensureStorage('sessionStorage');
+
+/**
+ * jsdom has no layout engine, so it does not implement `Element.prototype.scrollTo`
+ * / `window.scrollTo`. `useScrollToTop` calls `el.scrollTo(...)` on route change,
+ * which would throw in any test that renders the AppShell. Install no-op
+ * polyfills so those tests run; specs that assert on scrolling override the
+ * spy locally.
+ */
+if (typeof Element.prototype.scrollTo !== 'function') {
+  Element.prototype.scrollTo = () => {};
+}
+if (typeof window.scrollTo !== 'function') {
+  window.scrollTo = () => {};
+}

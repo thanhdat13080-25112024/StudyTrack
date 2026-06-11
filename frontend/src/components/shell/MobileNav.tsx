@@ -5,7 +5,7 @@
  * the desktop rail exactly. Backdrop click, Escape, and selecting a nav link all
  * close it. Slide motion is gated on the reduced-motion preference.
  */
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
@@ -14,6 +14,7 @@ import { Button } from '@/components/ui/button';
 import { NotificationBell } from '@/components/NotificationBell';
 import { SidebarNav } from '@/components/shell/SidebarNav';
 import { ShellControls } from '@/components/shell/ShellControls';
+import { useFocusTrap } from '@/hooks/useFocusTrap';
 import { getMotion } from '@/lib/motion';
 
 export function MobileNav() {
@@ -22,6 +23,10 @@ export function MobileNav() {
   const reduced = useReducedMotion() ?? false;
   const duration = getMotion(reduced).duration;
   const close = () => setOpen(false);
+  // Trap focus inside the drawer and lock body scroll while it's open; focus
+  // returns to the hamburger trigger on close (handled by the hook).
+  const drawerRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(drawerRef, open);
 
   useEffect(() => {
     if (!open) return;
@@ -64,13 +69,15 @@ export function MobileNav() {
               aria-hidden
             />
             <motion.div
-              className="fixed inset-y-0 left-0 z-50 flex w-[280px] max-w-[85vw] flex-col bg-bg-sidebar shadow-elevated"
+              ref={drawerRef}
+              className="fixed inset-y-0 left-0 z-50 flex w-[280px] max-w-[85vw] flex-col bg-bg-sidebar shadow-elevated focus:outline-none"
               initial={{ x: '-100%' }}
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ duration }}
               role="dialog"
               aria-modal="true"
+              tabIndex={-1}
             >
               <div className="flex items-center justify-between px-4 py-4">
                 <Link
