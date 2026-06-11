@@ -9,19 +9,21 @@ import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import { gsap, useGSAP } from '@/lib/gsap';
+import { DUR, EASE, usePrefersReducedMotion } from '@/lib/motion';
+import { usePresence } from '@/hooks/usePresence';
 import { Button } from '@/components/ui/button';
 import { NotificationBell } from '@/components/NotificationBell';
 import { SidebarNav } from '@/components/shell/SidebarNav';
 import { ShellControls } from '@/components/shell/ShellControls';
 import { useFocusTrap } from '@/hooks/useFocusTrap';
-import { getMotion } from '@/lib/motion';
 
 export function MobileNav() {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
-  const reduced = useReducedMotion() ?? false;
-  const duration = getMotion(reduced).duration;
+  const reduced = usePrefersReducedMotion();
+  const { rendered, onExited } = usePresence(open);
+  const overlayRef = useRef<HTMLDivElement>(null);
   const close = () => setOpen(false);
   // Trap focus inside the drawer and lock body scroll while it's open; focus
   // returns to the hamburger trigger on close (handled by the hook).
@@ -36,6 +38,44 @@ export function MobileNav() {
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [open]);
+
+  // Enter/exit timeline for backdrop + panel. Exit must finish before unmount,
+  // so the close branch calls onExited() when the timeline completes (instantly
+  // under reduced motion).
+  useGSAP(
+    () => {
+      const root = overlayRef.current;
+      if (!root || !rendered) return;
+      const backdrop = root.querySelector('[data-backdrop]');
+      const panel = root.querySelector('[data-panel]');
+      if (open) {
+        if (reduced) {
+          gsap.set(backdrop, { opacity: 1 });
+          gsap.set(panel, { xPercent: 0 });
+          return;
+        }
+        gsap
+          .timeline()
+          .fromTo(backdrop, { opacity: 0 }, { opacity: 1, duration: DUR.fast })
+          .fromTo(
+            panel,
+            { xPercent: -100 },
+            { xPercent: 0, duration: DUR.base, ease: EASE.standard },
+            '<',
+          );
+      } else {
+        if (reduced) {
+          onExited();
+          return;
+        }
+        gsap
+          .timeline({ onComplete: onExited })
+          .to(backdrop, { opacity: 0, duration: DUR.fast })
+          .to(panel, { xPercent: -100, duration: DUR.base, ease: EASE.soft }, '<');
+      }
+    },
+    { dependencies: [open, rendered, reduced], scope: overlayRef },
+  );
 
   return (
     <div className="md:hidden">
@@ -56,51 +96,43 @@ export function MobileNav() {
         </div>
       </header>
 
-      <AnimatePresence>
-        {open && (
-          <>
-            <motion.div
-              className="fixed inset-0 z-40 bg-black/40"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration }}
-              onClick={close}
-              aria-hidden
-            />
-            <motion.div
-              ref={drawerRef}
-              className="fixed inset-y-0 left-0 z-50 flex w-[280px] max-w-[85vw] flex-col bg-bg-sidebar shadow-elevated focus:outline-none"
-              initial={{ x: '-100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '-100%' }}
-              transition={{ duration }}
-              role="dialog"
-              aria-modal="true"
-              tabIndex={-1}
-            >
-              <div className="flex items-center justify-between px-4 py-4">
-                <Link
-                  to="/dashboard"
-                  onClick={close}
-                  className="text-lg font-bold tracking-tight text-accent"
-                >
-                  {t('app.name')}
-                </Link>
-                <Button variant="ghost" size="icon" onClick={close} aria-label={t('nav.closeMenu')}>
-                  <X className="h-5 w-5" aria-hidden />
-                </Button>
-              </div>
-              <div className="flex-1 overflow-y-auto px-2">
-                <SidebarNav onNavigate={close} />
-              </div>
-              <div className="px-2 pb-4">
-                <ShellControls onNavigate={close} />
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+      {rendered && (
+        <div ref={overlayRef}>
+          <div
+            data-backdrop
+            className="fixed inset-0 z-40 bg-black/40"
+            onClick={close}
+            aria-hidden
+          />
+          <div
+            data-panel
+            ref={drawerRef}
+            className="fixed inset-y-0 left-0 z-50 flex w-[280px] max-w-[85vw] flex-col bg-bg-sidebar shadow-elevated focus:outline-none"
+            role="dialog"
+            aria-modal="true"
+            tabIndex={-1}
+          >
+            <div className="flex items-center justify-between px-4 py-4">
+              <Link
+                to="/dashboard"
+                onClick={close}
+                className="text-lg font-bold tracking-tight text-accent"
+              >
+                {t('app.name')}
+              </Link>
+              <Button variant="ghost" size="icon" onClick={close} aria-label={t('nav.closeMenu')}>
+                <X className="h-5 w-5" aria-hidden />
+              </Button>
+            </div>
+            <div className="flex-1 overflow-y-auto px-2">
+              <SidebarNav onNavigate={close} />
+            </div>
+            <div className="px-2 pb-4">
+              <ShellControls onNavigate={close} />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
