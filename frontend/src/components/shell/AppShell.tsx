@@ -6,17 +6,32 @@
  * pages no longer carry their own header/layout chrome), and renders the
  * `EmailVerifyBanner` once at the top of the content area.
  */
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useLocation } from 'react-router-dom';
 import { Sidebar } from '@/components/shell/Sidebar';
 import { MobileNav } from '@/components/shell/MobileNav';
 import { EmailVerifyBanner } from '@/components/EmailVerifyBanner';
+import { CommandPalette } from '@/components/command/CommandPalette';
+import { ShortcutHelp } from '@/components/command/ShortcutHelp';
+import { useGlobalShortcuts } from '@/hooks/useGlobalShortcuts';
 import { getMotion } from '@/lib/motion';
 
 export function AppShell({ children }: { children: ReactNode }) {
   const location = useLocation();
   const m = getMotion(useReducedMotion() ?? false);
+  const [paletteOpen, setPaletteOpen] = useState(false);
+  const [helpOpen, setHelpOpen] = useState(false);
+
+  useGlobalShortcuts({
+    openPalette: () => setPaletteOpen((o) => !o),
+    openHelp: () => setHelpOpen(true),
+    closeAll: () => {
+      setPaletteOpen(false);
+      setHelpOpen(false);
+    },
+  });
+
   return (
     <div className="flex min-h-screen bg-bg-main text-text-main">
       <Sidebar />
@@ -40,6 +55,8 @@ export function AppShell({ children }: { children: ReactNode }) {
           </div>
         </main>
       </div>
+      <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} />
+      <ShortcutHelp open={helpOpen} onClose={() => setHelpOpen(false)} />
     </div>
   );
 }
