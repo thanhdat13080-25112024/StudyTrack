@@ -74,7 +74,7 @@ export function ProductivityGauge({ data }: ProductivityGaugeProps) {
       </div>
 
       {/* Breakdown */}
-      <div className="flex flex-col gap-3">
+      <div className="flex w-full flex-1 flex-col gap-3">
         <h3 className="text-sm font-semibold text-text-helper">
           {t('analytics.productivityComponents')}
         </h3>

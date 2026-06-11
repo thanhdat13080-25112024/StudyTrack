@@ -55,12 +55,13 @@ export default function Deadlines() {
   };
 
   const now = Date.now();
+  // Status accent on the left edge: green = done, red = overdue (past due, not
+  // done), yellow = still pending.
   const rowTone = (d: Deadline) => {
-    if (d.done) return 'opacity-60';
+    if (d.done) return 'border-l-4 border-sticker-green';
     const diff = new Date(d.due_at).getTime() - now;
     if (diff < 0) return 'border-l-4 border-red-500';
-    if (diff < 24 * 3600 * 1000) return 'border-l-4 border-amber-500';
-    return 'border-l-4 border-border';
+    return 'border-l-4 border-amber-500';
   };
 
   const m = getMotion(!!useReducedMotion());

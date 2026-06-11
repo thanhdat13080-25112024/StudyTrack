@@ -12,7 +12,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Languages, LogOut, Moon, Settings as SettingsIcon, Sun } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
-import { NotificationBell } from '@/components/NotificationBell';
 import { useUiStore } from '@/store/uiStore';
 import { useAuthStore } from '@/store/authStore';
 
@@ -66,7 +65,6 @@ export function ShellControls({ onNavigate }: { onNavigate?: () => void }) {
       </Link>
 
       <div className="flex flex-wrap items-center gap-1.5">
-        <NotificationBell />
         <Button variant="ghost" size="icon" asChild aria-label={t('nav.settings')}>
           <Link to="/settings" onClick={onNavigate}>
             <SettingsIcon className="h-4 w-4" aria-hidden />

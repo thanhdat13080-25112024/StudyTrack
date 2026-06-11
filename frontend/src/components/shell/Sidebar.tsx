@@ -8,15 +8,17 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { SidebarNav } from '@/components/shell/SidebarNav';
 import { ShellControls } from '@/components/shell/ShellControls';
+import { NotificationBell } from '@/components/NotificationBell';
 
 export function Sidebar() {
   const { t } = useTranslation();
   return (
     <aside className="hidden h-screen w-[248px] shrink-0 flex-col border-r border-border bg-bg-sidebar md:flex">
-      <div className="px-4 py-5">
+      <div className="flex items-center justify-between gap-2 px-4 py-5">
         <Link to="/dashboard" className="text-xl font-bold tracking-tight text-accent">
           {t('app.name')}
         </Link>
+        <NotificationBell align="left" />
       </div>
       <div className="flex-1 overflow-y-auto px-2">
         <SidebarNav />

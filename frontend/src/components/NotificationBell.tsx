@@ -28,7 +28,10 @@ function renderText(
   return n.type;
 }
 
-export function NotificationBell() {
+/** `align` controls which edge the dropdown panel anchors to, so it never spills
+ * off-screen: `right` (default) opens leftward — for a trigger near the right
+ * edge (mobile top bar); `left` opens rightward — for the desktop sidebar header. */
+export function NotificationBell({ align = 'right' }: { align?: 'left' | 'right' }) {
   const { t } = useTranslation();
   const { data: unread } = useUnreadCount();
   const { data: notifications } = useNotifications();
@@ -51,7 +54,11 @@ export function NotificationBell() {
         )}
       </Button>
       {open && (
-        <div className="absolute right-0 z-20 mt-2 w-80 rounded-md border border-border bg-bg-card p-2 shadow-elevated">
+        <div
+          className={`absolute z-30 mt-2 max-h-[70vh] w-80 max-w-[calc(100vw-2rem)] overflow-y-auto rounded-md border border-border bg-bg-card p-2 shadow-elevated ${
+            align === 'left' ? 'left-0' : 'right-0'
+          }`}
+        >
           <div className="flex items-center justify-between px-2 py-1">
             <span className="font-semibold text-text-main">{t('notifications.title')}</span>
             <button className="text-xs text-accent" onClick={() => markAll.mutate()}>

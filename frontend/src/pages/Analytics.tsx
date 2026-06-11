@@ -83,23 +83,27 @@ export default function Analytics() {
         <Card className="p-8 text-center text-text-muted">{t('analytics.noData')}</Card>
       ) : (
         <>
-          {/* Row 1: Comparison cards + Productivity gauge */}
-          <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            <ComparisonCard
-              label={t('analytics.weekComparison')}
-              sublabel={t('analytics.vsLastWeek')}
-              current={data.weekly_comparison.this_week_minutes}
-              previous={data.weekly_comparison.last_week_minutes}
-              changePct={data.weekly_comparison.change_pct}
-            />
-            <ComparisonCard
-              label={t('analytics.monthComparison')}
-              sublabel={t('analytics.vsLastMonth')}
-              current={data.monthly_comparison.this_month_minutes}
-              previous={data.monthly_comparison.last_month_minutes}
-              changePct={data.monthly_comparison.change_pct}
-            />
-            <div className="sm:col-span-2 lg:col-span-1">
+          {/* Row 1: Comparison cards (narrow column) + Productivity gauge (wide).
+              The gauge carries a breakdown the comparison cards don't, so it gets
+              2/3 of the row on desktop instead of an equal third. */}
+          <section className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
+              <ComparisonCard
+                label={t('analytics.weekComparison')}
+                sublabel={t('analytics.vsLastWeek')}
+                current={data.weekly_comparison.this_week_minutes}
+                previous={data.weekly_comparison.last_week_minutes}
+                changePct={data.weekly_comparison.change_pct}
+              />
+              <ComparisonCard
+                label={t('analytics.monthComparison')}
+                sublabel={t('analytics.vsLastMonth')}
+                current={data.monthly_comparison.this_month_minutes}
+                previous={data.monthly_comparison.last_month_minutes}
+                changePct={data.monthly_comparison.change_pct}
+              />
+            </div>
+            <div className="lg:col-span-2">
               <ProductivityGauge data={data.productivity_score} />
             </div>
           </section>

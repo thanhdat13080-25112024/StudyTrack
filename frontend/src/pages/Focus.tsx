@@ -200,7 +200,7 @@ export default function Focus() {
           </p>
           <p className="text-lg font-medium text-white">{timer.subject}</p>
           <TimerRing secondsLeft={timer.secondsLeft} planned={timer.plannedSeconds}>
-            <Timer secondsLeft={timer.secondsLeft} className="text-white text-5xl md:text-6xl" />
+            <Timer secondsLeft={timer.secondsLeft} className="text-white" />
           </TimerRing>
           <div className="flex gap-3">
             {timer.running ? (
