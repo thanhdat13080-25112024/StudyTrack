@@ -17,14 +17,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Command } from 'cmdk';
 import { useQueryClient } from '@tanstack/react-query';
-import {
-  CalendarClock,
-  Languages,
-  LogOut,
-  MoonStar,
-  Plus,
-  Timer as TimerIcon,
-} from 'lucide-react';
+import { CalendarClock, Languages, LogOut, MoonStar, Plus, Timer as TimerIcon } from 'lucide-react';
 import { NAV_ITEMS } from '@/lib/nav';
 import { useFocusTrap } from '@/hooks/useFocusTrap';
 import { useUiStore } from '@/store/uiStore';

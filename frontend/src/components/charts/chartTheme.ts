@@ -38,7 +38,12 @@ export interface ChartTheme {
 /** Theme-aware chart tokens; re-reads the CSS vars whenever the theme flips. */
 export function useChartTheme(): ChartTheme {
   const theme = useUiStore((s) => s.theme);
-  const [c, setC] = useState({ accent: '#2563eb', grid: '#1e293b', text: '#9ca3af', card: '#1e293b' });
+  const [c, setC] = useState({
+    accent: '#2563eb',
+    grid: '#1e293b',
+    text: '#9ca3af',
+    card: '#1e293b',
+  });
 
   useEffect(() => {
     setC({

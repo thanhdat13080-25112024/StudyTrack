@@ -71,7 +71,9 @@ export function ShortcutHelp({ open, onClose }: ShortcutHelpProps) {
         <span className="flex items-center gap-1 text-text-faint">
           <Kbd>g</Kbd>
           <span className="text-xs">{t('shortcuts.then')}</span>
-          <Kbd>{'⟨'}…{'⟩'}</Kbd>
+          <Kbd>
+            {'⟨'}…{'⟩'}
+          </Kbd>
         </span>
       ) : (
         <span className="flex items-center gap-1">

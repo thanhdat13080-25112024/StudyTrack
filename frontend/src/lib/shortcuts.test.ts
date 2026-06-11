@@ -1,11 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import {
-  GOTO,
-  SHORTCUT_ROWS,
-  resolveKey,
-  contextualNew,
-  isTypingTarget,
-} from '@/lib/shortcuts';
+import { GOTO, SHORTCUT_ROWS, resolveKey, contextualNew, isTypingTarget } from '@/lib/shortcuts';
 import { NAV_ITEMS } from '@/lib/nav';
 
 describe('shortcuts: GOTO table', () => {

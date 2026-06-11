@@ -10,7 +10,12 @@ interface AnimatedNumberProps {
 }
 
 /** Counts up from 0 → value on mount; instant under reduced motion. */
-export function AnimatedNumber({ value, decimals = 0, suffix = '', className }: AnimatedNumberProps) {
+export function AnimatedNumber({
+  value,
+  decimals = 0,
+  suffix = '',
+  className,
+}: AnimatedNumberProps) {
   const reduced = useReducedMotion();
   const [display, setDisplay] = useState(reduced ? value : 0);
 
