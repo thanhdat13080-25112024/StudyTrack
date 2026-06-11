@@ -3,12 +3,12 @@ import { useRef } from 'react';
 import { act, render } from '@testing-library/react';
 import { MemoryRouter, Routes, Route, useNavigate } from 'react-router-dom';
 
-// Drive useReducedMotion deterministically via a hoisted mutable flag so each
-// test can pick the smooth (false) or instant (true) branch.
+// Drive usePrefersReducedMotion deterministically via a hoisted mutable flag so
+// each test can pick the smooth (false) or instant (true) branch.
 const motion = vi.hoisted(() => ({ reduced: false }));
-vi.mock('framer-motion', async (orig) => ({
-  ...(await orig<typeof import('framer-motion')>()),
-  useReducedMotion: () => motion.reduced,
+vi.mock('@/lib/motion', async (orig) => ({
+  ...(await orig<typeof import('@/lib/motion')>()),
+  usePrefersReducedMotion: () => motion.reduced,
 }));
 
 import { useScrollToTop } from '@/hooks/useScrollToTop';
