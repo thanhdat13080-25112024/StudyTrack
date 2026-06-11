@@ -12,7 +12,7 @@
  * headers are eyebrow type. Picking any item closes the palette; Esc + backdrop
  * click close too.
  */
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Command } from 'cmdk';
@@ -26,6 +26,7 @@ import {
   Timer as TimerIcon,
 } from 'lucide-react';
 import { NAV_ITEMS } from '@/lib/nav';
+import { useFocusTrap } from '@/hooks/useFocusTrap';
 import { useUiStore } from '@/store/uiStore';
 import { useAuthStore } from '@/store/authStore';
 
@@ -46,6 +47,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
   const logout = useAuthStore((s) => s.logout);
 
   const close = () => onOpenChange(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   // Esc closes (cmdk doesn't own the overlay here).
   useEffect(() => {
@@ -60,6 +62,9 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
     return () => window.removeEventListener('keydown', onKey);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
+
+  // Trap focus + lock body scroll while open; restore focus to the trigger on close.
+  useFocusTrap(containerRef, open);
 
   if (!open) return null;
 
@@ -77,6 +82,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
 
   return (
     <div
+      ref={containerRef}
       className="fixed inset-0 z-50 flex items-start justify-center bg-black/50 p-4 pt-[12vh]"
       role="dialog"
       aria-modal="true"

@@ -7,11 +7,12 @@
  * `<kbd>` chip cluster + a localized description. The go-to row expands into the
  * per-page legend (`g` then ⟨letter⟩) reusing the existing `nav.*` labels.
  */
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { useFocusTrap } from '@/hooks/useFocusTrap';
 import { GOTO, SHORTCUT_ROWS, type ShortcutRow } from '@/lib/shortcuts';
 
 export interface ShortcutHelpProps {
@@ -38,6 +39,7 @@ function GroupHeading({ children }: { children: React.ReactNode }) {
 
 export function ShortcutHelp({ open, onClose }: ShortcutHelpProps) {
   const { t } = useTranslation();
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!open) return;
@@ -50,6 +52,9 @@ export function ShortcutHelp({ open, onClose }: ShortcutHelpProps) {
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [open, onClose]);
+
+  // Trap focus + lock body scroll while open; restore focus to the trigger on close.
+  useFocusTrap(containerRef, open);
 
   if (!open) return null;
 
@@ -80,6 +85,7 @@ export function ShortcutHelp({ open, onClose }: ShortcutHelpProps) {
 
   return (
     <div
+      ref={containerRef}
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
       role="dialog"
       aria-modal="true"

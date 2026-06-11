@@ -51,4 +51,11 @@ describe('CommandPalette', () => {
     fireEvent.click(screen.getByText(i18n.t('nav.dashboard')));
     expect(onOpenChange).toHaveBeenCalledWith(false);
   });
+
+  // useFocusTrap is wired in (so Tab can't escape behind the backdrop and focus
+  // returns on close); body scroll-lock is the trap's observable side effect.
+  it('locks body scroll while open (focus trap engaged)', () => {
+    renderPalette();
+    expect(document.body.style.overflow).toBe('hidden');
+  });
 });
