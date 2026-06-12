@@ -2,15 +2,22 @@ import * as React from 'react';
 import { cn } from '@/lib/utils';
 
 /**
- * shadcn-style Card. Surfaces use the `bg-card` / `border` / radius tokens wired
- * to the legacy palette so light/dark match automatically.
+ * Notion-style Card. Surfaces use the `bg-card` / `border` / radius tokens
+ * wired to the palette so light/dark match automatically. FLAT by default
+ * (hairline border, no shadow); pass `elevated` to add the soft shadow.
  */
-const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
-  ({ className, ...props }, ref) => (
+export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+  /** When true, lifts the card off the page with the soft shadow. */
+  elevated?: boolean;
+}
+
+const Card = React.forwardRef<HTMLDivElement, CardProps>(
+  ({ className, elevated = false, ...props }, ref) => (
     <div
       ref={ref}
       className={cn(
-        'rounded-card border border-border bg-bg-card text-text-helper shadow-card',
+        'rounded-card border border-border bg-bg-card text-text-helper',
+        elevated && 'shadow-soft',
         className,
       )}
       {...props}

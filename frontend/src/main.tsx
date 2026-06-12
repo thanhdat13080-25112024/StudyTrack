@@ -1,3 +1,7 @@
+import '@fontsource/inter/400.css';
+import '@fontsource/inter/500.css';
+import '@fontsource/inter/600.css';
+import '@fontsource/inter/700.css';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -9,7 +13,7 @@ import i18n from '@/lib/i18n';
 import { initTheme } from '@/lib/theme';
 import './globals.css';
 
-// Apply persisted (or default: dark) theme before first paint.
+// Apply persisted (or default: light) theme before first paint.
 initTheme();
 
 const queryClient = new QueryClient({

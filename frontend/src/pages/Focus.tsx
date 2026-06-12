@@ -13,9 +13,9 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import confetti from 'canvas-confetti';
 import { Pause, Play, Square } from 'lucide-react';
-import { AppHeader } from '@/components/AppHeader';
 import { Button } from '@/components/ui/button';
 import { Timer } from '@/components/timer/Timer';
+import { TimerRing } from '@/components/timer/TimerRing';
 import { MusicPlayer } from '@/components/timer/MusicPlayer';
 import { SessionForm, type SessionFormValues } from '@/components/sessions/SessionForm';
 import { useCourses } from '@/features/courses/hooks';
@@ -178,55 +178,55 @@ export default function Focus() {
   const isRunning = timer.plannedSeconds > 0 && (timer.running || timer.secondsLeft > 0);
 
   return (
-    <main className="min-h-full bg-bg-main text-text-main">
-      <div className="mx-auto flex max-w-4xl flex-col gap-8 px-6 py-8">
-        <AppHeader />
-
-        {!isRunning ? (
-          <section className="rounded-card border border-border bg-bg-card p-8 shadow-card">
-            <h1 className="mb-6 text-xl font-bold text-text-helper">{t('focus.title')}</h1>
-            <SessionForm
-              values={form}
-              onChange={handleChange}
-              onStart={handleStart}
-              error={error}
-              suggestion={suggestionText}
-              courses={courses ?? []}
-            />
-          </section>
-        ) : (
-          <section className="flex flex-col items-center gap-6 rounded-timer border border-border bg-bg-card p-10 text-center shadow-timer">
-            <p className="text-sm font-semibold uppercase tracking-wide text-brand-emerald">
-              {t('focus.heading')}
-            </p>
-            <p className="text-lg font-medium text-text-main">{timer.subject}</p>
-            <Timer secondsLeft={timer.secondsLeft} />
-            <div className="flex gap-3">
-              {timer.running ? (
-                <Button variant="outline" size="lg" onClick={handlePause}>
-                  <Pause className="h-4 w-4" aria-hidden />
-                  {t('focus.pause')}
-                </Button>
-              ) : (
-                <Button variant="outline" size="lg" onClick={handleResume}>
-                  <Play className="h-4 w-4" aria-hidden />
-                  {t('focus.resume')}
-                </Button>
-              )}
-              <Button size="lg" onClick={() => finalize(false)}>
-                <Square className="h-4 w-4" aria-hidden />
-                {t('focus.stop')}
+    <div className="flex flex-col gap-8">
+      {!isRunning ? (
+        <section className="rounded-card border border-border bg-bg-card p-8">
+          <h1 className="mb-6 text-xl font-bold tracking-heading text-text-main">
+            {t('focus.title')}
+          </h1>
+          <SessionForm
+            values={form}
+            onChange={handleChange}
+            onStart={handleStart}
+            error={error}
+            suggestion={suggestionText}
+            courses={courses ?? []}
+          />
+        </section>
+      ) : (
+        <section className="flex flex-col items-center gap-8 rounded-xl bg-secondary p-10 text-center text-white">
+          <p className="text-sm font-semibold uppercase tracking-eyebrow text-white/70">
+            {t('focus.heading')}
+          </p>
+          <p className="text-lg font-medium text-white">{timer.subject}</p>
+          <TimerRing secondsLeft={timer.secondsLeft} planned={timer.plannedSeconds}>
+            <Timer secondsLeft={timer.secondsLeft} className="text-white" />
+          </TimerRing>
+          <div className="flex gap-3">
+            {timer.running ? (
+              <Button variant="secondary" size="lg" onClick={handlePause}>
+                <Pause className="h-4 w-4" aria-hidden />
+                {t('focus.pause')}
               </Button>
-            </div>
-            {createSession.isError && (
-              <span className="text-sm text-red-400">{t('common.actionFailed')}</span>
+            ) : (
+              <Button variant="secondary" size="lg" onClick={handleResume}>
+                <Play className="h-4 w-4" aria-hidden />
+                {t('focus.resume')}
+              </Button>
             )}
-            <div className="w-full max-w-md">
-              <MusicPlayer autoPlay />
-            </div>
-          </section>
-        )}
-      </div>
-    </main>
+            <Button size="lg" onClick={() => finalize(false)}>
+              <Square className="h-4 w-4" aria-hidden />
+              {t('focus.stop')}
+            </Button>
+          </div>
+          {createSession.isError && (
+            <span className="text-sm text-red-300">{t('common.actionFailed')}</span>
+          )}
+          <div className="w-full max-w-md">
+            <MusicPlayer autoPlay />
+          </div>
+        </section>
+      )}
+    </div>
   );
 }

@@ -31,16 +31,16 @@ export function ComparisonCard({
       <span className="text-xs font-medium uppercase tracking-wide text-text-muted">{label}</span>
       <span className="text-3xl font-bold text-text-helper">{formatValue(current)}</span>
       <div className="flex items-center gap-1.5 text-sm">
-        {isUp && <ArrowUp className="h-4 w-4 text-brand-emerald" aria-hidden />}
-        {isDown && <ArrowDown className="h-4 w-4 text-brand-rose" aria-hidden />}
+        {isUp && <ArrowUp className="h-4 w-4 text-sticker-green" aria-hidden />}
+        {isDown && <ArrowDown className="h-4 w-4 text-red-500" aria-hidden />}
         {isFlat && <Minus className="h-4 w-4 text-text-muted" aria-hidden />}
         {changePct !== null ? (
           <span
             className={
               isUp
-                ? 'font-medium text-brand-emerald'
+                ? 'font-medium text-sticker-green'
                 : isDown
-                  ? 'font-medium text-brand-rose'
+                  ? 'font-medium text-red-500'
                   : 'text-text-muted'
             }
           >

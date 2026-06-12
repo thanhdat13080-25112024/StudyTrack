@@ -13,8 +13,10 @@ export function Timer({ secondsLeft, className }: TimerProps) {
   return (
     <div
       className={
-        'font-mono text-6xl font-bold tabular-nums tracking-widest text-text-main md:text-7xl ' +
-        (className ?? '')
+        // Size is tuned to sit inside the focus ring (~280px); tracking-tight +
+        // tabular-nums keep the HH:MM:SS readout from overflowing the circle.
+        'font-mono text-4xl font-bold tabular-nums tracking-tight sm:text-5xl ' +
+        (className ?? 'text-text-main')
       }
       role="timer"
       aria-live="off"

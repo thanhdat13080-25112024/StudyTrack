@@ -3,69 +3,81 @@
 @tailwind utilities;
 
 /*
- * StudyTrack theme tokens — ported verbatim from legacy/index.html.
+ * StudyTrack theme tokens — Notion "paper-calm" design language.
  *
- * Legacy used data-theme on <body>: `:root` = DARK (default) and
- * `[data-theme="light"]` = LIGHT. Here we use Tailwind `darkMode: 'class'`,
- * so the convention is inverted to match Tailwind semantics:
- *   :root  -> LIGHT palette (legacy [data-theme="light"])
- *   .dark  -> DARK  palette (legacy :root)
- * The app still boots in DARK by default (legacy default) — theme.ts adds the
- * `dark` class to <html> on load.
+ * We use Tailwind `darkMode: 'class'`:
+ *   :root  -> LIGHT palette (Notion warm paper) — the default boot theme
+ *   .dark  -> DARK  palette (indigo "night-shift")
+ * Every CSS-var name below is kept stable so all components keep resolving;
+ * the Notion redesign only changes values + adds tokens (text-faint, secondary,
+ * shadow-soft/elevated). The Inter font is self-hosted via @fontsource imports
+ * in `main.tsx`, not a CDN @import here.
  */
 
 @layer base {
-  /* LIGHT palette (legacy [data-theme="light"]) */
+  /* LIGHT — Notion warm paper */
   :root {
-    --bg-main: #15928a;
-    --bg-sidebar: #0d6e68;
+    --bg-main: #f6f5f4;
+    --bg-sidebar: #ffffff;
     --bg-card: #ffffff;
-    --text-main: #ffffff;
-    --text-muted: rgba(255, 255, 255, 0.85);
-    --text-helper: #1e293b;
-    --border-color: rgba(255, 255, 255, 0.2);
-    --input-bg: #f8fafc;
-    --id-card-bg: linear-gradient(135deg, #0f766e 0%, #115e59 100%);
+    --input-bg: #ffffff;
+    --menu-item-bg: rgba(0, 117, 222, 0.08);
+    --menu-item-text: #1c1c1c;
+    --text-main: #1c1c1c;
+    --text-helper: #31302e;
+    --text-muted: #615d59;
+    --text-faint: #a39e98;
+    --border-color: #e6e6e6;
+    --accent-color: #0075de;
+    --accent-hover: #005bab;
+    --secondary: #213183;
+    --id-card-bg: linear-gradient(135deg, #213183 0%, #0075de 100%);
     --id-card-text: #ffffff;
-    --menu-item-bg: rgba(255, 255, 255, 0.1);
-    --menu-item-text: #ffffff;
-    --accent-color: #ffffff;
-    --accent-hover: rgba(255, 255, 255, 0.9);
+    --shadow-soft:
+      0 0.175px 1.04px rgba(0, 0, 0, 0.01), 0 0.8px 2.9px rgba(0, 0, 0, 0.02),
+      0 2px 7.8px rgba(0, 0, 0, 0.027), 0 4px 18px rgba(0, 0, 0, 0.04);
+    --shadow-elevated: 0 4px 18px rgba(0, 0, 0, 0.05), 0 23px 52px rgba(0, 0, 0, 0.05);
   }
-
-  /* DARK palette (legacy :root) */
+  /* DARK — indigo "night-shift" */
   .dark {
-    --bg-main: #0f172a;
-    --bg-sidebar: #111827;
-    --bg-card: #1e293b;
-    --text-main: #ffffff;
-    --text-muted: #cbd5e1;
-    --text-helper: #9ca3af;
-    --border-color: #1e293b;
-    --input-bg: #0f172a;
-    --id-card-bg: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+    --bg-main: #1a1b26;
+    --bg-sidebar: #16161f;
+    --bg-card: #232533;
+    --input-bg: #1f2030;
+    --menu-item-bg: rgba(91, 157, 240, 0.14);
+    --menu-item-text: #e8e8ea;
+    --text-main: #f3f3f5;
+    --text-helper: #d7d7db;
+    --text-muted: #a6a6ad;
+    --text-faint: #6e6e78;
+    --border-color: rgba(255, 255, 255, 0.08);
+    --accent-color: #5b9df0;
+    --accent-hover: #3f86e0;
+    --secondary: #213183;
+    --id-card-bg: linear-gradient(135deg, #213183 0%, #2563eb 100%);
     --id-card-text: #ffffff;
-    --menu-item-bg: #1e293b;
-    --menu-item-text: #ffffff;
-    --accent-color: #2563eb;
-    --accent-hover: #1d4ed8;
+    --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.3), 0 4px 18px rgba(0, 0, 0, 0.35);
+    --shadow-elevated: 0 8px 30px rgba(0, 0, 0, 0.45), 0 23px 52px rgba(0, 0, 0, 0.5);
   }
-
   * {
     @apply box-border;
     transition:
-      background 0.3s,
-      color 0.3s,
-      border-color 0.3s;
+      background 0.25s,
+      color 0.25s,
+      border-color 0.25s;
   }
-
   html,
   body,
   #root {
     height: 100%;
   }
-
   body {
     @apply bg-bg-main text-text-main font-sans antialiased;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      transition: none !important;
+      animation: none !important;
+    }
   }
 }

@@ -15,7 +15,7 @@ export function EmailVerifyBanner() {
   const resend = useResendVerification();
   if (verified) return null;
   return (
-    <div className="flex flex-wrap items-center justify-between gap-2 rounded-token border border-border bg-bg-card px-4 py-2 text-sm text-text-main">
+    <div className="flex flex-wrap items-center justify-between gap-2 rounded-md border border-border bg-bg-card px-4 py-2 text-sm text-text-main">
       <span>{t('auth.verifyBanner')}</span>
       <Button
         variant="outline"

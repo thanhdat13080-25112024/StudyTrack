@@ -3,12 +3,14 @@
  * edit / delete academic semesters. Deleting a semester cascades its grades, so
  * the semester hooks also invalidate the grades list + GPA summary.
  */
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pencil, Trash2, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useFocusTrap } from '@/hooks/useFocusTrap';
 import {
   useCreateSemester,
   useDeleteSemester,
@@ -37,6 +39,23 @@ export function SemesterManager({ onClose }: SemesterManagerProps) {
 
   const [form, setForm] = useState<FormValues>(EMPTY);
   const [editingId, setEditingId] = useState<number | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Modal is mounted only while open, so the trap is always active here; it
+  // locks scroll, traps Tab, and returns focus to the trigger on unmount.
+  useFocusTrap(containerRef, true);
+
+  // Esc closes the modal (the palette/help overlays do the same).
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [onClose]);
 
   const reset = () => {
     setForm(EMPTY);
@@ -64,13 +83,15 @@ export function SemesterManager({ onClose }: SemesterManagerProps) {
 
   return (
     <div
+      ref={containerRef}
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
       role="dialog"
       aria-modal="true"
       onClick={onClose}
     >
-      <div
-        className="flex w-full max-w-md flex-col gap-4 rounded-card border border-border bg-bg-card p-6 shadow-card"
+      <Card
+        elevated
+        className="flex w-full max-w-md flex-col gap-4 p-6"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between">
@@ -131,7 +152,7 @@ export function SemesterManager({ onClose }: SemesterManagerProps) {
             (semesters ?? []).map((s) => (
               <div
                 key={s.id}
-                className="flex items-center justify-between rounded-token border border-border px-3 py-2"
+                className="flex items-center justify-between rounded-md border border-border px-3 py-2"
               >
                 <span className="text-sm text-text-main">
                   <span className="font-mono font-semibold text-text-helper">{s.code}</span>
@@ -160,7 +181,7 @@ export function SemesterManager({ onClose }: SemesterManagerProps) {
             ))
           )}
         </div>
-      </div>
+      </Card>
     </div>
   );
 }

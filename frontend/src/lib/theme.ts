@@ -3,14 +3,15 @@
  *
  * Legacy set `data-theme` on <body> (default "dark"). Here we toggle the
  * Tailwind `dark` class on <html> (darkMode: 'class') and persist the choice.
- * Default theme is `dark` to preserve legacy behavior.
+ * Default theme is `light` (Notion is paper/light-first); users with a stored
+ * `track_theme` keep their choice.
  */
 
 export type Theme = 'light' | 'dark';
 
 // Legacy localStorage key (kept for continuity with the original app).
 const STORAGE_KEY = 'track_theme';
-const DEFAULT_THEME: Theme = 'dark';
+const DEFAULT_THEME: Theme = 'light';
 
 export function getStoredTheme(): Theme {
   if (typeof window === 'undefined') return DEFAULT_THEME;

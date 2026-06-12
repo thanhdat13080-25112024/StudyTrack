@@ -4,12 +4,13 @@
  * note, and a delete action.
  */
 import { useTranslation } from 'react-i18next';
+import { motion, useReducedMotion } from 'framer-motion';
 import { Trash2 } from 'lucide-react';
-import { AppHeader } from '@/components/AppHeader';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useDeleteSession, useSessions } from '@/features/sessions/hooks';
 import type { StudySession } from '@/features/sessions/types';
+import { getMotion } from '@/lib/motion';
 
 function SessionRow({ session }: { session: StudySession }) {
   const { t } = useTranslation();
@@ -52,26 +53,31 @@ function SessionRow({ session }: { session: StudySession }) {
 export default function History() {
   const { t } = useTranslation();
   const { data, isLoading } = useSessions();
+  const m = getMotion(!!useReducedMotion());
 
   return (
-    <main className="min-h-full bg-bg-main text-text-main">
-      <div className="mx-auto flex max-w-3xl flex-col gap-8 px-6 py-8">
-        <AppHeader />
-        <section className="flex flex-col gap-4">
-          <h1 className="text-xl font-bold text-text-main">{t('history.title')}</h1>
-          {isLoading ? (
-            <p className="text-text-muted">{t('common.loading')}</p>
-          ) : !data || data.length === 0 ? (
-            <Card className="p-8 text-center text-text-muted">{t('history.empty')}</Card>
-          ) : (
-            <div className="flex flex-col gap-3">
-              {data.map((s) => (
-                <SessionRow key={s.id} session={s} />
-              ))}
-            </div>
-          )}
-        </section>
-      </div>
-    </main>
+    <div className="flex flex-col gap-8">
+      <section className="flex flex-col gap-4">
+        <h1 className="text-xl font-bold text-text-main">{t('history.title')}</h1>
+        {isLoading ? (
+          <p className="text-text-muted">{t('common.loading')}</p>
+        ) : !data || data.length === 0 ? (
+          <Card className="p-8 text-center text-text-muted">{t('history.empty')}</Card>
+        ) : (
+          <motion.div
+            className="flex flex-col gap-3"
+            variants={m.list}
+            initial="initial"
+            animate="animate"
+          >
+            {data.map((s) => (
+              <motion.div key={s.id} variants={m.item}>
+                <SessionRow session={s} />
+              </motion.div>
+            ))}
+          </motion.div>
+        )}
+      </section>
+    </div>
   );
 }
