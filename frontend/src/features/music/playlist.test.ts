@@ -1,11 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import {
-  buildPlaylist,
-  deriveTitle,
-  makeShuffleOrder,
-  nextIndex,
-  prevIndex,
-} from './playlist';
+import { buildPlaylist, deriveTitle, makeShuffleOrder, nextIndex, prevIndex } from './playlist';
 
 describe('deriveTitle', () => {
   it('strips extension, splits -/_ and capitalizes', () => {

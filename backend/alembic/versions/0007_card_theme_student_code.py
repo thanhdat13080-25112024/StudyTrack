@@ -25,9 +25,7 @@ def upgrade() -> None:
             server_default="studytrack",
         ),
     )
-    op.add_column(
-        "profiles", sa.Column("student_code", sa.String(length=30), nullable=True)
-    )
+    op.add_column("profiles", sa.Column("student_code", sa.String(length=30), nullable=True))
 
 
 def downgrade() -> None:
