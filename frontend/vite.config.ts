@@ -14,6 +14,9 @@ export default defineConfig({
   server: {
     port: 5173,
     host: true,
+    // Allow a container-based browser (e.g. Playwright MCP) to reach the dev
+    // server via Docker's host alias; harmless for normal localhost dev.
+    allowedHosts: ['host.docker.internal'],
   },
   test: {
     globals: true,
