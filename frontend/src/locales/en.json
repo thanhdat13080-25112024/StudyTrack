@@ -78,7 +78,11 @@
     "music": "Focus Audio",
     "musicPlay": "Play music",
     "musicPause": "Pause music",
-    "volume": "Volume"
+    "volume": "Volume",
+    "musicPrev": "Previous track",
+    "musicNext": "Next track",
+    "musicShuffleOn": "Enable shuffle",
+    "musicShuffleOff": "Disable shuffle"
   },
   "history": {
     "title": "Empirical Focus History Logs",
@@ -359,11 +363,21 @@
     "major": "Major",
     "goal": "Goal",
     "avatar": "Avatar",
-    "save": "Save profile"
+    "save": "Save profile",
+    "studentCode": "Student ID"
   },
   "studentId": {
     "class": "Class",
-    "major": "Major"
+    "major": "Major",
+    "avatarMenu": "Open avatar menu",
+    "avatarView": "View avatar",
+    "avatarChange": "Choose avatar",
+    "theme": {
+      "studytrack": "StudyTrack",
+      "vju-mono": "VJU mono",
+      "vju-red": "VJU red",
+      "vnu-green": "VNU green"
+    }
   },
   "deadlines": {
     "title": "Deadlines",

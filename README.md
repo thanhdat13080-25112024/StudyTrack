@@ -22,7 +22,7 @@
 ## Bạn làm được gì với StudyTrack?
 
 ### ⏱️ Học tập trung
-- **Bộ hẹn giờ tập trung** (Pomodoro / Deep Work / Active Recall): chọn môn, đặt số phút rồi bắt đầu. Có **nhạc lofi** để dễ vào việc.
+- **Bộ hẹn giờ tập trung** (Pomodoro / Deep Work / Active Recall): chọn môn, đặt số phút rồi bắt đầu. Có **trình phát nhạc lofi dạng playlist** (bài trước/sau, phát ngẫu nhiên không lặp, nhớ bài + âm lượng); muốn thêm nhạc chỉ cần thả file `.mp3` vào `frontend/src/assets/music/` — tên file tự thành tên bài.
 - Khi học xong, ứng dụng **tự lưu lại phiên học** và bắn pháo giấy chúc mừng 🎉.
 - **Gợi ý thông minh** nhắc bạn điều chỉnh thời lượng/độ tập trung cho hợp lý.
 
@@ -49,14 +49,16 @@
 - **Chuông thông báo**: một chiếc chuông luôn hiện số thông báo chưa đọc — nhắc deadline và cả lúc bạn vừa mở khóa một huy hiệu mới.
 
 ### 👤 Hồ sơ cá nhân
-- Hồ sơ sinh viên (lớp, khoa, ngành, mục tiêu, ảnh đại diện) và **thẻ sinh viên ảo** đẹp mắt.
+- Hồ sơ sinh viên (lớp, khoa, ngành, MSSV, mục tiêu, ảnh đại diện) và **thẻ sinh viên ảo** đẹp mắt.
+- **4 giao diện thẻ** chọn được ngay dưới thẻ (StudyTrack indigo, VJU trắng-đen, VJU đỏ, VNU xanh — theo logo trường) và lưu vào tài khoản, đổi máy vẫn giữ.
+- **Đổi/xem ảnh đại diện kiểu Facebook**: bấm thẳng vào avatar trên thẻ → "Xem ảnh đại diện" (phóng to) hoặc "Chọn ảnh đại diện" (đổi ảnh, lưu ngay).
 
 ### 🎨 Giao diện kiểu Notion (mới)
 - **Thanh điều hướng bên (sidebar)**: trên máy tính là một thanh cố định bên trái, trên điện thoại là ngăn kéo trượt ra (có thể đóng bằng Esc); thay cho thanh tiêu đề trên cùng kiểu cũ.
 - **Hai giao diện "giấy tĩnh"**: nền giấy ấm cho chế độ **sáng** và tông indigo "đêm" cho chế độ **tối**, dùng font **Inter**; mặc định mở lên là giao diện sáng.
 - **Bảng lệnh ⌘K**: nhấn **⌘K** (hoặc Ctrl+K) để mở ô tìm nhanh, gõ vài chữ là nhảy thẳng tới trang hay thực hiện hành động.
 - **Phím tắt toàn cục**: đi nhanh giữa các trang bằng tổ hợp **g** (ví dụ g rồi d về dashboard), **n** tạo mới, **t** đổi giao diện, **l** đổi ngôn ngữ, **?** mở bảng tra cứu phím tắt.
-- **Chuyển động mượt** (framer-motion) và **tự tắt khi bạn bật "giảm chuyển động"** trong hệ điều hành.
+- **Chuyển động mượt** (GSAP) và **tự tắt khi bạn bật "giảm chuyển động"** trong hệ điều hành.
 
 ### 🔐 Tài khoản & bảo mật (mới)
 - **Xác thực email**: khi đăng ký, ứng dụng gửi email kèm liên kết xác thực. Tài khoản chưa xác thực vẫn dùng được (cổng mềm), nhưng có **banner nhắc xác thực** kèm nút **gửi lại email**.

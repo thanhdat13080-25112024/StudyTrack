@@ -78,7 +78,11 @@
     "music": "Âm nhạc học tập",
     "musicPlay": "Phát nhạc",
     "musicPause": "Tạm dừng nhạc",
-    "volume": "Âm lượng"
+    "volume": "Âm lượng",
+    "musicPrev": "Bài trước",
+    "musicNext": "Bài sau",
+    "musicShuffleOn": "Bật phát ngẫu nhiên",
+    "musicShuffleOff": "Tắt phát ngẫu nhiên"
   },
   "history": {
     "title": "Lịch sử học tập thực tế",
@@ -359,11 +363,21 @@
     "major": "Ngành",
     "goal": "Mục tiêu",
     "avatar": "Ảnh đại diện",
-    "save": "Lưu hồ sơ"
+    "save": "Lưu hồ sơ",
+    "studentCode": "MSSV"
   },
   "studentId": {
     "class": "Lớp",
-    "major": "Ngành"
+    "major": "Ngành",
+    "avatarMenu": "Mở menu ảnh đại diện",
+    "avatarView": "Xem ảnh đại diện",
+    "avatarChange": "Chọn ảnh đại diện",
+    "theme": {
+      "studytrack": "StudyTrack",
+      "vju-mono": "VJU trắng đen",
+      "vju-red": "VJU đỏ",
+      "vnu-green": "VNU xanh"
+    }
   },
   "deadlines": {
     "title": "Hạn chót",

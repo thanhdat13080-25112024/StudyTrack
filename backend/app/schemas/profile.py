@@ -18,6 +18,8 @@ class ProfileOut(BaseModel):
     major: str
     goal: str
     avatar_url: str | None
+    card_theme: str
+    student_code: str | None
     target_cpa: float | None
     total_credits_required: int | None
     expected_graduation: str | None
@@ -30,6 +32,10 @@ class ProfileUpdate(BaseModel):
     major: str | None = Field(default=None, max_length=120)
     goal: str | None = Field(default=None, max_length=2000)
     avatar_url: str | None = Field(default=None, max_length=MAX_AVATAR_LEN)
+    card_theme: str | None = Field(
+        default=None, pattern="^(studytrack|vju-mono|vju-red|vnu-green)$"
+    )
+    student_code: str | None = Field(default=None, max_length=30)
     target_cpa: float | None = Field(default=None, ge=0, le=4)
     total_credits_required: int | None = Field(default=None, ge=0)
     expected_graduation: str | None = Field(default=None, max_length=32)

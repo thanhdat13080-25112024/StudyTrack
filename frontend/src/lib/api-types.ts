@@ -1200,6 +1200,10 @@ export interface components {
       goal: string;
       /** Avatar Url */
       avatar_url: string | null;
+      /** Card Theme */
+      card_theme: string;
+      /** Student Code */
+      student_code: string | null;
       /** Target Cpa */
       target_cpa: number | null;
       /** Total Credits Required */
@@ -1221,6 +1225,10 @@ export interface components {
       goal?: string | null;
       /** Avatar Url */
       avatar_url?: string | null;
+      /** Card Theme */
+      card_theme?: string | null;
+      /** Student Code */
+      student_code?: string | null;
       /** Target Cpa */
       target_cpa?: number | null;
       /** Total Credits Required */
