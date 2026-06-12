@@ -172,6 +172,7 @@ def reset_password(request: Request, data: ResetPasswordIn, db: Session = Depend
     if user is None:  # defensive: token without a live user (should not happen)
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "Invalid or expired token")
     user.password_hash = hash_password(data.new_password)
+    user.password_changed_at = datetime.now(UTC)  # revoke all outstanding JWTs
     tokens.consume_token(db, token)
     db.commit()
 
@@ -189,6 +190,7 @@ def change_password(
         # global "session expired" handler and log the user out on a typo.
         raise HTTPException(status.HTTP_403_FORBIDDEN, "Current password is incorrect")
     current.password_hash = hash_password(data.new_password)
+    current.password_changed_at = datetime.now(UTC)  # revoke all outstanding JWTs
     db.commit()
 
 

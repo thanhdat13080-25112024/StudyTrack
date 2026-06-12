@@ -39,6 +39,11 @@ class User(Base):
     email_verified_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True
     )
+    # JWT revocation gate: tokens whose `iat` predates this moment are rejected
+    # (set on change-password / reset-password; NULL = never changed).
+    password_changed_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
 
     profile: Mapped[Profile] = relationship(
         back_populates="user", uselist=False, cascade="all, delete-orphan"

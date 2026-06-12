@@ -6,6 +6,7 @@ it on an interval and is started from the app lifespan."""
 from __future__ import annotations
 
 import asyncio
+import logging
 from datetime import UTC, datetime
 
 from sqlalchemy import select
@@ -17,6 +18,8 @@ from app.models.deadline import Deadline
 from app.models.notification import Notification
 from app.realtime.manager import manager
 from app.services.reminders import DueInput, due_reminders
+
+logger = logging.getLogger(__name__)
 
 
 def _as_utc(dt: datetime) -> datetime:
@@ -89,6 +92,6 @@ async def reminder_loop(stop: asyncio.Event) -> None:
         try:
             scan_once(db)
         except Exception:
-            pass
+            logger.warning("reminder scan tick failed", exc_info=True)
         finally:
             db.close()
