@@ -33,7 +33,19 @@ export function Reveal({ as, scroll = false, className, children }: RevealProps)
           duration: DUR.base,
           ease: EASE.standard,
           stagger: STAGGER,
-          ...(scroll ? { scrollTrigger: { trigger: el, start: REVEAL_START, once: true } } : {}),
+          // The app shell's <main data-scroll-root> is the real scroll container
+          // (the window never scrolls inside the shell) — point ScrollTrigger at
+          // it; outside the shell fall back to the window default.
+          ...(scroll
+            ? {
+                scrollTrigger: {
+                  trigger: el,
+                  start: REVEAL_START,
+                  once: true,
+                  scroller: el.closest('[data-scroll-root]') ?? undefined,
+                },
+              }
+            : {}),
         });
       });
       return () => mm.revert();

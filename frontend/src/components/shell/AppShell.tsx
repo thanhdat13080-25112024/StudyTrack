@@ -34,11 +34,13 @@ export function AppShell({ children }: { children: ReactNode }) {
   });
 
   return (
-    <div className="flex min-h-screen bg-bg-main text-text-main">
+    // h-screen + overflow-hidden lock the shell to the viewport: the sidebar
+    // rail never scrolls away; <main> below is the ONLY scroll container.
+    <div className="flex h-screen overflow-hidden bg-bg-main text-text-main">
       <Sidebar />
       <div className="flex min-w-0 flex-1 flex-col">
         <MobileNav />
-        <main ref={mainRef} className="min-h-screen flex-1 overflow-y-auto bg-bg-main">
+        <main ref={mainRef} data-scroll-root className="flex-1 overflow-y-auto bg-bg-main">
           <div className="mx-auto flex max-w-5xl flex-col gap-6 px-6 py-8 md:px-8">
             <EmailVerifyBanner />
             <PageTransition>{children}</PageTransition>

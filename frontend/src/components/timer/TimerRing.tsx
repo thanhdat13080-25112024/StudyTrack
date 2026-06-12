@@ -75,7 +75,9 @@ export function TimerRing({ secondsLeft, planned, size = 280, children }: TimerR
           cy={size / 2}
           r={r}
           fill="none"
-          stroke="var(--accent-color)"
+          // On the indigo night band every signal is on-primary white (DESIGN.md
+          // hero-band); structural blue stays reserved for paper surfaces.
+          stroke="#ffffff"
           strokeWidth={stroke}
           strokeLinecap="round"
           strokeDasharray={circumference}

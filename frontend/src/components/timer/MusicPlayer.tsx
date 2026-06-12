@@ -53,12 +53,15 @@ export function MusicPlayer({ autoPlay = false }: MusicPlayerProps) {
   };
 
   return (
-    <div className="flex items-center gap-3 rounded-md border border-border bg-bg-card/40 px-4 py-3">
+    // Lives on the Focus night band: glassy white-on-indigo chrome (DESIGN.md —
+    // on-primary carries every signal on the secondary band, no paper tokens).
+    <div className="flex items-center gap-3 rounded-md border border-white/20 bg-white/10 px-4 py-3">
       <audio ref={audioRef} src="/dom.mp3" loop preload="auto" />
       <Button
         type="button"
         variant="outline"
         size="icon"
+        className="border-transparent bg-white text-[#31302e] shadow-none hover:bg-white/90"
         onClick={toggle}
         aria-label={playing ? t('focus.musicPause') : t('focus.musicPlay')}
       >
@@ -68,9 +71,9 @@ export function MusicPlayer({ autoPlay = false }: MusicPlayerProps) {
           <Play className="h-4 w-4" aria-hidden />
         )}
       </Button>
-      <span className="text-sm font-medium text-text-main">{t('focus.music')}</span>
+      <span className="text-sm font-medium text-white">{t('focus.music')}</span>
       <div className="ml-auto flex items-center gap-2">
-        <Volume2 className="h-4 w-4 text-text-muted" aria-hidden />
+        <Volume2 className="h-4 w-4 text-white/70" aria-hidden />
         <input
           type="range"
           min={0}
