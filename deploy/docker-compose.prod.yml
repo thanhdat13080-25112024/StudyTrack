@@ -46,6 +46,23 @@ services:
     environment:
       DATABASE_URL: ${DATABASE_URL}
       JWT_SECRET: ${JWT_SECRET}
+      # CORS allow-list (comma-separated). MUST include the public FE origin(s),
+      # e.g. the Vercel domain + the real app domain. The backend default is
+      # localhost-only, so without this the deployed SPA is blocked by CORS.
+      CORS_ORIGINS: ${CORS_ORIGINS}
+      # Public base URL of the frontend — used to build verify/reset links in
+      # emails. Must be the real https domain, not localhost.
+      FRONTEND_URL: ${FRONTEND_URL}
+      # Account email delivery (verify / password reset). Set EMAIL_BACKEND=smtp
+      # in the server-side .env for real delivery; the default "console" only
+      # logs the link (so verification silently won't reach users). See GO-LIVE.md.
+      EMAIL_BACKEND: ${EMAIL_BACKEND:-console}
+      EMAIL_FROM: ${EMAIL_FROM:-StudyTrack <no-reply@studytrack.app>}
+      EMAIL_SMTP_HOST: ${EMAIL_SMTP_HOST:-}
+      EMAIL_SMTP_PORT: ${EMAIL_SMTP_PORT:-587}
+      EMAIL_SMTP_USER: ${EMAIL_SMTP_USER:-}
+      EMAIL_SMTP_PASSWORD: ${EMAIL_SMTP_PASSWORD:-}
+      EMAIL_SMTP_USE_TLS: ${EMAIL_SMTP_USE_TLS:-true}
       # Uncomment when the AI feature ships:
       # ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
     # gunicorn with uvicorn workers, bound on the internal network only.
@@ -64,12 +81,30 @@ services:
     expose:
       - "8000"
 
+  # One-shot: build the SPA and publish it into the shared volume nginx serves.
+  # The app is served same-origin as the API, so the build sets NO VITE_API_URL
+  # (the FE then calls a relative /api and connects wss to its own host). Exits 0
+  # when the copy is done; nginx waits for it via service_completed_successfully.
+  frontend-build:
+    build:
+      context: ..
+      dockerfile: frontend/Dockerfile
+      target: build
+    container_name: studytrack-prod-frontend-build
+    command: ["sh", "-c", "rm -rf /export/* && cp -a /app/dist/. /export/"]
+    volumes:
+      - frontend_dist:/export
+    restart: "no"
+
   nginx:
     image: nginx:1.27-alpine
     container_name: studytrack-prod-nginx
     restart: unless-stopped
     depends_on:
-      - backend
+      backend:
+        condition: service_started
+      frontend-build:
+        condition: service_completed_successfully
     ports:
       - "80:80"
       - "443:443"
@@ -97,7 +132,7 @@ services:
 volumes:
   pgdata:
     name: studytrack_prod_pgdata
-  # Populated by the frontend build (e.g. a one-shot build container or a
-  # bind-mount of frontend/dist). See deploy/deploy.sh / frontend Dockerfile.
+  # Populated by the one-shot `frontend-build` service above (copies its
+  # `npm run build` output here); nginx serves it read-only at /.
   frontend_dist:
     name: studytrack_frontend_dist
