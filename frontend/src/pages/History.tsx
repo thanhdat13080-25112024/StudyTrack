@@ -4,13 +4,12 @@
  * note, and a delete action.
  */
 import { useTranslation } from 'react-i18next';
-import { motion, useReducedMotion } from 'framer-motion';
 import { Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useDeleteSession, useSessions } from '@/features/sessions/hooks';
 import type { StudySession } from '@/features/sessions/types';
-import { getMotion } from '@/lib/motion';
+import { Reveal } from '@/components/motion/Reveal';
 
 function SessionRow({ session }: { session: StudySession }) {
   const { t } = useTranslation();
@@ -53,7 +52,6 @@ function SessionRow({ session }: { session: StudySession }) {
 export default function History() {
   const { t } = useTranslation();
   const { data, isLoading } = useSessions();
-  const m = getMotion(!!useReducedMotion());
 
   return (
     <div className="flex flex-col gap-8">
@@ -64,18 +62,13 @@ export default function History() {
         ) : !data || data.length === 0 ? (
           <Card className="p-8 text-center text-text-muted">{t('history.empty')}</Card>
         ) : (
-          <motion.div
-            className="flex flex-col gap-3"
-            variants={m.list}
-            initial="initial"
-            animate="animate"
-          >
+          <Reveal scroll className="flex flex-col gap-3">
             {data.map((s) => (
-              <motion.div key={s.id} variants={m.item}>
+              <div key={s.id}>
                 <SessionRow session={s} />
-              </motion.div>
+              </div>
             ))}
-          </motion.div>
+          </Reveal>
         )}
       </section>
     </div>

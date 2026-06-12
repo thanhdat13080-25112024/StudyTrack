@@ -2,7 +2,6 @@
  * create form. Reminder offset uses presets. */
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { motion, useReducedMotion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useCourses } from '@/features/courses/hooks';
@@ -18,7 +17,7 @@ import {
   REMIND_PRESETS,
   type Deadline,
 } from '@/features/deadlines/types';
-import { getMotion } from '@/lib/motion';
+import { Reveal } from '@/components/motion/Reveal';
 
 const EMPTY = {
   title: '',
@@ -63,8 +62,6 @@ export default function Deadlines() {
     if (diff < 0) return 'border-l-4 border-red-500';
     return 'border-l-4 border-amber-500';
   };
-
-  const m = getMotion(!!useReducedMotion());
 
   return (
     <div className="flex flex-col gap-6">
@@ -135,19 +132,13 @@ export default function Deadlines() {
         </div>
       </Card>
 
-      <motion.section
-        className="flex flex-col gap-2"
-        variants={m.list}
-        initial="initial"
-        animate="animate"
-      >
+      <Reveal as="section" className="flex flex-col gap-2">
         {(deadlines ?? []).length === 0 && (
           <p className="text-text-muted">{t('deadlines.empty')}</p>
         )}
         {(deadlines ?? []).map((d) => (
-          <motion.div
+          <div
             key={d.id}
-            variants={m.item}
             className={`flex items-center justify-between gap-3 rounded-md border border-border bg-bg-card p-3 ${rowTone(d)}`}
           >
             <div className="flex flex-col">
@@ -169,9 +160,9 @@ export default function Deadlines() {
                 {t('common.delete')}
               </Button>
             </div>
-          </motion.div>
+          </div>
         ))}
-      </motion.section>
+      </Reveal>
     </div>
   );
 }

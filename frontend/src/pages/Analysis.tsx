@@ -8,12 +8,11 @@
  */
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { motion, useReducedMotion } from 'framer-motion';
 import { Activity, AlertTriangle, TrendingUp } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { useDirection, useWeakSubjects } from '@/features/analysis/hooks';
 import { useCourses } from '@/features/courses/hooks';
-import { getMotion } from '@/lib/motion';
+import { Reveal } from '@/components/motion/Reveal';
 
 export default function Analysis() {
   const { t } = useTranslation();
@@ -27,8 +26,6 @@ export default function Analysis() {
     return map;
   }, [courses]);
 
-  const m = getMotion(!!useReducedMotion());
-
   return (
     <div className="flex flex-col gap-8">
       <section className="flex flex-col gap-4">
@@ -41,14 +38,9 @@ export default function Analysis() {
         ) : (weak ?? []).length === 0 ? (
           <p className="text-text-muted">{t('analysis.noWeak')}</p>
         ) : (
-          <motion.div
-            className="grid gap-3 md:grid-cols-2"
-            variants={m.list}
-            initial="initial"
-            animate="animate"
-          >
+          <Reveal scroll className="grid gap-3 md:grid-cols-2">
             {(weak ?? []).map((w) => (
-              <motion.div key={w.course_id} variants={m.item}>
+              <div key={w.course_id}>
                 <Card className="flex flex-col gap-2 p-4">
                   <div className="flex items-center justify-between">
                     <span className="font-mono font-semibold text-text-helper">
@@ -90,9 +82,9 @@ export default function Analysis() {
                     </div>
                   )}
                 </Card>
-              </motion.div>
+              </div>
             ))}
-          </motion.div>
+          </Reveal>
         )}
       </section>
 

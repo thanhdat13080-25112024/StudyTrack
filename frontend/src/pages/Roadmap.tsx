@@ -6,13 +6,12 @@
  */
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { motion, useReducedMotion } from 'framer-motion';
 import { Check, Play, Route } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { getMotion } from '@/lib/motion';
+import { Reveal } from '@/components/motion/Reveal';
 import { useMe } from '@/features/auth/hooks';
 import { useApplyRoadmap, useGenerateRoadmap } from '@/features/roadmap/hooks';
 import type { RoadmapPlan, RoadmapWarning } from '@/features/roadmap/types';
@@ -49,8 +48,6 @@ export default function Roadmap() {
         setApplied(true);
       },
     });
-
-  const m = getMotion(!!useReducedMotion());
 
   return (
     <div className="flex flex-col gap-8">
@@ -104,14 +101,9 @@ export default function Roadmap() {
       {plan && plan.semesters.length === 0 ? (
         <p className="text-text-muted">{t('roadmap.empty')}</p>
       ) : plan ? (
-        <motion.div
-          className="flex gap-4 overflow-x-auto pb-2"
-          variants={m.list}
-          initial="initial"
-          animate="animate"
-        >
+        <Reveal scroll className="flex gap-4 overflow-x-auto pb-2">
           {plan.semesters.map((sem) => (
-            <motion.div key={sem.code} variants={m.item}>
+            <div key={sem.code}>
               <Card className="flex min-w-[220px] flex-col gap-3 p-4">
                 <div className="flex items-center justify-between border-b border-border pb-2">
                   <span className="font-mono font-bold text-text-helper">{sem.code}</span>
@@ -136,9 +128,9 @@ export default function Roadmap() {
                   </div>
                 ))}
               </Card>
-            </motion.div>
+            </div>
           ))}
-        </motion.div>
+        </Reveal>
       ) : (
         <p className="text-text-muted">{t('roadmap.hint')}</p>
       )}
