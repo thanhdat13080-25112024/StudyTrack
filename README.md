@@ -9,7 +9,7 @@
 
 Ứng dụng **song ngữ Việt / Anh** và có **giao diện sáng / tối** lấy cảm hứng từ phong cách "giấy tĩnh" của Notion — gọn gàng, ấm mắt, mặc định là **giao diện sáng**.
 
-> 🔗 Bản demo trực tuyến: <https://studytrack-mzds.vercel.app/>
+> 🔗 Bản demo trực tuyến (xem trước): <https://study-track-orpin.vercel.app/> — đăng nhập bằng tài khoản demo `demo@studytrack.app` / `studytrack`.
 
 ---
 
