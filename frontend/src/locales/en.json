@@ -78,7 +78,11 @@
     "music": "Focus Audio",
     "musicPlay": "Play music",
     "musicPause": "Pause music",
-    "volume": "Volume"
+    "volume": "Volume",
+    "musicPrev": "Previous track",
+    "musicNext": "Next track",
+    "musicShuffleOn": "Enable shuffle",
+    "musicShuffleOff": "Disable shuffle"
   },
   "history": {
     "title": "Empirical Focus History Logs",

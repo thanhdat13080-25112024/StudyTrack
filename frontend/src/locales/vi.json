@@ -78,7 +78,11 @@
     "music": "Âm nhạc học tập",
     "musicPlay": "Phát nhạc",
     "musicPause": "Tạm dừng nhạc",
-    "volume": "Âm lượng"
+    "volume": "Âm lượng",
+    "musicPrev": "Bài trước",
+    "musicNext": "Bài sau",
+    "musicShuffleOn": "Bật phát ngẫu nhiên",
+    "musicShuffleOff": "Tắt phát ngẫu nhiên"
   },
   "history": {
     "title": "Lịch sử học tập thực tế",
