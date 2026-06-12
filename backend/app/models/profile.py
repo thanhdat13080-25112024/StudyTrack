@@ -30,6 +30,12 @@ class Profile(Base):
     goal: Mapped[str] = mapped_column(Text, default="", nullable=False)
     avatar_url: Mapped[str | None] = mapped_column(Text, nullable=True)  # base64 data-URI
 
+    # Virtual student-ID card: chosen visual theme + optional student code (MSSV)
+    card_theme: Mapped[str] = mapped_column(
+        String(20), default="studytrack", server_default="studytrack", nullable=False
+    )
+    student_code: Mapped[str | None] = mapped_column(String(30), nullable=True)
+
     # Academic (nullable, unused until Phase 3)
     target_cpa: Mapped[float | None] = mapped_column(Float, nullable=True)
     total_credits_required: Mapped[int | None] = mapped_column(Integer, nullable=True)

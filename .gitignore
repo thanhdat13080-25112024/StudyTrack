@@ -18,12 +18,16 @@ GEMINI-VIE.md
 # Cross-tool AI guides (Cursor/Copilot/Codex/Zed/Windsurf/Aider/Gemini) — same
 # local-only policy as CLAUDE.md; they mirror it for non-Claude assistants.
 AGENTS.md
+# Design-language reference (local-only, like CLAUDE.md)
+DESIGN.md
 .github/copilot-instructions.md
 .cursorrules
 .cursor/
 .windsurfrules
 # Superpowers workflow artifacts (per-phase specs & plans)
 docs/superpowers/
+# Superpowers visual-companion brainstorm sessions (mockups, local-only)
+.superpowers/
 # Harness cross-agent scratch (never pushed)
 _workspace/
 # Codegraph MCP index (local SQLite knowledge graph — rebuildable, never pushed)
