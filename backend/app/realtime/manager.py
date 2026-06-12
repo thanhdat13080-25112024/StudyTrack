@@ -5,7 +5,10 @@ best-effort bridge for pushing from threadpool (sync) request handlers."""
 from __future__ import annotations
 
 import asyncio
+import logging
 from typing import Any, Protocol
+
+logger = logging.getLogger(__name__)
 
 
 class _Socket(Protocol):
@@ -46,7 +49,7 @@ class ConnectionManager:
         try:
             asyncio.run_coroutine_threadsafe(self.send_to_user(user_id, message), loop)
         except Exception:
-            pass
+            logger.warning("realtime push scheduling failed", exc_info=True)
 
 
 # Module-level singleton shared by the ws endpoint, scanner, and sync routers.

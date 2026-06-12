@@ -41,7 +41,11 @@ def create_access_token(
     expire = datetime.now(UTC) + (
         expires_delta or timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     )
-    to_encode: dict[str, Any] = {"sub": subject, "exp": expire}
+    to_encode: dict[str, Any] = {
+        "sub": subject,
+        "exp": expire,
+        "iat": int(datetime.now(UTC).timestamp()),
+    }
     if extra_claims:
         to_encode.update(extra_claims)
     return jwt.encode(to_encode, settings.JWT_SECRET, algorithm=settings.JWT_ALG)
@@ -53,3 +57,24 @@ def decode_access_token(token: str) -> dict[str, Any] | None:
         return jwt.decode(token, settings.JWT_SECRET, algorithms=[settings.JWT_ALG])
     except JWTError:
         return None
+
+
+def token_predates_password_change(
+    payload: dict[str, Any], password_changed_at: datetime | None
+) -> bool:
+    """True if this token was issued before the user's last password change.
+
+    A missing ``iat`` (legacy token) counts as predating — once a password
+    change is recorded, only tokens minted after it survive.
+    """
+    if password_changed_at is None:
+        return False
+    iat = payload.get("iat")
+    if iat is None:
+        return True
+    pca = (
+        password_changed_at
+        if password_changed_at.tzinfo is not None
+        else password_changed_at.replace(tzinfo=UTC)
+    )
+    return int(iat) < int(pca.timestamp())

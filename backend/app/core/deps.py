@@ -39,7 +39,7 @@ def get_current_user(
     """Decode the bearer JWT and return the matching User, or 401."""
     from sqlalchemy import select
 
-    from app.core.security import decode_access_token
+    from app.core.security import decode_access_token, token_predates_password_change
     from app.models.user import User
 
     credentials_error = HTTPException(
@@ -58,4 +58,6 @@ def get_current_user(
     user = db.scalar(select(User).where(User.email == email))
     if user is None:
         raise credentials_error
+    if token_predates_password_change(payload, user.password_changed_at):
+        raise credentials_error  # token minted before the last password change
     return user

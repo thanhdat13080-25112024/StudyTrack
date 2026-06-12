@@ -50,12 +50,17 @@ services:
       # ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
     # gunicorn with uvicorn workers, bound on the internal network only.
     # single worker: in-memory WS manager + reminder scanner (Phase 5)
+    # --forwarded-allow-ips "*": trust X-Forwarded-For from nginx (the backend
+    # is expose-only on the internal network, so only nginx can reach it).
+    # Without it every request appears to come from nginx's container IP and
+    # slowapi's per-IP rate limits collapse into one site-wide bucket.
     command: >-
       gunicorn app.main:app
       -k uvicorn.workers.UvicornWorker
       --bind 0.0.0.0:8000
       --workers 1
       --timeout 60
+      --forwarded-allow-ips "*"
     expose:
       - "8000"
 
