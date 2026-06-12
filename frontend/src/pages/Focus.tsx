@@ -202,19 +202,37 @@ export default function Focus() {
           <TimerRing secondsLeft={timer.secondsLeft} planned={timer.plannedSeconds}>
             <Timer secondsLeft={timer.secondsLeft} className="text-white" />
           </TimerRing>
+          {/* Night-band button hierarchy (DESIGN.md): the committing action is the
+              single white pill; the toggle is a ghost outline in on-primary white.
+              Structural blue never paints on the indigo band. */}
           <div className="flex gap-3">
             {timer.running ? (
-              <Button variant="secondary" size="lg" onClick={handlePause}>
+              <Button
+                variant="outline"
+                size="lg"
+                className="border-white/30 bg-transparent text-white shadow-none hover:bg-white/10"
+                onClick={handlePause}
+              >
                 <Pause className="h-4 w-4" aria-hidden />
                 {t('focus.pause')}
               </Button>
             ) : (
-              <Button variant="secondary" size="lg" onClick={handleResume}>
+              <Button
+                variant="outline"
+                size="lg"
+                className="border-white/30 bg-transparent text-white shadow-none hover:bg-white/10"
+                onClick={handleResume}
+              >
                 <Play className="h-4 w-4" aria-hidden />
                 {t('focus.resume')}
               </Button>
             )}
-            <Button size="lg" onClick={() => finalize(false)}>
+            <Button
+              variant="secondary"
+              size="lg"
+              className="border-transparent bg-white text-[#31302e] shadow-none hover:bg-white/90"
+              onClick={() => finalize(false)}
+            >
               <Square className="h-4 w-4" aria-hidden />
               {t('focus.stop')}
             </Button>

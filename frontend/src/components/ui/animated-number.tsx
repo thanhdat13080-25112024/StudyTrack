@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
-import { animate, useReducedMotion } from 'framer-motion';
+import { useState } from 'react';
+import { gsap, useGSAP } from '@/lib/gsap';
+import { EASE, usePrefersReducedMotion } from '@/lib/motion';
 import { cn } from '@/lib/utils';
 
 interface AnimatedNumberProps {
@@ -16,21 +17,25 @@ export function AnimatedNumber({
   suffix = '',
   className,
 }: AnimatedNumberProps) {
-  const reduced = useReducedMotion();
+  const reduced = usePrefersReducedMotion();
   const [display, setDisplay] = useState(reduced ? value : 0);
 
-  useEffect(() => {
-    if (reduced) {
-      setDisplay(value);
-      return;
-    }
-    const controls = animate(0, value, {
-      duration: 0.7,
-      ease: 'easeOut',
-      onUpdate: (v) => setDisplay(v),
-    });
-    return () => controls.stop();
-  }, [value, reduced]);
+  useGSAP(
+    () => {
+      if (reduced) {
+        setDisplay(value);
+        return;
+      }
+      const proxy = { v: 0 };
+      gsap.to(proxy, {
+        v: value,
+        duration: 0.8,
+        ease: EASE.count,
+        onUpdate: () => setDisplay(proxy.v),
+      });
+    },
+    { dependencies: [value, reduced] },
+  );
 
   return (
     <span className={cn('tabular-nums', className)}>

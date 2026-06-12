@@ -66,3 +66,27 @@ if (typeof Element.prototype.scrollTo !== 'function') {
 if (typeof window.scrollTo !== 'function') {
   window.scrollTo = () => {};
 }
+
+/**
+ * jsdom provides no `window.matchMedia`. GSAP's ScrollTrigger calls it at
+ * plugin-registration time (module-load), so any test that directly or
+ * transitively imports `@/lib/gsap` would crash without this stub.
+ * Individual test files that care about the actual media-match value
+ * (e.g. usePrefersReducedMotion.test) override this via `vi.stubGlobal`.
+ */
+if (typeof window.matchMedia !== 'function') {
+  Object.defineProperty(window, 'matchMedia', {
+    writable: true,
+    configurable: true,
+    value: (query: string) => ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addListener: () => {},
+      removeListener: () => {},
+      addEventListener: () => {},
+      removeEventListener: () => {},
+      dispatchEvent: () => false,
+    }),
+  });
+}

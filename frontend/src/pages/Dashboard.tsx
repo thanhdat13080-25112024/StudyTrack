@@ -5,7 +5,6 @@
  */
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { motion, useReducedMotion } from 'framer-motion';
 import { ArrowRight, Clock, Flame, GraduationCap, Layers, Timer as TimerIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -17,7 +16,7 @@ import { BadgeGrid } from '@/components/dashboard/BadgeGrid';
 import { useDashboard } from '@/features/sessions/hooks';
 import { useGpa } from '@/features/grades/hooks';
 import { useAuthStore } from '@/store/authStore';
-import { getMotion } from '@/lib/motion';
+import { Reveal } from '@/components/motion/Reveal';
 
 function KpiCard({
   icon,
@@ -52,7 +51,6 @@ export default function Dashboard() {
   const { data, isLoading } = useDashboard();
   const { data: gpa } = useGpa();
   const name = useAuthStore((s) => s.user?.user.name ?? '');
-  const m = getMotion(!!useReducedMotion());
 
   const streak = data?.kpis.streak ?? 0;
   const hasGrades = !!gpa && (gpa.semesters.length > 0 || gpa.cpa > 0);
@@ -169,14 +167,9 @@ export default function Dashboard() {
             {data.recent_sessions.length === 0 ? (
               <Card className="p-6 text-center text-text-muted">{t('dashboard.recentEmpty')}</Card>
             ) : (
-              <motion.div
-                className="flex flex-col gap-2"
-                variants={m.list}
-                initial="initial"
-                animate="animate"
-              >
+              <Reveal className="flex flex-col gap-2">
                 {data.recent_sessions.map((s) => (
-                  <motion.div key={s.id} variants={m.item}>
+                  <div key={s.id}>
                     <Card className="flex items-center justify-between gap-4 p-4">
                       <div className="flex flex-col">
                         <span className="font-semibold text-text-helper">{s.subject}</span>
@@ -188,9 +181,9 @@ export default function Dashboard() {
                         {s.actual_minutes} {t('common.minutesShort')}
                       </span>
                     </Card>
-                  </motion.div>
+                  </div>
                 ))}
-              </motion.div>
+              </Reveal>
             )}
           </section>
         </>

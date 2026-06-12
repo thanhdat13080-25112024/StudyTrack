@@ -1,6 +1,6 @@
 import { useEffect, type RefObject } from 'react';
 import { useLocation } from 'react-router-dom';
-import { useReducedMotion } from 'framer-motion';
+import { usePrefersReducedMotion } from '@/lib/motion';
 
 /**
  * Reset a scroll container to the top whenever the route (pathname) changes.
@@ -13,7 +13,7 @@ import { useReducedMotion } from 'framer-motion';
  */
 export function useScrollToTop(ref: RefObject<HTMLElement | null>) {
   const { pathname } = useLocation();
-  const reduced = useReducedMotion() ?? false;
+  const reduced = usePrefersReducedMotion();
 
   useEffect(() => {
     const el = ref.current;

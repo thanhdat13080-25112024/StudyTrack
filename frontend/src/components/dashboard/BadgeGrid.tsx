@@ -5,9 +5,8 @@
  * focused_5h (🔥) / master_20h (👑).
  */
 import { useTranslation } from 'react-i18next';
-import { motion, useReducedMotion } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { getMotion } from '@/lib/motion';
+import { Reveal } from '@/components/motion/Reveal';
 import type { Dashboard } from '@/features/sessions/types';
 
 type Badge = Dashboard['badges'][number];
@@ -20,21 +19,13 @@ const ICONS: Record<string, string> = {
 
 export function BadgeGrid({ badges }: { badges: Badge[] }) {
   const { t } = useTranslation();
-  const m = getMotion(!!useReducedMotion());
   return (
-    <motion.div
-      className="flex flex-wrap gap-3"
-      variants={m.list}
-      initial="initial"
-      animate="animate"
-    >
+    <Reveal className="flex flex-wrap gap-3">
       {badges.map((badge) => (
-        <motion.div
+        <div
           key={badge.key}
-          variants={m.item}
-          whileHover={{ y: -2 }}
           className={cn(
-            'flex items-center gap-3 rounded-lg border p-3 transition-all',
+            'flex items-center gap-3 rounded-lg border p-3 transition-all motion-safe:hover:-translate-y-0.5',
             badge.unlocked
               ? 'border-sticker-orange bg-bg-card'
               : 'border-border bg-bg-main opacity-50 grayscale',
@@ -49,8 +40,8 @@ export function BadgeGrid({ badges }: { badges: Badge[] }) {
             </span>
             <span className="text-xs text-text-muted">{t(`badges.${badge.key}.desc`)}</span>
           </div>
-        </motion.div>
+        </div>
       ))}
-    </motion.div>
+    </Reveal>
   );
 }
