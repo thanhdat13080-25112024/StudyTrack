@@ -363,11 +363,21 @@
     "major": "Major",
     "goal": "Goal",
     "avatar": "Avatar",
-    "save": "Save profile"
+    "save": "Save profile",
+    "studentCode": "Student ID"
   },
   "studentId": {
     "class": "Class",
-    "major": "Major"
+    "major": "Major",
+    "avatarMenu": "Open avatar menu",
+    "avatarView": "View avatar",
+    "avatarChange": "Choose avatar",
+    "theme": {
+      "studytrack": "StudyTrack",
+      "vju-mono": "VJU mono",
+      "vju-red": "VJU red",
+      "vnu-green": "VNU green"
+    }
   },
   "deadlines": {
     "title": "Deadlines",
