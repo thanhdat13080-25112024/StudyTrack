@@ -1,6 +1,7 @@
+import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { motion, useReducedMotion } from 'framer-motion';
 import { BookOpen, Flame, GraduationCap, Sparkles, Timer } from 'lucide-react';
+import { gsap, useGSAP } from '@/lib/gsap';
 
 type Variant = 'login' | 'register';
 
@@ -32,8 +33,29 @@ const BG: Record<Variant, string> = {
 
 export function AuthHero({ variant }: { variant: Variant }) {
   const { t } = useTranslation();
-  const reduced = useReducedMotion();
   const stickers = STICKERS[variant];
+  const stickerWrapRef = useRef<HTMLDivElement>(null);
+
+  // Sticker pop-in: the one allowed overshoot (decorative auth hero only).
+  useGSAP(
+    () => {
+      const wrap = stickerWrapRef.current;
+      if (!wrap) return;
+      const mm = gsap.matchMedia();
+      mm.add('(prefers-reduced-motion: no-preference)', () => {
+        gsap.from(wrap.children, {
+          opacity: 0,
+          scale: 0.6,
+          duration: 0.4,
+          ease: 'back.out(1.6)',
+          stagger: 0.1,
+        });
+      });
+      return () => mm.revert();
+    },
+    { dependencies: [variant], scope: stickerWrapRef },
+  );
+
   return (
     <div
       className={`relative flex h-full flex-col justify-between overflow-hidden p-10 text-white ${BG[variant]}`}
@@ -45,18 +67,15 @@ export function AuthHero({ variant }: { variant: Variant }) {
           {t(variant === 'login' ? 'auth.heroLogin' : 'auth.heroRegister')}
         </p>
       </div>
-      <div className="pointer-events-none absolute inset-0" aria-hidden>
+      <div ref={stickerWrapRef} className="pointer-events-none absolute inset-0" aria-hidden>
         {stickers.map(({ Icon, color, top, left }, i) => (
-          <motion.span
+          <span
             key={`${variant}-${i}`}
             className="absolute inline-flex h-12 w-12 items-center justify-center rounded-lg"
             style={{ top, left, backgroundColor: `${color}26`, color }}
-            initial={reduced ? false : { opacity: 0, scale: 0.6 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={reduced ? undefined : { delay: 0.1 * i, duration: 0.4 }}
           >
             <Icon className="h-6 w-6" />
-          </motion.span>
+          </span>
         ))}
       </div>
     </div>

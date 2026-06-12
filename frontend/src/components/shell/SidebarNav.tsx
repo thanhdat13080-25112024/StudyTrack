@@ -7,24 +7,16 @@
  */
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
-import { motion, useReducedMotion } from 'framer-motion';
 import { NAV_GROUPS } from '@/lib/nav';
-import { getMotion } from '@/lib/motion';
+import { Reveal } from '@/components/motion/Reveal';
 import { cn } from '@/lib/utils';
 
 export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
   const { t } = useTranslation();
   const location = useLocation();
-  const reduced = useReducedMotion() ?? false;
-  const motionCfg = getMotion(reduced);
 
   return (
-    <motion.nav
-      className="flex flex-col gap-6"
-      variants={motionCfg.list}
-      initial="initial"
-      animate="animate"
-    >
+    <Reveal as="nav" className="flex flex-col gap-6">
       {NAV_GROUPS.map((group) => (
         <div key={group.key} className="flex flex-col gap-1">
           <p className="px-3 pb-1 text-xs font-semibold uppercase tracking-eyebrow text-text-faint">
@@ -33,7 +25,7 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
           {group.items.map(({ to, key, icon: Icon }) => {
             const active = location.pathname === to;
             return (
-              <motion.div key={to} variants={motionCfg.item}>
+              <div key={to}>
                 <Link
                   to={to}
                   onClick={onNavigate}
@@ -48,11 +40,11 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
                   <Icon className="h-4 w-4 shrink-0" aria-hidden />
                   <span className="truncate">{t(key)}</span>
                 </Link>
-              </motion.div>
+              </div>
             );
           })}
         </div>
       ))}
-    </motion.nav>
+    </Reveal>
   );
 }
