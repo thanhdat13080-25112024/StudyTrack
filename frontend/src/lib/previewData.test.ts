@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest';
+import en from '@/locales/en.json';
 import { getPreviewResponse } from './previewData';
+
+type WeakLike = { priority: string; signals: string[] };
 
 describe('previewData.getPreviewResponse', () => {
   it('serves array fixtures for list GETs', () => {
@@ -32,6 +35,17 @@ describe('previewData.getPreviewResponse', () => {
     };
     expect(me.user.email).toContain('@');
     expect(me.profile).toBeDefined();
+  });
+
+  it('uses weak-subject priority/signal values that have matching i18n keys', () => {
+    const weak = getPreviewResponse('GET', '/api/analysis/weak-subjects') as WeakLike[];
+    expect(weak.length).toBeGreaterThan(0);
+    const priorityKeys = Object.keys(en.weakSubject.priority);
+    const signalKeys = Object.keys(en.weakSubject.signal);
+    for (const w of weak) {
+      expect(priorityKeys).toContain(w.priority);
+      for (const s of w.signals) expect(signalKeys).toContain(s);
+    }
   });
 
   it('echoes a created entity with an id for unknown mutations', () => {
