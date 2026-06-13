@@ -411,7 +411,8 @@
     "empty": "No notifications.",
     "markAllRead": "Mark all read",
     "deadlineReminder": "Reminder: \"{{title}}\" is due soon",
-    "badgeUnlocked": "Badge unlocked: {{badge}}"
+    "badgeUnlocked": "Badge unlocked: {{badge}}",
+    "generic": "New notification"
   },
   "settings": {
     "title": "Account settings",

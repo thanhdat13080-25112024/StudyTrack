@@ -51,9 +51,13 @@ export function createWsClient(opts: WsClientOptions): WsClient {
         /* ignore malformed frames */
       }
     };
-    ws.onclose = () => {
+    ws.onclose = (e: CloseEvent) => {
       ws = null;
       if (closedByUser) return;
+      // 1008 (policy violation) = the server rejected our token (bad/expired/
+      // revoked). Reconnecting with the same token just loops, so stop until the
+      // next explicit connect() (e.g. after a fresh login).
+      if (e.code === 1008) return;
       timer = setTimeout(open, backoff);
       backoff = Math.min(backoff * 2, maxBackoff);
     };
