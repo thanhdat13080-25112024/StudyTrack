@@ -14,6 +14,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { useUiStore } from '@/store/uiStore';
 import { useAuthStore } from '@/store/authStore';
+import { toggleThemeWithReveal } from '@/lib/themeReveal';
 
 export function ShellControls({ onNavigate }: { onNavigate?: () => void }) {
   const { t } = useTranslation();
@@ -21,7 +22,6 @@ export function ShellControls({ onNavigate }: { onNavigate?: () => void }) {
   const queryClient = useQueryClient();
   const theme = useUiStore((s) => s.theme);
   const lang = useUiStore((s) => s.lang);
-  const toggleTheme = useUiStore((s) => s.toggleTheme);
   const toggleLang = useUiStore((s) => s.toggleLang);
   const logout = useAuthStore((s) => s.logout);
   const name = useAuthStore((s) => s.user?.user.name ?? '');
@@ -73,7 +73,8 @@ export function ShellControls({ onNavigate }: { onNavigate?: () => void }) {
         <Button
           variant="ghost"
           size="icon"
-          onClick={toggleTheme}
+          data-theme-toggle
+          onClick={(e) => toggleThemeWithReveal(e.currentTarget)}
           aria-label={t('common.toggleTheme')}
         >
           {theme === 'dark' ? (

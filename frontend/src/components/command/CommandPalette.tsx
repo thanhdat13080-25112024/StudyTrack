@@ -22,6 +22,7 @@ import { NAV_ITEMS } from '@/lib/nav';
 import { useFocusTrap } from '@/hooks/useFocusTrap';
 import { useUiStore } from '@/store/uiStore';
 import { useAuthStore } from '@/store/authStore';
+import { toggleThemeWithReveal } from '@/lib/themeReveal';
 
 export interface CommandPaletteProps {
   open: boolean;
@@ -35,7 +36,6 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const toggleTheme = useUiStore((s) => s.toggleTheme);
   const toggleLang = useUiStore((s) => s.toggleLang);
   const logout = useAuthStore((s) => s.logout);
 
@@ -135,8 +135,9 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
             <PaletteItem
               value={t('command.action.toggleTheme')}
               onSelect={() => {
-                toggleTheme();
+                // No pointer origin here — reveal from the sidebar theme button.
                 close();
+                toggleThemeWithReveal();
               }}
             >
               <MoonStar className="h-4 w-4 shrink-0 text-text-faint" aria-hidden />

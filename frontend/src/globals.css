@@ -81,3 +81,29 @@
     }
   }
 }
+
+/*
+ * Theme circular-reveal (View Transitions API) — driven by lib/themeReveal.ts.
+ * Kept UNLAYERED (after @layer base) so these win the cascade over the base
+ * `* { transition }` rule.
+ *
+ *  - Strip the default VT cross-fade so ONLY the expanding clip-circle shows.
+ *  - Stack the new snapshot above the old one (the circle reveals the new theme).
+ *  - While the reveal runs, suppress the global 0.25s color transition so the
+ *    revealed region snaps to FINAL colors crisply instead of fading (the new
+ *    VT snapshot is live, so an active transition would muddy the edge).
+ */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+::view-transition-old(root) {
+  z-index: 0;
+}
+::view-transition-new(root) {
+  z-index: 1;
+}
+html.theme-reveal-active * {
+  transition: none !important;
+}

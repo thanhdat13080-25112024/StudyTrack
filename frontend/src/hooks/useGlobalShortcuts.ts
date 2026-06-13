@@ -17,6 +17,7 @@ import { useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useUiStore } from '@/store/uiStore';
 import { contextualNew, isTypingTarget, resolveKey } from '@/lib/shortcuts';
+import { toggleThemeWithReveal } from '@/lib/themeReveal';
 
 const PENDING_RESET_MS = 1200;
 
@@ -32,13 +33,12 @@ export interface UseGlobalShortcutsArgs {
 export function useGlobalShortcuts({ openPalette, openHelp, closeAll }: UseGlobalShortcutsArgs) {
   const navigate = useNavigate();
   const location = useLocation();
-  const toggleTheme = useUiStore((s) => s.toggleTheme);
   const toggleLang = useUiStore((s) => s.toggleLang);
 
   // Keep the latest closures in refs so the listener can stay registered once
   // (no re-bind churn) while always calling the current handlers/route.
-  const handlers = useRef({ openPalette, openHelp, closeAll, navigate, toggleTheme, toggleLang });
-  handlers.current = { openPalette, openHelp, closeAll, navigate, toggleTheme, toggleLang };
+  const handlers = useRef({ openPalette, openHelp, closeAll, navigate, toggleLang });
+  handlers.current = { openPalette, openHelp, closeAll, navigate, toggleLang };
   const pathnameRef = useRef(location.pathname);
   pathnameRef.current = location.pathname;
 
@@ -97,7 +97,8 @@ export function useGlobalShortcuts({ openPalette, openHelp, closeAll }: UseGloba
           break;
         case 'theme':
           e.preventDefault();
-          h.toggleTheme();
+          // No pointer origin — reveal from the sidebar theme button.
+          toggleThemeWithReveal();
           break;
         case 'lang':
           e.preventDefault();
