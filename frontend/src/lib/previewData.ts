@@ -453,22 +453,25 @@ const direction: Direction = {
   missing_prerequisites: [],
 };
 
+// Signal/priority strings mirror the backend weak_subject contract exactly
+// (priority red|yellow; signals low_grade|low_study|failed_prereq), so the
+// frontend i18n keys weakSubject.{priority,signal}.* resolve in preview mode.
 const weakSubjects: WeakSubject[] = [
   {
     course_id: 6,
     code: 'INT202',
     name: 'Cơ sở Dữ liệu',
-    signals: ['low_focus', 'below_target'],
-    priority: 'high',
-    metrics: { avg_focus: 3.2, grade_4: 3.0 },
+    signals: ['low_study', 'failed_prereq'],
+    priority: 'red',
+    metrics: { minutes_per_credit: 18.5 },
   },
   {
     course_id: 3,
     code: 'PHY101',
     name: 'Vật lý đại cương',
-    signals: ['below_target'],
-    priority: 'medium',
-    metrics: { grade_4: 3.0 },
+    signals: ['low_study'],
+    priority: 'yellow',
+    metrics: { minutes_per_credit: 22.0 },
   },
 ];
 
