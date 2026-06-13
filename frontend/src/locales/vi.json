@@ -411,7 +411,8 @@
     "empty": "Chưa có thông báo.",
     "markAllRead": "Đánh dấu đã đọc hết",
     "deadlineReminder": "Nhắc: \"{{title}}\" sắp đến hạn",
-    "badgeUnlocked": "Mở khoá huy hiệu: {{badge}}"
+    "badgeUnlocked": "Mở khoá huy hiệu: {{badge}}",
+    "generic": "Thông báo mới"
   },
   "settings": {
     "title": "Cài đặt tài khoản",

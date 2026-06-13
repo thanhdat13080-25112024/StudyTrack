@@ -25,7 +25,9 @@ function renderText(
       badge: t(`badges.${String(p.badge_key ?? '')}.title`),
     });
   }
-  return n.type;
+  // Unknown/forward-compatible type: show a generic localized label rather than
+  // leaking the raw backend slug (e.g. "system_announcement") to the user.
+  return t('notifications.generic');
 }
 
 /** `align` controls which edge the dropdown panel anchors to, so it never spills
