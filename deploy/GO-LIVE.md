@@ -7,9 +7,11 @@ terminator) serves the SPA at `/`, the API at `/api`, and the WebSocket at `/ws`
 (wss) — all on the same origin, so the frontend calls a relative `/api` and
 connects `wss://<your-domain>/ws` with no `VITE_API_URL` needed.
 
-**Vercel is a throwaway preview only.** It's used to show the app off *before* the
-VPS is live; once the VPS serves everything, **both Vercel projects are deleted**
-(`studytrack-mzds` legacy + `study-track` preview). See §7.
+**Vercel is a throwaway preview only.** The `study-track` project is built with
+`VITE_PREVIEW_MODE=true`, so it runs **backend-less** — login is bypassed and the app
+serves baked demo fixtures, letting anyone browse every page with sample data. Once
+the VPS serves everything, **both Vercel projects are deleted** (`studytrack-mzds`
+legacy + `study-track` preview). See §7.
 
 > Nothing here runs automatically. CI keeps `main` deployable; a human provisions
 > the VPS and fills secrets once. The `Deploy` workflow then auto-runs on every
@@ -157,13 +159,15 @@ Vercel was only a preview while the VPS was being set up. The new React app live
 the Vercel project **`study-track`** (`study-track-orpin.vercel.app`); the legacy
 single-file app is in **`studytrack-mzds`**.
 
-- **While previewing on Vercel** (before the VPS is live): set
-  `VITE_API_URL = https://<your-domain>` on the `study-track` project and add the
-  Vercel origin to `CORS_ORIGINS` in the VPS `.env`. (Needed only because Vercel FE
-  → VPS API is cross-origin.)
-- **Once the VPS serves everything** (§6 green): **delete both Vercel projects**
-  (`study-track` *and* `studytrack-mzds`) from the Vercel dashboard, and drop the
-  Vercel origin from `CORS_ORIGINS`. The VPS domain is now the only home.
+- **Preview build (no backend):** the `study-track` project is built with
+  `VITE_PREVIEW_MODE=true` (Vercel → Settings → Environment Variables → add it →
+  redeploy). In this mode the app bypasses login and serves baked demo fixtures
+  (`frontend/src/lib/previewData.ts`), so visitors browse every page with sample data
+  — no backend, no `VITE_API_URL`, no `CORS_ORIGINS` entry needed.
+- **At VPS go-live (§6 green): delete both Vercel projects** (`study-track` *and*
+  `studytrack-mzds`) from the Vercel dashboard. The VPS build leaves
+  `VITE_PREVIEW_MODE` unset, so login + the live backend take over. The VPS domain is
+  the only home.
 
 ---
 

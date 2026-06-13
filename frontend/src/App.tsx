@@ -23,6 +23,7 @@ import { useAuthStore } from '@/store/authStore';
 import { useMe } from '@/features/auth/hooks';
 import { createWsClient } from '@/lib/wsClient';
 import { apiClient, getToken } from '@/lib/apiClient';
+import { PREVIEW_MODE } from '@/lib/previewMode';
 import { useNotificationStore } from '@/store/notificationStore';
 import { NOTIFICATIONS_KEY, UNREAD_KEY } from '@/features/notifications/hooks';
 
@@ -40,7 +41,9 @@ export default function App() {
   const pushLive = useNotificationStore((s) => s.push);
 
   useEffect(() => {
-    if (!isAuthenticated) return;
+    // Preview mode has no backend to connect to — skip the WS (avoids a futile
+    // reconnect loop against a dead /ws endpoint).
+    if (!isAuthenticated || PREVIEW_MODE) return;
     const client = createWsClient({
       baseUrl: apiClient.baseUrl,
       getToken,

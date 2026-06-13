@@ -10,6 +10,7 @@ import { useRef, useState, type ReactNode } from 'react';
 import { Sidebar } from '@/components/shell/Sidebar';
 import { MobileNav } from '@/components/shell/MobileNav';
 import { EmailVerifyBanner } from '@/components/EmailVerifyBanner';
+import { PreviewBanner } from '@/components/PreviewBanner';
 import { CommandPalette } from '@/components/command/CommandPalette';
 import { ShortcutHelp } from '@/components/command/ShortcutHelp';
 import { useGlobalShortcuts } from '@/hooks/useGlobalShortcuts';
@@ -42,6 +43,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         <MobileNav />
         <main ref={mainRef} data-scroll-root className="flex-1 overflow-y-auto bg-bg-main">
           <div className="mx-auto flex max-w-5xl flex-col gap-6 px-6 py-8 md:px-8">
+            <PreviewBanner />
             <EmailVerifyBanner />
             <PageTransition>{children}</PageTransition>
           </div>

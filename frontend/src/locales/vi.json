@@ -406,6 +406,9 @@
       "w1": "Trước 1 tuần"
     }
   },
+  "preview": {
+    "banner": "Bản xem trước — dữ liệu minh hoạ, chưa có máy chủ thật. Tạm thời không thể đăng nhập hay lưu."
+  },
   "notifications": {
     "title": "Thông báo",
     "empty": "Chưa có thông báo.",

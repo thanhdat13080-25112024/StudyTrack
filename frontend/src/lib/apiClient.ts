@@ -8,6 +8,9 @@
  * are typed against `lib/api-types.ts` (generated from the backend OpenAPI).
  */
 
+import { PREVIEW_MODE } from '@/lib/previewMode';
+import { getPreviewResponse } from '@/lib/previewData';
+
 const BASE_URL = (import.meta.env.VITE_API_URL ?? '').replace(/\/$/, '');
 
 export const TOKEN_STORAGE_KEY = 'track_token';
@@ -43,6 +46,13 @@ export interface ApiRequestOptions extends Omit<RequestInit, 'body'> {
 
 async function request<T>(path: string, options: ApiRequestOptions = {}): Promise<T> {
   const { json, rawBody, headers, ...rest } = options;
+
+  // Preview mode (no backend): serve baked demo fixtures instead of fetching.
+  if (PREVIEW_MODE) {
+    const method = (rest.method ?? 'GET').toUpperCase();
+    return getPreviewResponse(method, path, json) as T;
+  }
+
   const token = getToken();
 
   const init: RequestInit = {
