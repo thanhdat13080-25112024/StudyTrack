@@ -5,6 +5,7 @@
  */
 import { create } from 'zustand';
 import { getToken, setToken } from '@/lib/apiClient';
+import { PREVIEW_MODE, PREVIEW_TOKEN } from '@/lib/previewMode';
 import type { MeOut } from '@/features/auth/types';
 
 interface AuthState {
@@ -17,7 +18,9 @@ interface AuthState {
 }
 
 export const useAuthStore = create<AuthState>((set, get) => ({
-  token: getToken(),
+  // Preview mode seeds a synthetic token so the app treats the visitor as signed
+  // in (no real login / backend); apiClient serves demo fixtures. See previewMode.
+  token: PREVIEW_MODE ? PREVIEW_TOKEN : getToken(),
   user: null,
   setSession: (token) => {
     setToken(token);
@@ -25,6 +28,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   },
   setUser: (user) => set({ user }),
   logout: () => {
+    if (PREVIEW_MODE) return; // no real session to end in preview; avoids a dead-end /login
     setToken(null);
     set({ token: null, user: null });
   },

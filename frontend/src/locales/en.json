@@ -406,6 +406,9 @@
       "w1": "1 week before"
     }
   },
+  "preview": {
+    "banner": "Preview build — sample data, no live backend. Log-in and saving are disabled."
+  },
   "notifications": {
     "title": "Notifications",
     "empty": "No notifications.",
