@@ -9,7 +9,7 @@
 
 Ứng dụng **song ngữ Việt / Anh** và có **giao diện sáng / tối** lấy cảm hứng từ phong cách "giấy tĩnh" của Notion — gọn gàng, ấm mắt, mặc định là **giao diện sáng**.
 
-> 🔗 Bản demo trực tuyến (xem trước): <https://study-track-orpin.vercel.app/> — đăng nhập bằng tài khoản demo `demo@studytrack.app` / `studytrack`.
+> 🔗 Bản xem trước giao diện: <https://study-track-orpin.vercel.app/> — bản preview chỉ để xem giao diện (chưa nối backend nên **chưa đăng nhập được**). Bản đầy đủ (đăng nhập, dữ liệu) sẽ chạy trên VPS.
 
 ---
 
